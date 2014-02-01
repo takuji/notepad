@@ -7,5 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Takuji Shimokawa",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "~3.5.0",
+    "gulp-util": "~2.2.13"
+  }
 }
