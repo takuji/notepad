@@ -23,7 +23,8 @@ gulp.task('copy-resources', function() {
 
 gulp.task('watch', function () {
   gulp.watch('src/js/**/*.coffee', ['build-notepad.js']);
-  gulp.watch('src/resources/**/*', ['copy-resources']);
+  gulp.watch('resources/**/*', ['copy-resources']);
+  gulp.watch('build/src/**/*', ['package']);
 });
 
 gulp.task('package', function() {
