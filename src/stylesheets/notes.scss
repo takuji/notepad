@@ -3,7 +3,46 @@
 }
 
 .note-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
 	height: 100%;
 	min-width: 200px;
 	background-color: #ddd;
+
+  .more {
+    padding-left: 10px;
+  }
+}
+
+.note-list-item {
+  position: relative;
+  padding: 4px 6px 6px;
+  border-bottom: 1px dotted #ddd;
+  cursor: pointer;
+
+  &:last-child {
+    //border-bottom: 1px dotted #888;
+  }
+
+  &:hover {
+    background-color: #ddd;
+
+    .note-index-actions {
+      display: block;
+    }
+  }
+  
+  &.selected {
+    background-color: #f0f0f0;
+  }
+
+  .title {
+    color: #000;
+  }
+
+  .created_at {
+    font-size: 70%;
+    color: #aaa;
+  }
 }
