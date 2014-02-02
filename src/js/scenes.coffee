@@ -19,7 +19,7 @@ class NotesScene extends Marionette.Layout
 
 	_resize: ->
     $window = $(window)
-    margin = 0
+    margin = @$el.offset().top
     @$el.height($window.height() - margin)
 
 
