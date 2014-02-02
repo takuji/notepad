@@ -1,5 +1,5 @@
-class Notepad
-	constructor: ->
+class Notepad extends Backbone.Model
+	initialize: ->
 		@scenes = ['notes', 'note-edit']
 		@current_scene = @scenes[0]
 		@documents = {}	# id => Note
@@ -14,8 +14,8 @@ class Scenes extends Backbone.Router
 	initialize: (option)->
 		@app = option.app
 		@scenes =
-			notes: new NotesScene()
-			note_edit: new NoteEditScene()
+			notes: new NotesScene(model: option.model)
+			note_edit: new NoteEditScene(model: option.model)
 		console.log 'Screens initialized.'
 
 	list: ->
@@ -32,10 +32,15 @@ class Scenes extends Backbone.Router
 
 class App extends Marionette.Application
 
-notepad = new Notepad()
+notes = 
+	1: {title: 'ネコ', content: '吾輩は猫である。'}
+	2: {title: 'いぬ', content: '名前はまだない。'}
+	1: {title: '猿', content: 'にゃーん。'}
+
+notepad = new Notepad(documents: notes)
 
 app = new App()
-scenes = new Scenes(app: app)
+scenes = new Scenes(app: app, model: notepad)
 
 app.addInitializer (options)->
 	app.addRegions scene: '#scene'

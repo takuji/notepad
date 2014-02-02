@@ -15,7 +15,6 @@ class NotesScene extends Marionette.Layout
 		@_resize()
 		@note_list.show @note_list_view
 		@note.show @note_view
-		#@listenTo $(window), 'resize', @_resize
 		$(window).on 'resize', => @_resize()
 
 	_resize: ->
