@@ -7,7 +7,7 @@ var zip = require('gulp-zip');
 gulp.task('default', ['build-notepad.js', 'copy-vendor', 'copy-resources', 'watch']);
 
 gulp.task('build-notepad.js', function() {
-	return gulp.src('src/js/**/*.coffee')
+	return gulp.src(['src/js/scenes.coffee', 'src/js/app.coffee'])
 		.pipe(coffee({bare: true}).on('error', gutil.log))
 		.pipe(concat('notepad.js'))
 		.pipe(gulp.dest('build/src/js/'));
