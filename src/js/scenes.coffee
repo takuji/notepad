@@ -4,17 +4,18 @@ class NotesScene extends Marionette.Layout
   className: 'notes scene'
 
   regions:
-    note_list: '#sidebar'
-    note: '#note'
+    note_list_region: '#sidebar'
+    note_region: '#note'
 
   initialize: ->
-    @note_list_view = new NoteListView(collection: @model.documents)
-    @note_view = new NoteView(model: @model)
+    @note_list_view = new NoteListView(collection: @model.documents, parent: @)
+    @note_view = new NoteView()
 
   onRender: ->
     @_resize()
-    @note_list.show @note_list_view
-    @note.show @note_view
+    @note_list_region.show @note_list_view
+    if @model.documents.length > 0
+      @note_region.show @note_view
     $(window).on 'resize', => @_resize()
 
   _resize: ->
@@ -22,11 +23,24 @@ class NotesScene extends Marionette.Layout
     margin = @$el.offset().top
     @$el.height($window.height() - margin)
 
+  selectNote: (note_id)->
+    note = @model.documents.get(note_id)
+    console.log note
+    if note
+      @note_view.changeNote(note)
+      @note_region.show @note_view
+
 
 class NoteListItemView extends Marionette.ItemView
   template: '#note-list-item-template'
   tagName: 'li'
   className: 'note-list-item'
+
+  events:
+    'click': 'onClicked'
+
+  onClicked: (e)->
+    @trigger 'note:selected', id: @model.id
 
 
 class NoteListView extends Marionette.CollectionView
@@ -34,11 +48,31 @@ class NoteListView extends Marionette.CollectionView
   tagName: 'ul'
   className: 'note-list'
 
+  initialize: (options)->
+    @parent = options.parent
+    @on 'itemview:note:selected', @selectNote, @
+
+  selectNote: (view, params)->
+    @parent.selectNote params.id
+    console.log "select note #{params.id}"
+
 
 class NoteView extends Marionette.ItemView
   template: '#note-template'
   id: 'note'
   className: 'note'
+
+  serializeData: ->
+    console.log "serializing.. #{@model}"
+    if @model
+      @model.toJSON()
+    else
+      {title: 'Untitled', content: ''}
+
+  changeNote: (note)->
+    console.log note
+    @model = note
+    @render()
 
 
 class NoteEditScene extends Marionette.Layout
