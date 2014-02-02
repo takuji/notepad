@@ -7,10 +7,15 @@ class Screens extends Backbone.Router
 
 	list: ->
 		console.log 'list'
+		@showScreen('notes')
 
 	edit: (id)->
 		console.log "edit #{id}"
+		@showScreen('note-edit')
 
+	showScreen: (screen_id)->
+		$('.screen').hide()
+		$("##{screen_id}").show()
 
 new Screens()
 
