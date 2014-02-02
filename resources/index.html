@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta charset="utf-8">
 	<title>Notepad</title>
 	<script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
 	<script type="text/javascript" src="js/underscore.js"></script>
@@ -19,17 +19,13 @@
 	</div>
 	
 	<script type="text/template" id="notes-template">
-		<div id="notes" class="screen notes">
-			<div id="note-list">List pane</div>
-			<div id="note">Main content</div>
-		</div>
+		<div id="sidebar"></div>
+		<div id="note">Main content</div>
 	</script>
 	<script type="text/template" id="note-edit-template">
-		<div id="note-edit" class="screen note-edit">
-			<div id="note-index">Index</div>
-			<div id="note-editor">Editor</div>
-			<div id="note-preview">Preview</div>
-		</div>
+		<div id="note-index">Index</div>
+		<div id="note-editor">Editor</div>
+		<div id="note-preview">Preview</div>
 	</script>
 	<script type="text/template" id="note-template">
 		<div id="note">Note</div>
