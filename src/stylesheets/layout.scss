@@ -1,0 +1,13 @@
+#notes {
+	>div {
+		display: inline-block;
+		min-height: 300px;
+		height: 100%;
+		vertical-align: top;
+	}
+}
+
+#note-list {
+	min-width: 200px;
+	background-color: #ddd;
+}

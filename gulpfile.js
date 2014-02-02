@@ -24,7 +24,7 @@ gulp.task('copy-resources', function() {
 
 gulp.task('watch', function () {
   gulp.watch('src/js/**/*.coffee', ['build-notepad.js']);
-  gulp.watch('src/stylesheets/**/*.coffee', ['compass']);
+  gulp.watch('src/stylesheets/**/*.scss', ['compass']);
   gulp.watch('resources/**/*', ['copy-resources']);
   gulp.watch('build/src/**/*', ['package']);
 });

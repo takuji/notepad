@@ -1,5 +1,7 @@
 class NotesScene extends Marionette.Layout
 	template: '#notes-template'
+	id: 'notes'
+	className: 'notes scene'
 
 	regions:
 		note_list: '#note-list'
@@ -10,8 +12,17 @@ class NotesScene extends Marionette.Layout
 		@note_view = new NoteView()
 
 	onRender: ->
+		@_resize()
 		@note_list.show @note_list_view
 		@note.show @note_view
+		#@listenTo $(window), 'resize', @_resize
+		$(window).on 'resize', => @_resize()
+
+	_resize: ->
+    $window = $(window)
+    margin = 0
+    @$el.height($window.height() - margin)
+
 
 
 class NoteListView extends Marionette.CollectionView
@@ -24,7 +35,11 @@ class NoteListItemView extends Marionette.ItemView
 
 class NoteView extends Marionette.ItemView
 	template: '#note-template'
+	id: 'note'
+	className: 'note'
 
 
 class NoteEditScene extends Marionette.Layout
 	template: '#note-edit-template'
+	id: 'note-edit'
+	className: 'note-edit scene'
