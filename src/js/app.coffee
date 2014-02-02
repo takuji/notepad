@@ -1,8 +1,8 @@
 class Notepad extends Backbone.Model
-	initialize: ->
+	initialize: (attrs, options)->
 		@scenes = ['notes', 'note-edit']
 		@current_scene = @scenes[0]
-		@documents = {}	# id => Note
+		@documents = options.documents || new Backbone.Collection()
 		console.log 'Application initialized.'
 
 
@@ -32,12 +32,13 @@ class Scenes extends Backbone.Router
 
 class App extends Marionette.Application
 
-notes = 
-	1: {title: 'ネコ', content: '吾輩は猫である。'}
-	2: {title: 'いぬ', content: '名前はまだない。'}
-	1: {title: '猿', content: 'にゃーん。'}
+notes = new Backbone.Collection([
+	new Backbone.Model(id: 1, title: 'ネコ', content: '吾輩は猫である。', created_at: new Date())
+	new Backbone.Model(id: 2, title: 'いぬ', content: '名前はまだない。', created_at: new Date())
+	new Backbone.Model(id: 3, title: '猿', content: 'にゃーん。', created_at: new Date())
+	])
 
-notepad = new Notepad(documents: notes)
+notepad = new Notepad({}, documents: notes)
 
 app = new App()
 scenes = new Scenes(app: app, model: notepad)

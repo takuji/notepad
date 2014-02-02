@@ -8,8 +8,8 @@ class NotesScene extends Marionette.Layout
 		note: '#note'
 
 	initialize: ->
-		@note_list_view = new NoteListView()
-		@note_view = new NoteView()
+		@note_list_view = new NoteListView(collection: @model.documents)
+		@note_view = new NoteView(model: @model)
 
 	onRender: ->
 		@_resize()
@@ -23,13 +23,12 @@ class NotesScene extends Marionette.Layout
     @$el.height($window.height() - margin)
 
 
-
-class NoteListView extends Marionette.CollectionView
-	item: NoteListItemView
-
-
 class NoteListItemView extends Marionette.ItemView
 	template: '#note-list-item-template'
+
+
+class NoteListView extends Marionette.CollectionView
+	itemView: NoteListItemView
 
 
 class NoteView extends Marionette.ItemView
