@@ -1,7 +1,17 @@
 #notes {
-	>* {
-		display: inline-block;
-		height: 100%;
-		vertical-align: top;
-	}
+  >* {
+    display: inline-block;
+    height: 100%;
+    vertical-align: top;
+  }
+}
+
+#note-edit {
+  height: 100%;
+  
+  >* {
+    display: inline-block;
+    height: 100%;
+    vertical-align: top;
+  }
 }
