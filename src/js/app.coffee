@@ -6,17 +6,14 @@ class Notepad extends Backbone.Model
     console.log 'Application initialized.'
 
 
-class Scenes extends Backbone.Router
+class Router extends Backbone.Router
   routes:
     'notes': 'list'
     'notes/:id/edit': 'edit'
 
   initialize: (option)->
     @app = option.app
-    @scenes =
-      notes: new NotesScene(model: option.model)
-      note_edit: new NoteEditScene(model: option.model)
-    console.log 'Screens initialized.'
+    console.log 'Router initialized.'
 
   list: ->
     console.log 'list'
@@ -26,20 +23,26 @@ class Scenes extends Backbone.Router
     console.log "edit #{id}"
     @showScreen('note_edit')
 
-  showScreen: (screen_id)->
-    @app.scene.show @scenes[screen_id]
+  showScreen: (scene_id)->
+    @app.changeScene(scene_id)
+
 
 
 class App extends Marionette.Application
 
   init: (notepad)->
-    @scene_pane = $('#scene')
-    @addRegions scene: '#scene'
+    @addRegions sceneRegion: '#scene'
+    @scenes =
+      notes: new NotesScene(model: notepad)
+      note_edit: new NoteEditScene(model: notepad)
     @resize()
     $(window).on 'resize', => @resize()
-    @scenes = new Scenes(app: @, model: notepad)
-    @scenes.showScreen('notes')
-    Backbone.history.start() 
+    @router = new Router(app: @)
+    @router.list()
+    Backbone.history.start()
+
+  changeScene: (scene_id)->
+    @sceneRegion.show @scenes[scene_id]
 
   resize: ->
     $scene = $('#scene')

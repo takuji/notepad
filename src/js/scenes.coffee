@@ -8,14 +8,13 @@ class NotesScene extends Marionette.Layout
     note_region: '#note'
 
   initialize: ->
-    @note_list_view = new NoteListView(collection: @model.documents, parent: @)
-    @note_view = new NoteView()
+    @current_note = @model.documents[0] if @model.documents.length > 0
+    console.log "NotesScene created at #{new Date()}"
 
   onRender: ->
     @_resize()
-    @note_list_region.show @note_list_view
-    if @model.documents.length > 0
-      @note_region.show @note_view
+    @note_list_region.show new NoteListView(collection: @model.documents, parent: @)
+    @note_region.show new NoteView(model: @current_note)
     $(window).on 'resize', => @_resize()
 
   _resize: ->
@@ -24,12 +23,9 @@ class NotesScene extends Marionette.Layout
     @$el.height($window.height() - margin)
 
   selectNote: (note_id)->
-    note = @model.documents.get(note_id)
-    console.log note
-    if note
-      @note_view.changeNote(note)
-      @note_region.show @note_view
-
+    @current_note = @model.documents.get(note_id)
+    if @current_note
+      @note_region.currentView.changeNote(@current_note)
 
 class NoteListItemView extends Marionette.ItemView
   template: '#note-list-item-template'
@@ -38,6 +34,9 @@ class NoteListItemView extends Marionette.ItemView
 
   events:
     'click': 'onClicked'
+
+  initialize: ->
+    console.log "NoteListItemView#initialize #{@model.id}"
 
   onClicked: (e)->
     @trigger 'note:selected', id: @model.id
@@ -51,10 +50,25 @@ class NoteListView extends Marionette.CollectionView
   initialize: (options)->
     @parent = options.parent
     @on 'itemview:note:selected', @selectNote, @
+    console.log 'NoteListView#initialize'
+
+  onRender: ->
+    console.log @._events
+    console.log 'NoteListView#onRender'
 
   selectNote: (view, params)->
+    console.log "Note #{params.id} selected."
     @parent.selectNote params.id
-    console.log "select note #{params.id}"
+
+  onItemRemoved: (itemView)->
+    console.log "NoteListView#itemRemoved #{itemView.model.id}"
+
+  onClose: ->
+    console.log @._events
+    console.log 'NoteListView#onClose'
+
+  onItemAdded: (view)->
+    console.log "NoteListView#onItemAdded #{view.model.id}"
 
 
 class NoteView extends Marionette.ItemView

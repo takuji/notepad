@@ -1,3 +1,5 @@
+@import "compass/css3";
+
 .notes {
 
 }
@@ -44,5 +46,34 @@
   .created_at {
     font-size: 70%;
     color: #aaa;
+  }
+}
+
+.note-index-actions {
+  display: none;
+  float: right;
+  padding: 0 4px;
+  margin: 0;
+  list-style: none;
+  @include border-radius(4px);
+  cursor: pointer;
+
+  li {
+    float: left;
+    padding: 0px 4px;
+    margin-left: 4px;
+    border: 1px solid #aaa;
+    @include border-radius(4px);
+    text-align: center;
+    font-size: 120%;
+    color: #666;
+
+    &.edit {
+      width: 40px
+    }
+    
+    &:hover {
+      background-color: $border-color2;
+    }
   }
 }

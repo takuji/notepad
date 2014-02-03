@@ -34,11 +34,17 @@
 		</article>
 	</script>
 	<script type="text/template" id="note-list-item-template">
-    <div>
-      <span><%= title %></span>
-    </div>
-    <div>
-      <span class="created_at"><%= created_at %></span>
+    <div class="title"><%= title %></div>
+    <div class="created_at">
+      <span><%= created_at %></span>
+      <ul class="note-index-actions">
+        <li class="edit">
+        	<a href="#notes/<%= id %>/edit"><i class="icon-edit">E</i></a>
+        </li>
+        <li class="delete">
+          <i class="icon-trash">D</i>
+        </li>
+      </ul>
     </div>
 	</script>
 
