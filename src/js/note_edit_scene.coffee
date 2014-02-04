@@ -11,16 +11,22 @@ class NoteEditScene extends Marionette.Layout
     @current_note = null
 
   onRender: ->
+    console.log "scene: #{@$el.width()}"
     if @current_note
       @sidebar.show(new NoteIndexView(model: @current_note))
+      console.log @sidebar.$el.width()
       @main.show(new NoteEditMain(model: @current_note))
-    @_resize()
+      console.log @main.$el.width()
     $(window).on 'resize', => @_resize()
+
+  onShow: ->
+    console.log 'onShow!'
+    @_resize()
 
   _resize: ->
     $window = $(window)
     @$el.height($window.height() - @$el.offset().top)
-    @main.$el.width($window.width() - @sidebar.currentView.$el.width())
+    @main.$el.width($window.width() - @sidebar.$el.width())
     #@main.currentView.$el.width($window.width() - @sidebar.currentView.$el.width())
 
   changeNote: (note_id)->
@@ -55,6 +61,7 @@ class NoteIndexView extends Marionette.ItemView
 
 class NoteEditorView extends Marionette.ItemView
   template: '#note-editor-template'
+  className: 'editor'
 
   onRender: ->
     @$('textarea').val(@model.get('content'))
@@ -62,3 +69,4 @@ class NoteEditorView extends Marionette.ItemView
 
 class NotePreviewView extends Marionette.ItemView
   template: '#note-preview-template'
+  className: 'preview'
