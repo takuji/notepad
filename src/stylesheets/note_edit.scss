@@ -24,7 +24,6 @@
 	}
 
 	#editor {
-		width: 100%;
 		background-color: #efe;
 
 		>* {
@@ -33,7 +32,7 @@
 	}
 
 	#preview {
-		display: none;
+		width: 50%;
 		background-color: #eef;
 	}
 }
