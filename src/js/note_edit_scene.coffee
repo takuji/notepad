@@ -67,13 +67,41 @@ class NoteEditorView extends Marionette.ItemView
   template: '#note-editor-template'
   className: 'editor'
 
+  events:
+    'keyup textarea': 'onKeyUp'
+
+  initialize: ->
+
   onRender: ->
-    @$('textarea').val(@model.get('content'))
+    @$textarea = @$('textarea')
+    @$textarea.val(@model.get('content'))
 
   onShow: ->
     console.log 'NoteDeitorView.onShow'
+
+  onKeyUp: ->
+    console.log 'onKeyUp'
+    console.log @$textarea.val()
+    @model.set('content': @$textarea.val())
 
 
 class NotePreviewView extends Marionette.ItemView
   template: '#note-preview-template'
   className: 'preview'
+
+  initialize: ->
+    @listenTo @model, 'change:content', @onNoteUpdated
+    @updateHtml()
+
+  onNoteUpdated: ->
+    @updateHtml()
+    @render()
+
+  updateHtml: ->
+    @html = marked(@model.get('content') || '')
+
+  serializeData: ->
+    {html: @html}
+
+  onShow: ->
+    console.log 'NotePreviewView.onShow'
