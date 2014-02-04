@@ -1,62 +1,71 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-	<meta charset="utf-8">
-	<title>Notepad</title>
-	<script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
-	<script type="text/javascript" src="js/underscore.js"></script>
-	<script type="text/javascript" src="js/backbone.js"></script>
-	<script type="text/javascript" src="js/backbone.marionette.js"></script>
-	<link rel="stylesheet" type="text/css" href="stylesheets/notepad.css">
+  <meta charset="utf-8">
+  <title>Notepad</title>
+  <script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
+  <script type="text/javascript" src="js/underscore.js"></script>
+  <script type="text/javascript" src="js/backbone.js"></script>
+  <script type="text/javascript" src="js/backbone.marionette.js"></script>
+  <link rel="stylesheet" type="text/css" href="stylesheets/notepad.css">
 </head>
 <body>
 
-	<a href="#notes">List</a>
-	<a href="#notes/2/edit">Edit</a>
+  <a href="#notes">List</a>
+  <a href="#notes/2/edit">Edit</a>
 
-	<div id="container">
-		<div id="scene"></div>
-	</div>
-	
-	<script type="text/template" id="notes-template">
-		<div id="sidebar"></div>
-		<div id="note">Main content</div>
-	</script>
+  <div id="container">
+    <div id="scene"></div>
+  </div>
+  
+  <script type="text/template" id="notes-template">
+    <div id="sidebar"></div>
+    <div id="note">Main content</div>
+  </script>
 
-	<script type="text/template" id="note-edit-template">
-		<div id="sidebar" class="region">Sidebar
-		</div><div id="main" class="region">Main
-		</div>
-	</script>
+  <script type="text/template" id="note-edit-template">
+    <div id="sidebar" class="region">Sidebar
+    </div><div id="main" class="region">Main
+    </div>
+  </script>
 
-	<script type="text/template" id="note-template">
-		<article>
-			<h1><%= title %></h1>
-			<div><%= content %></div>
-		</article>
-	</script>
+  <script type="text/template" id="note-template">
+    <article>
+      <h1><%= title %></h1>
+      <div><%= content %></div>
+    </article>
+  </script>
 
-	<script type="text/template" id="note-list-item-template">
+  <script type="text/template" id="note-list-item-template">
     <div class="title"><%= title %></div>
     <div class="created_at">
       <span><%= created_at %></span>
       <ul class="note-index-actions">
         <li class="edit">
-        	<a href="#notes/<%= id %>/edit"><i class="icon-edit">E</i></a>
+          <a href="#notes/<%= id %>/edit"><i class="icon-edit">E</i></a>
         </li>
         <li class="delete">
           <i class="icon-trash">D</i>
         </li>
       </ul>
     </div>
-	</script>
+  </script>
 
-	<script type="text/template" id="note-index-template">
-		Index
-	</script>
+  <script type="text/template" id="note-index-template">
+    Index
+  </script>
 
+  <script type="text/template" id="note-main-views-template">
+    <div id="editor"></div><div id="preview"></div>
+  </script>
 
+  <script type="text/template" id="note-editor-template">
+    <textarea></textarea>
+  </script>
 
-	<script type="text/javascript" src="js/notepad.js"></script>
+  <script type="text/template" id="note-preview-template">
+  </script>
+
+  <script type="text/javascript" src="js/notepad.js"></script>
 </body>
 </html>
