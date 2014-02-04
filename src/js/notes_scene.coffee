@@ -87,9 +87,3 @@ class NoteView extends Marionette.ItemView
     console.log note
     @model = note
     @render()
-
-
-class NoteEditScene extends Marionette.Layout
-  template: '#note-edit-template'
-  id: 'note-edit'
-  className: 'note-edit scene'

@@ -22,15 +22,20 @@
 		<div id="sidebar"></div>
 		<div id="note">Main content</div>
 	</script>
+
 	<script type="text/template" id="note-edit-template">
-		<div id="note-index">Index</div><div id="note-editor">Editor</div><div id="note-preview">Preview</div>
+		<div id="sidebar" class="region">Sidebar
+		</div><div id="main" class="region">Main
+		</div>
 	</script>
+
 	<script type="text/template" id="note-template">
 		<article>
 			<h1><%= title %></h1>
 			<div><%= content %></div>
 		</article>
 	</script>
+
 	<script type="text/template" id="note-list-item-template">
     <div class="title"><%= title %></div>
     <div class="created_at">
@@ -45,6 +50,12 @@
       </ul>
     </div>
 	</script>
+
+	<script type="text/template" id="note-index-template">
+		Index
+	</script>
+
+
 
 	<script type="text/javascript" src="js/notepad.js"></script>
 </body>

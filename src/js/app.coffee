@@ -5,6 +5,9 @@ class Notepad extends Backbone.Model
     @documents = options.documents || new Backbone.Collection()
     console.log 'Application initialized.'
 
+  getNote: (note_id)->
+    @documents.get(note_id)
+
 
 class Router extends Backbone.Router
   routes:
@@ -21,6 +24,7 @@ class Router extends Backbone.Router
 
   edit: (id)->
     console.log "edit #{id}"
+    @app.changeNote(id)
     @showScreen('note_edit')
 
   showScreen: (scene_id)->
@@ -43,6 +47,9 @@ class App extends Marionette.Application
 
   changeScene: (scene_id)->
     @sceneRegion.show @scenes[scene_id]
+
+  changeNote: (note_id)->
+    @scenes['note_edit'].changeNote(note_id)
 
   resize: ->
     $scene = $('#scene')
