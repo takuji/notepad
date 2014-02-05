@@ -72,20 +72,20 @@
 
   li {
     float: left;
-    padding: 0px 4px;
-    margin-left: 4px;
-    border: 1px solid #aaa;
-    @include border-radius(4px);
-    text-align: center;
-    font-size: 120%;
-    color: #666;
 
-    &.edit {
-      width: 40px
-    }
-    
-    &:hover {
-      background-color: $border-color2;
+    a {
+      display: inline-block;
+      width: 30px;
+      padding: 0px 4px;
+      margin-left: 4px;
+      border: 1px solid #aaa;
+      @include border-radius(4px);
+      text-align: center;
+      font-size: 120%;
+      color: #666;
+      &:hover {
+        background-color: $border-color2;
+      }
     }
   }
 }
