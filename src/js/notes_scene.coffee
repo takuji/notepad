@@ -84,7 +84,7 @@ class NoteView extends Marionette.ItemView
     if @model
       @model.toJSON()
     else
-      {title: 'Untitled', content: ''}
+      {title: 'Untitled', html: ''}
 
   changeNote: (note)->
     console.log note

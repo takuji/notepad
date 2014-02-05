@@ -1,9 +1,14 @@
 @import "compass/css3";
+@import "note";
 
 #notes {
 	#sidebar {
 		width: 30%;
 		border-right: 1px solid #ddd;
+	}
+
+	.note {
+		@include note-base;
 	}
 }
 
