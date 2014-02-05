@@ -4,8 +4,14 @@ var concat = require('gulp-concat');
 var coffee = require('gulp-coffee');
 var zip = require('gulp-zip');
 var compass = require('gulp-compass');
+fs = require('fs');
 
-gulp.task('default', ['build-notepad.js', 'compass', 'copy-vendor', 'copy-resources', 'watch']);
+if (!fs.existsSync('build')) {
+	fs.mkdirSync('build');
+	fs.mkdirSync('build/src');
+}
+
+gulp.task('default', ['build-notepad.js', 'compass', 'copy-vendor', 'copy-resources', 'package', 'watch']);
 
 gulp.task('build-notepad.js', function() {
 	return gulp.src(['src/js/models.coffee', 'src/js/*_scene.coffee', 'src/js/app.coffee'])
@@ -15,7 +21,7 @@ gulp.task('build-notepad.js', function() {
 });
 
 gulp.task('copy-vendor', function() {
-	return gulp.src('vendor/js/**/*.js').pipe(gulp.dest('build/src/js/'));
+	return gulp.src('vendor/**/*').pipe(gulp.dest('build/src/'));
 });
 
 gulp.task('copy-resources', function() {
