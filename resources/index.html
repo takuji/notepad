@@ -28,7 +28,7 @@
   <script type="text/template" id="note-list-item-template">
     <div class="title"><%= title %></div>
     <div class="created_at">
-      <span><%= created_at %></span>
+      <span><%= updated_at %></span>
       <ul class="note-index-actions">
         <li class="edit">
           <a href="#notes/<%= id %>/edit"><i class="icon-edit">E</i></a>
@@ -65,6 +65,7 @@
   <script type="text/javascript" src="js/backbone.js"></script>
   <script type="text/javascript" src="js/backbone.marionette.js"></script>
   <script type="text/javascript" src="js/marked.js"></script>
+  <script type="text/javascript" src="js/moment-with-langs.js"></script>
   <script type="text/javascript" src="js/notepad.js"></script>
 </body>
 </html>

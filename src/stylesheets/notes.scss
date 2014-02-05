@@ -1,5 +1,12 @@
 @import "compass/css3";
 
+#notes {
+	#sidebar {
+		width: 30%;
+		border-right: 1px solid #ddd;
+	}
+}
+
 .notes {
 
 }
@@ -10,7 +17,7 @@
   list-style: none;
 	height: 100%;
 	min-width: 200px;
-	background-color: #ddd;
+	// background-color: #ddd;
 
   .more {
     padding-left: 10px;

@@ -38,6 +38,9 @@ class NoteListItemView extends Marionette.ItemView
   initialize: ->
     console.log "NoteListItemView#initialize #{@model.id}"
 
+  serializeData: ->
+    _.extend @model.toJSON(), updated_at: moment(@model.get('updated_at')).format('YYYY/MM/DD')
+
   onClicked: (e)->
     @trigger 'note:selected', id: @model.id
 
