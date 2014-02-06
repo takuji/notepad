@@ -30,7 +30,23 @@ class Router extends Backbone.Router
   showScreen: (scene_id)->
     @app.changeScene(scene_id)
 
+class Key
+  constructor: (e)->
+    @code = e.keyCode
+    @shift = e.shiftKey
+    @ctrl = (e.ctrlKey && !e.metaKey) || (!e.ctrlKey && e.metaKey)
 
+  toMapKey: ->
+    "#{@ctrl}-#{@shift}-#{@code}"
+
+  codeToString: (code)->
+    if code >= 48 && code <= 122
+      String.fromCharCode(code)
+    else
+      switch code
+        when  9 then 'TAB'
+        when 13 then 'ENTER'
+        when 46 then 'DELETE'
 
 class App extends Marionette.Application
 
@@ -40,13 +56,21 @@ class App extends Marionette.Application
       notes: new NotesScene(model: notepad)
       note_edit: new NoteEditScene(model: notepad)
     @resize()
-    $(window).on 'resize', => @resize()
+    $window = $(window)
+    $window.on 'resize', => @resize()
+    $window.on 'keydown', (e)=> @onKeyDown(e)
     @router = new Router(app: @)
     @router.list()
+    @keymaps = {}
     Backbone.history.start()
 
   changeScene: (scene_id)->
+    scene = @scenes[scene_id]
+    #@attachKeymap('scene', scene.keymap)
     @sceneRegion.show @scenes[scene_id]
+
+  attachKeymap: (keymap_id, keymap)->
+    @keymaps[keymap_id] = keymap
 
   changeNote: (note_id)->
     @scenes['note_edit'].changeNote(note_id)
@@ -55,6 +79,15 @@ class App extends Marionette.Application
     $scene = $('#scene')
     margin = $scene.offset().top
     $scene.height($(window).height() - margin)
+
+  onKeyDown: (e)->
+    key =
+      code: e.keyCode
+      shift: e.shiftKey
+      ctrl: (e.ctrlKey && !e.metaKey) || (!e.ctrlKey && e.metaKey)
+    @triggerKeyCommand(key)  
+
+  triggerKeyCommand: (key)->
 
 
 notes = new Backbone.Collection([

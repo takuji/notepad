@@ -7,6 +7,13 @@ class NotesScene extends Marionette.Layout
     note_list_region: '#sidebar'
     note_region: '#note'
 
+  keymap:
+    'J': 'nextNote'
+    'K': 'prevNote'
+    'N': 'newNote'
+    'ENTER': 'editCurrentNote'
+    'DELETE': 'deleteCurrentNote'
+
   initialize: ->
     @current_note = @model.documents[0] if @model.documents.length > 0
     $(window).on 'resize', => @_resize()
@@ -28,6 +35,17 @@ class NotesScene extends Marionette.Layout
   onNoteSelected: (note)->
     @current_note = note
     @note_region.currentView.changeNote(@current_note)
+
+  nextNote: ->
+
+  prevNote: ->
+
+  newNote: ->
+
+  editCurrentNote: ->
+
+  deleteCurrentNote: ->
+    
 
 class NoteListItemView extends Marionette.ItemView
   template: '#note-list-item-template'
@@ -57,7 +75,6 @@ class NoteListView extends Marionette.CollectionView
   className: 'note-list'
 
   initialize: (options)->
-    @parent = options.parent
     @on 'itemview:note:selected', @onNoteSelected, @
     @current_item_view = null
     console.log 'NoteListView#initialize'
