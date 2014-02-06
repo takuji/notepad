@@ -30,23 +30,6 @@ class Router extends Backbone.Router
   showScreen: (scene_id)->
     @app.changeScene(scene_id)
 
-class Key
-  constructor: (e)->
-    @code = e.keyCode
-    @shift = e.shiftKey
-    @ctrl = (e.ctrlKey && !e.metaKey) || (!e.ctrlKey && e.metaKey)
-
-  toMapKey: ->
-    "#{@ctrl}-#{@shift}-#{@code}"
-
-  codeToString: (code)->
-    if code >= 48 && code <= 122
-      String.fromCharCode(code)
-    else
-      switch code
-        when  9 then 'TAB'
-        when 13 then 'ENTER'
-        when 46 then 'DELETE'
 
 class App extends Marionette.Application
 
@@ -61,7 +44,8 @@ class App extends Marionette.Application
     $window.on 'keydown', (e)=> @onKeyDown(e)
     @router = new Router(app: @)
     @router.list()
-    @keymaps = {}
+    @keymap = new Keymap()
+    @keymap.set(Key.fromChar('P'), new KeyAction((-> alert('hoge'))))
     Backbone.history.start()
 
   changeScene: (scene_id)->
@@ -81,14 +65,9 @@ class App extends Marionette.Application
     $scene.height($(window).height() - margin)
 
   onKeyDown: (e)->
-    key =
-      code: e.keyCode
-      shift: e.shiftKey
-      ctrl: (e.ctrlKey && !e.metaKey) || (!e.ctrlKey && e.metaKey)
-    @triggerKeyCommand(key)  
-
-  triggerKeyCommand: (key)->
-
+    action = @keymap.get Key.fromEvent(e)
+    if action
+      action.fire()
 
 notes = new Backbone.Collection([
   new Note(id: 1, title: 'ネコ', content: '吾輩は猫である。', created_at: new Date(), updated_at: new Date())
