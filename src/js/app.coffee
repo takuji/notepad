@@ -44,17 +44,14 @@ class App extends Marionette.Application
     $window.on 'keydown', (e)=> @onKeyDown(e)
     @router = new Router(app: @)
     @router.list()
-    @keymap = new Keymap()
-    @keymap.set(Key.fromChar('P'), new KeyAction((-> alert('hoge'))))
+    @keymaps = {global: new Keymap()}
+    #@keymap.set(Key.fromChar('P'), new KeyAction((-> alert('hoge'))))
     Backbone.history.start()
 
   changeScene: (scene_id)->
     scene = @scenes[scene_id]
-    #@attachKeymap('scene', scene.keymap)
+    @keymaps['scene'] = scene.keymap
     @sceneRegion.show @scenes[scene_id]
-
-  attachKeymap: (keymap_id, keymap)->
-    @keymaps[keymap_id] = keymap
 
   changeNote: (note_id)->
     @scenes['note_edit'].changeNote(note_id)
@@ -65,9 +62,15 @@ class App extends Marionette.Application
     $scene.height($(window).height() - margin)
 
   onKeyDown: (e)->
-    action = @keymap.get Key.fromEvent(e)
+    key = Key.fromEvent(e)
+
+    action = @keymaps.global.get(key)
     if action
       action.fire()
+    action = @keymaps.scene.get(key)
+    if action
+      action.fire
+
 
 notes = new Backbone.Collection([
   new Note(id: 1, title: 'ネコ', content: '吾輩は猫である。', created_at: new Date(), updated_at: new Date())
