@@ -53,6 +53,7 @@ class App extends Marionette.Application
     scene = @scenes[scene_id]
     console.log @keymaps
     @keymaps.scene = scene.keymap
+    console.log @keymaps.scene
     @sceneRegion.show @scenes[scene_id]
 
   changeNote: (note_id)->
@@ -65,13 +66,15 @@ class App extends Marionette.Application
 
   onKeyDown: (e)->
     key = Key.fromEvent(e)
-
+    console.log key
     action = @keymaps.global.get(key)
     if action
       action.fire()
     action = @keymaps.scene.get(key)
+    console.log @keymaps.scene
+    console.log action
     if action
-      action.fire
+      action.fire()
 
 
 notes = new Backbone.Collection([

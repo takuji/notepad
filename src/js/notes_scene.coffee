@@ -7,7 +7,7 @@ class NotesScene extends Marionette.Layout
     note_list_region: '#sidebar'
     note_region: '#note'
 
-  keymap:
+  keymapData:
     'J': 'nextNote'
     'K': 'prevNote'
     'N': 'newNote'
@@ -16,8 +16,15 @@ class NotesScene extends Marionette.Layout
 
   initialize: ->
     @current_note = @model.documents[0] if @model.documents.length > 0
+    @initKeymap()
     $(window).on 'resize', => @_resize()
     console.log "NotesScene created at #{new Date()}"
+
+  initKeymap: ->
+    @keymap = new Keymap()
+    _.each @keymapData, (action, code)=>
+      console.log {code: code, action: action}
+      @keymap.set Key.fromCodeString(code), new KeyAction(@[action], @)
 
   onRender: ->
     @note_list_region.show new NoteListView(collection: @model.documents)
@@ -37,15 +44,20 @@ class NotesScene extends Marionette.Layout
     @note_region.currentView.changeNote(@current_note)
 
   nextNote: ->
+    console.log 'next note'
 
   prevNote: ->
+    console.log 'prev note'
 
   newNote: ->
+    console.log 'new note'
 
   editCurrentNote: ->
+    console.log 'edit current note'
 
   deleteCurrentNote: ->
-    
+    console.log 'delete current note'
+
 
 class NoteListItemView extends Marionette.ItemView
   template: '#note-list-item-template'
