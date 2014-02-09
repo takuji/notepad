@@ -49,6 +49,7 @@ class NotesScene extends Marionette.Layout
 
   prevNote: ->
     console.log 'prev note'
+    @note_list_region.currentView.selectPrevNote()
 
   newNote: ->
     console.log 'new note'
@@ -116,9 +117,14 @@ class NoteListView extends Marionette.CollectionView
     console.log "NoteListView#onItemAdded #{view.model.id}"
 
   selectNextNote: ->
-    console.log 'selectNextNote'
     view = @nextNoteView()
-    console.log view
+    if view
+      @unselectCurrent()
+      view.select()
+
+  selectPrevNote: ->
+    view = @prevNoteView()
+    console.log "view #{view}"
     if view
       @unselectCurrent()
       view.select()
@@ -135,17 +141,19 @@ class NoteListView extends Marionette.CollectionView
     @children.each (view)=> view.unselect()
 
   nextNoteView: ->
-    console.log @current_item_view
     if @current_item_view
-      console.log @children
       idx = @collection.indexOf @current_item_view.model
       if @collection.length > idx + 1
-        console.log idx + 1
         @children.findByIndex(idx + 1)
     else
       if @children.length > 0
         @children.first()
 
+  prevNoteView: ->
+    if @current_item_view
+      idx = @collection.indexOf @current_item_view.model
+      if idx > 0
+        @children.findByIndex(idx - 1)
 
 class NoteView extends Marionette.ItemView
   template: '#note-template'
