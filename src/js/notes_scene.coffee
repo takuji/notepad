@@ -56,6 +56,7 @@ class NotesScene extends Marionette.Layout
 
   editCurrentNote: ->
     console.log 'edit current note'
+    @note_list_region.currentView.editSelectedNote()
 
   deleteCurrentNote: ->
     console.log 'delete current note'
@@ -84,6 +85,9 @@ class NoteListItemView extends Marionette.ItemView
 
   unselect: ->
     @$el.removeClass 'selected'
+
+  editNote: ->
+    location.href = "#notes/#{@model.id}/edit"
 
 
 class NoteListView extends Marionette.CollectionView
@@ -128,6 +132,10 @@ class NoteListView extends Marionette.CollectionView
     if view
       @unselectCurrent()
       view.select()
+
+  editSelectedNote: ->
+    if @current_item_view
+      @current_item_view.editNote()
 
   selectCurrent: (view)->
     console.log 'selectCurrent'
