@@ -45,6 +45,7 @@ class NotesScene extends Marionette.Layout
 
   nextNote: ->
     console.log 'next note'
+    @note_list_region.currentView.selectNextNote()
 
   prevNote: ->
     console.log 'prev note'
@@ -77,8 +78,11 @@ class NoteListItemView extends Marionette.ItemView
     @select()
 
   select: ->
-    @$el.addClass 'active'
+    @$el.addClass 'selected'
     @trigger 'note:selected'
+
+  unselect: ->
+    @$el.removeClass 'selected'
 
 
 class NoteListView extends Marionette.CollectionView
@@ -98,7 +102,7 @@ class NoteListView extends Marionette.CollectionView
   onNoteSelected: (view)->
     note = view.model
     console.log "Note #{note.id} selected."
-    @current_item_view = view
+    @selectCurrent(view)
     @trigger 'note:selected', note
 
   onItemRemoved: (itemView)->
@@ -110,6 +114,37 @@ class NoteListView extends Marionette.CollectionView
 
   onItemAdded: (view)->
     console.log "NoteListView#onItemAdded #{view.model.id}"
+
+  selectNextNote: ->
+    console.log 'selectNextNote'
+    view = @nextNoteView()
+    console.log view
+    if view
+      @unselectCurrent()
+      view.select()
+
+  selectCurrent: (view)->
+    console.log 'selectCurrent'
+    @current_item_view = view
+
+  unselectCurrent: ->
+    if @current_item_view
+      @current_item_view.unselect()
+
+  unselectAll: ->
+    @children.each (view)=> view.unselect()
+
+  nextNoteView: ->
+    console.log @current_item_view
+    if @current_item_view
+      console.log @children
+      idx = @collection.indexOf @current_item_view.model
+      if @collection.length > idx + 1
+        console.log idx + 1
+        @children.findByIndex(idx + 1)
+    else
+      if @children.length > 0
+        @children.first()
 
 
 class NoteView extends Marionette.ItemView

@@ -1,10 +1,14 @@
 class Keymap
-  key: {true: {true: {}, false: {}}, false: {true: {}, false: {}}}
+  constructor: ->
+    @key =
+      true:  {true: {}, false: {}}
+      false: {true: {}, false: {}}
 
   get: (key)->
     @key[key.ctrl][key.shift][key.code]
 
   set: (key, action)->
+    console.log "Key Added #{key}"
     @key[key.ctrl][key.shift][key.code] = action
 
 class KeyAction
