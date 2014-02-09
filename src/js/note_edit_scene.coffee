@@ -9,9 +9,6 @@ class NoteEditScene extends Marionette.Layout
 
   initialize: ->
     @current_note = null
-    @initKeymap()
-
-  initKeymap: ->
     @keymap = new Keymap()
 
   onRender: ->
@@ -100,8 +97,14 @@ class NoteEditorView extends Marionette.ItemView
 
   events:
     'keyup textarea': 'onKeyUp'
+    'keydown textarea': 'onKeyDown'
+
+  keymapData:
+    'TAB': 'forwardHeadingLevel'
+    'SHIFT-TAB': 'backwardHeadingLevel'
 
   initialize: ->
+    @keymap = Keymap.createFromData(@keymapData, @)
 
   onRender: ->
     @$textarea = @$('textarea')
@@ -115,9 +118,23 @@ class NoteEditorView extends Marionette.ItemView
     console.log @$textarea.val()
     @model.set('content': @$textarea.val())
 
+  onKeyDown: (e)->
+    console.log 'keydown'
+    key = Key.fromEvent(e)
+    action = @keymap.get(key)
+    if action
+      e.preventDefault()
+      action.fire()
+
   focus: ->
     @$('textarea').focus()
     console.log "FOOOOOOOOOOOOOOOOOOOOCUSSSSSSSSSS"
+
+  forwardHeadingLevel: ->
+    console.log 'TAAAAAAAAAAAAAAAAAB'
+
+  backwardHeadingLevel: ->
+
 
 class NotePreviewView extends Marionette.ItemView
   template: '#note-preview-template'
