@@ -22,6 +22,7 @@ class NoteEditScene extends Marionette.Layout
   onShow: ->
     console.log 'onShow!'
     @_resize()
+    @main.currentView.focus()
 
   _resize: ->
     $window = $(window)
@@ -55,6 +56,9 @@ class NoteEditMain extends Marionette.Layout
     console.log @preview.$el.width()
     @editor.$el.width(@$el.width() - @preview.$el.width())
 
+  focus: ->
+    @editor.currentView.focus()
+
 
 class NoteIndexView extends Marionette.ItemView
   template: '#note-index-template'
@@ -84,6 +88,9 @@ class NoteEditorView extends Marionette.ItemView
     console.log @$textarea.val()
     @model.set('content': @$textarea.val())
 
+  focus: ->
+    @$('textarea').focus()
+    console.log "FOOOOOOOOOOOOOOOOOOOOCUSSSSSSSSSS"
 
 class NotePreviewView extends Marionette.ItemView
   template: '#note-preview-template'
