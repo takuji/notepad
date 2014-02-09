@@ -71,6 +71,7 @@ class NoteListItemView extends Marionette.ItemView
 
   events:
     'click': 'onClicked'
+    'dblclick': 'onDoubleClicked'
 
   initialize: ->
     console.log "NoteListItemView#initialize #{@model.id}"
@@ -80,6 +81,9 @@ class NoteListItemView extends Marionette.ItemView
 
   onClicked: (e)->
     @select()
+
+  onDoubleClicked: (e)->
+    @editNote()
 
   select: ->
     @$el.addClass 'selected'
