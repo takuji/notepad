@@ -107,7 +107,8 @@ class NoteListView extends Marionette.CollectionView
   onNoteSelected: (view)->
     note = view.model
     console.log "Note #{note.id} selected."
-    @selectCurrent(view)
+    @_unselectCurrent()
+    @_selectCurrent(view)
     @trigger 'note:selected', note
 
   onItemRemoved: (itemView)->
@@ -120,33 +121,32 @@ class NoteListView extends Marionette.CollectionView
   onItemAdded: (view)->
     console.log "NoteListView#onItemAdded #{view.model.id}"
 
+
   selectNextNote: ->
     view = @nextNoteView()
     if view
-      @unselectCurrent()
+      @_unselectCurrent()
       view.select()
 
   selectPrevNote: ->
     view = @prevNoteView()
     console.log "view #{view}"
     if view
-      @unselectCurrent()
+      @_unselectCurrent()
       view.select()
 
   editCurrentNote: ->
     if @current_item_view
       @current_item_view.editNote()
 
-  selectCurrent: (view)->
+
+  _selectCurrent: (view)->
     console.log 'selectCurrent'
     @current_item_view = view
 
-  unselectCurrent: ->
+  _unselectCurrent: ->
     if @current_item_view
       @current_item_view.unselect()
-
-  unselectAll: ->
-    @children.each (view)=> view.unselect()
 
   nextNoteView: ->
     if @current_item_view
