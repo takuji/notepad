@@ -56,7 +56,7 @@ class NotesScene extends Marionette.Layout
 
   editCurrentNote: ->
     console.log 'edit current note'
-    @note_list_region.currentView.editSelectedNote()
+    @note_list_region.currentView.editCurrentNote()
 
   deleteCurrentNote: ->
     console.log 'delete current note'
@@ -133,7 +133,7 @@ class NoteListView extends Marionette.CollectionView
       @unselectCurrent()
       view.select()
 
-  editSelectedNote: ->
+  editCurrentNote: ->
     if @current_item_view
       @current_item_view.editNote()
 
