@@ -1,3 +1,6 @@
+#
+#
+#
 class NoteEditScene extends Marionette.Layout
   template: '#note-edit-template'
   id: 'note-edit'
@@ -7,9 +10,13 @@ class NoteEditScene extends Marionette.Layout
     sidebar: '#sidebar'
     main: '#main'
 
+  keymapData:
+    'CTRL-S': 'saveCurrentNote'
+
   initialize: ->
     @current_note = null
-    @keymap = new Keymap()
+    @keymap = Keymap.createFromData(@keymapData, @)
+    @repository = new FileSystemRepository()
 
   onRender: ->
     console.log "scene: #{@$el.width()}"
@@ -37,7 +44,18 @@ class NoteEditScene extends Marionette.Layout
     @current_note = @model.getNote(note_id)
     console.log "current note is #{@current_note}"
 
+  saveCurrentNote: ->
+    console.log 'Saving...'
+    if @current_note
+      @repository.save(@current_note).then(
+        (()=>
+          console.log 'Saved successfully'),
+        ((error)=>
+          console.log 'Failed to save'))
 
+#
+#
+#
 class NoteEditMain extends Marionette.Layout
   template: '#note-main-views-template'
   regions:
@@ -91,6 +109,12 @@ class NoteIndexView extends Marionette.CompositeView
   onRender: ->
     console.log "NoteIndexView#onRender #{@$el.width()}"
 
+  onShow: ->
+
+
+#
+#
+#
 class NoteEditorView extends Marionette.ItemView
   template: '#note-editor-template'
   className: 'editor'
@@ -135,7 +159,9 @@ class NoteEditorView extends Marionette.ItemView
 
   backwardHeadingLevel: ->
 
-
+#
+#
+#
 class NotePreviewView extends Marionette.ItemView
   template: '#note-preview-template'
   className: 'preview'

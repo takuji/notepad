@@ -14,7 +14,7 @@ if (!fs.existsSync('build')) {
 gulp.task('default', ['build-notepad.js', 'compass', 'copy-vendor', 'copy-resources', 'package', 'watch']);
 
 gulp.task('build-notepad.js', function() {
-	return gulp.src(['src/js/models.coffee', 'src/js/keymap.coffee', 'src/js/*_scene.coffee', 'src/js/app.coffee'])
+	return gulp.src(['src/js/requirements.coffee', 'src/js/modules/*.coffee', 'src/js/*_scene.coffee', 'src/js/app.coffee'])
 		.pipe(coffee({bare: true}).on('error', gutil.log))
 		.pipe(concat('notepad.js'))
 		.pipe(gulp.dest('build/src/js/'));
