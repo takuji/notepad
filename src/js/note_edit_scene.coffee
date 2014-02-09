@@ -9,6 +9,10 @@ class NoteEditScene extends Marionette.Layout
 
   initialize: ->
     @current_note = null
+    @initKeymap()
+
+  initKeymap: ->
+    @keymap = new Keymap()
 
   onRender: ->
     console.log "scene: #{@$el.width()}"
