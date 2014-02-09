@@ -15,13 +15,13 @@ class NotesScene extends Marionette.Layout
     'DELETE': 'deleteCurrentNote'
 
   initialize: ->
-    @current_note = @model.documents[0] if @model.documents.length > 0
+    @current_note = @model.notes[0] if @model.notes.length > 0
     @keymap = Keymap.createFromData(@keymapData, @)
     $(window).on 'resize', => @_resize()
     console.log "NotesScene created at #{new Date()}"
 
   onRender: ->
-    @note_list_region.show new NoteListView(collection: @model.documents)
+    @note_list_region.show new NoteListView(collection: @model.notes)
     @note_region.show new NoteView(model: @current_note)
     @listenTo @note_list_region.currentView, 'note:selected', @onNoteSelected
 
@@ -47,7 +47,7 @@ class NotesScene extends Marionette.Layout
 
   newNote: ->
     console.log 'new note'
-    new_note = @model.documents.createNote()
+    new_note = @model.notes.createNote()
     location.href = "#notes/#{new_note.id}/edit"
 
   editCurrentNote: ->

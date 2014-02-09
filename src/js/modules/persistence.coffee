@@ -1,9 +1,3 @@
-class NoteManager
-  constructor: (options)->
-
-  getNotes: (options)->
-
-
 class FileSystemRepository
   settings:
     root_path: "#{process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE}/.notepad"
@@ -13,9 +7,9 @@ class FileSystemRepository
     console.log @root_path
 
   save: (note)->
-    Q.fcall (=> @_save(note))
+    Q.fcall (=> @saveSync(note))
 
-  _save: (note)->
+  saveSync: (note)->
     dir_path = @getNoteDirectory(note)
     @_prepareDirectory dir_path, (err)->
       if err
@@ -32,6 +26,12 @@ class FileSystemRepository
   getNoteDirectory: (note)->
     "#{@root_path}/notes/#{note.id}"
 
+  getNotesDirectory: ->
+    "#{@root_path}/notes"
+
+  getIndexFilePath: ->
+    "#{@getNotesDirectory()}/index.json"
+
   _prepareDirectory: (dir_path, callback)->
     fs.exists dir_path, (exists)=>
       if exists
@@ -42,3 +42,23 @@ class FileSystemRepository
             @_prepareDirectory(path.dirname(dir_path), callback)
             @_prepareDirectory(dir_path, callback)
           callback(err) if callback
+
+  saveIndex: (index)->
+    Q.fcall (=> @saveIndexSync(index))
+
+  saveIndexSync: (index)->
+    @_prepareDirectory @getNotesDirectory(), (err)=>
+      if err
+        throw err
+      fs.writeFile @getIndexFilePath(), JSON.stringify(index.toJSON()), (err)=>
+        if err
+          throw err
+
+  loadIndex: ->
+    Q.fcall (=> @loadIndexSync())
+
+  loadIndexSync: ->
+    s = fs.readFileSync @getIndexFilePath()
+    json = JSON.parse(s)
+    index = _.map json, (attrs)-> new Backbone.Model(attrs)
+    new Backbone.Collection(index)

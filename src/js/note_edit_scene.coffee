@@ -16,7 +16,6 @@ class NoteEditScene extends Marionette.Layout
   initialize: ->
     @current_note = null
     @keymap = Keymap.createFromData(@keymapData, @)
-    @repository = new FileSystemRepository()
 
   onRender: ->
     console.log "scene: #{@$el.width()}"
@@ -47,11 +46,7 @@ class NoteEditScene extends Marionette.Layout
   saveCurrentNote: ->
     console.log 'Saving...'
     if @current_note
-      @repository.save(@current_note).then(
-        (()=>
-          console.log 'Saved successfully'),
-        ((error)=>
-          console.log 'Failed to save'))
+      @model.saveNote(@current_note)
 
 #
 #

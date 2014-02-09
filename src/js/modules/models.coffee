@@ -22,6 +22,9 @@ class Note extends Backbone.Model
   getIndex: ->
     new NoteIndex().attachNote(@)
 
+  getInfo: ->
+    {id: @id, title: @get('title'), created_at: @get('created_at'), updated_at: @get('updated_at')}
+
 class NoteIndex extends Backbone.Model
   initialize: ->
     @index_items = new Backbone.Collection()
