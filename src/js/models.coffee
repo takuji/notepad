@@ -30,6 +30,8 @@ class NoteIndex extends Backbone.Model
     @stopListening()
     @listenTo note, 'change:content', => @_updateItems(note.get('content'))
     @listenTo note, 'change:title', => @_updateTitle(note.get('title'))
+    @_updateItems(note.get('content'))
+    @_updateTitle(note.get('title'))
     @
 
   getItems: ->
