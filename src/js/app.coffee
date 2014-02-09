@@ -73,7 +73,7 @@ class App extends Marionette.Application
       action.fire()
 
 
-notes = new Backbone.Collection([
+notes = new NoteCollection([
   new Note(id: 1, title: 'ネコ', content: '吾輩は猫である。', created_at: new Date(), updated_at: new Date())
   new Note(id: 2, title: 'いぬ', content: '名前はまだない。', created_at: new Date(), updated_at: new Date())
   new Note(id: 3, title: '猿', content: 'にゃーん。', created_at: new Date(), updated_at: new Date())
