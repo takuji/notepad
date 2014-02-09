@@ -1,66 +1,151 @@
 @import "note";
 
 #note-edit {
-	white-space: nowrap;
-	overflow: hidden;
+  height: 100%;
+  
+  white-space: nowrap;
+  overflow: hidden;
 
-	#sidebar {
-		width: 200px;
-		background-color: #eee;
-	}
+  >* {
+    display: inline-block;
+    height: 100%;
+    vertical-align: top;
+  }
 
-	#main {
-		background-color: #ff0;
+  #sidebar {
+    position: relative;
+    width: 200px;
+    background-color: #eee;
+  }
 
-		>* {
-			width: 100%;
-			height: 100%;
-			background-color: blue;
-		}
-	}
+  #main {
+    background-color: #ff0;
 
-	#editor, #preview {
-		display: inline-block;
-		vertical-align: top;
-		height: 100%;
-	}
+    >* {
+      width: 100%;
+      height: 100%;
+      background-color: blue;
+    }
+  }
 
-	#editor {
-		background-color: #efe;
+  #editor, #preview {
+    display: inline-block;
+    vertical-align: top;
+    height: 100%;
+  }
 
-		>* {
-			height: 100%;
-		}
-	}
+  #editor {
+    background-color: #efe;
 
-	#preview {
-		width: 50%;
-		background-color: #eef;
-		overflow: scroll;
-	}
+    >* {
+      height: 100%;
+    }
+  }
 
-	.note {
-		@include note-base;
-	}
+  #preview {
+    width: 50%;
+    background-color: #eef;
+    overflow: scroll;
+  }
+
+  .note {
+    @include note-base;
+  }
 }
 
 .editor {
-	width: 100%;
+  width: 100%;
 
-	textarea {
+  textarea {
     box-sizing: border-box;
-		width: 100%;
-		height: 100%;
-		margin: 0;
-		border-width: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border-width: 0;
     padding: 10px;
     resize: none;
     outline: none !important;
     font-size: 12px;
-	}
+  }
 }
 
 .preview {
   box-sizing: border-box;
   padding: 10px;
+}
+
+.note-index {
+  position: absolute;
+  top: 0;
+  bottom: 4px;
+  left: 4px;
+  right: 0;
+  //background-color: $index-background-color;
+  overflow: scroll;
+  //border: 1px #ddd solid;
+  border-right: 1px $border-color1 solid;
+  //@include border-radius(10px);
+  //@include box-shadow(rgba(#ccc, 0.5) 0px 0px 4px 2px inset);
+  //@include border-radius(6px);
+
+  ul {
+    list-style: none;
+    margin-left: 0px;
+    padding-left: 0px;
+
+    >li {
+      cursor: pointer;
+      padding: 0 10px;
+      //white-space: nowrap;
+
+      .title {
+        padding: 0 5px;
+      }
+
+      &:hover {
+        background-color: #f8e0e0;
+      }
+
+      i {
+        color: $index-mark-color;
+      }
+
+      &[data-depth="1"] {
+        margin-top: 8px;
+        font-size: 100%;
+        color: #000;
+      }
+
+      &[data-depth="2"] {
+        font-size: 90%;
+        padding-left: 20px;
+        color: #222;
+      }
+
+      &[data-depth="3"] {
+        font-size: 80%;
+        color: #444;
+        padding-left: 30px;
+      }
+
+      &[data-depth="4"] {
+        font-size: 75%;
+        color: #666;
+        padding-left: 40px;
+      }
+
+      &[data-depth="5"] {
+        font-size: 70%;
+        color: #666;
+        padding-left: 50px;
+      }
+
+      &[data-depth="6"] {
+        font-size: 65%;
+        color: #666;
+        padding-left: 60px;
+      }
+
+    }
+  }
 }

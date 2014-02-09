@@ -2,6 +2,12 @@
 @import "note";
 
 #notes {
+  >* {
+    display: inline-block;
+    height: 100%;
+    vertical-align: top;
+  }
+
 	#sidebar {
 		width: 30%;
 		border-right: 1px solid #ddd;

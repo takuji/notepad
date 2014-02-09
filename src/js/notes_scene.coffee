@@ -16,15 +16,9 @@ class NotesScene extends Marionette.Layout
 
   initialize: ->
     @current_note = @model.documents[0] if @model.documents.length > 0
-    @initKeymap()
+    @keymap = Keymap.createFromData(@keymapData, @)
     $(window).on 'resize', => @_resize()
     console.log "NotesScene created at #{new Date()}"
-
-  initKeymap: ->
-    @keymap = new Keymap()
-    _.each @keymapData, (action, code)=>
-      console.log {code: code, action: action}
-      @keymap.set Key.fromCodeString(code), new KeyAction(@[action], @)
 
   onRender: ->
     @note_list_region.show new NoteListView(collection: @model.documents)

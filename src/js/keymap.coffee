@@ -11,6 +11,13 @@ class Keymap
     console.log "Key Added #{key}"
     @key[key.ctrl][key.shift][key.code] = action
 
+Keymap.createFromData = (keymap_data, context)->
+  keymap = new Keymap()
+  _.each keymap_data, (action, code)=>
+    keymap.set Key.fromCodeString(code), new KeyAction(context[action], context)
+  keymap
+
+
 class KeyAction
   constructor: (action, context)->
     @action = action

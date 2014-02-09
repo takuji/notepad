@@ -1,21 +1,11 @@
-#notes {
-  >* {
-    display: inline-block;
-    height: 100%;
-    vertical-align: top;
-  }
+header {
+  border-bottom: 1px solid #ddd;
 }
 
-#note-edit {
-  height: 100%;
-  
-  >* {
-    display: inline-block;
-    height: 100%;
-    vertical-align: top;
-  }
+#container {
+  box-sizing: border-box;
 }
 
 #scene {
-  border-top: 1px solid #ddd;
+
 }
