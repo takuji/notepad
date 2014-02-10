@@ -40,8 +40,10 @@ class NoteEditScene extends Marionette.Layout
     #@main.currentView.$el.width($window.width() - @sidebar.currentView.$el.width())
 
   changeNote: (note_id)->
-    @current_note = @model.getNote(note_id)
-    console.log "current note is #{@current_note}"
+    @model.getNote(note_id)
+    .then((note)=>
+      console.log "current note is #{@current_note}"
+      @current_note = @model.getNote(note_id))
 
   saveCurrentNote: ->
     console.log 'Saving...'

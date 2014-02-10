@@ -1,7 +1,8 @@
 class Note extends Backbone.Model
   initialize: ->
+    console.log @attributes
     @listenTo @, 'change:content', @onContentUpdated
-    @compile()
+    @onContentUpdated()
 
   onContentUpdated: ->
     @compile()

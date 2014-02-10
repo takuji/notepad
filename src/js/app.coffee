@@ -4,11 +4,17 @@ class Notepad extends Backbone.Model
     @scenes = ['notes', 'note-edit']
     @current_scene = @scenes[0]
     @repository = new FileSystemRepository()
-    @notes = options.notes || new Backbone.Collection()
+    @notes = new NoteCollection()
+    @note_index = new Backbone.Collection()
     console.log 'Application initialized.'
 
   getNote: (note_id)->
-    @notes.get(note_id)
+    note = @notes.get(note_id)
+    Q.fcall =>
+      if note
+        note
+      else
+        @repository.loadNote(note_id)
 
   updateIndex: (note)->
     if @note_index
@@ -19,16 +25,12 @@ class Notepad extends Backbone.Model
       (()=>
         console.log "Note #{note.id} is saved successfully"
         @updateIndex(note)
-        @repository.saveIndex(@index)),
+        @repository.saveIndex(@note_index)),
       ((error)=>
         console.log 'Failed to save'))
 
   loadIndex: ->
-    @repository.loadIndex().then(
-      ((index)=>
-        @note_index = index),
-      ((error) =>
-        console.error error))
+    @repository.loadIndex()
 
 
 class Router extends Backbone.Router
@@ -71,7 +73,6 @@ class App extends Marionette.Application
     @router = new Router(app: @)
     @router.list()
     # Load existing notes
-    notepad.loadIndex()
     Backbone.history.start()
 
   changeScene: (scene_id)->
@@ -97,14 +98,7 @@ class App extends Marionette.Application
     if action
       action.fire()
 
-
-notes = new NoteCollection([
-  new Note(id: 1, title: 'ネコ', content: '吾輩は猫である。', created_at: new Date(), updated_at: new Date())
-  new Note(id: 2, title: 'いぬ', content: '名前はまだない。', created_at: new Date(), updated_at: new Date())
-  new Note(id: 3, title: '猿', content: 'にゃーん。', created_at: new Date(), updated_at: new Date())
-  ])
-
-notepad = new Notepad({}, notes: notes)
+notepad = new Notepad()
 
 app = new App()
 app.addInitializer (options)->

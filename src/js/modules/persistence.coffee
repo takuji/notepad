@@ -21,7 +21,13 @@ class FileSystemRepository
         if err
           throw err
 
-  load: (id)->
+  loadNote: (id)->
+    Q.fcall (=> @loadNoteSync(id))
+
+  loadNoteSync: (id)->
+    content = fs.readFileSync("#{@root_path}/notes/#{id}/content.md", 'utf-8')
+    console.log content
+    new Note(id: id, content: content)
 
   getNoteDirectory: (note)->
     "#{@root_path}/notes/#{note.id}"
@@ -60,5 +66,12 @@ class FileSystemRepository
   loadIndexSync: ->
     s = fs.readFileSync @getIndexFilePath()
     json = JSON.parse(s)
+    console.log json
     index = _.map json, (attrs)-> new Backbone.Model(attrs)
-    new Backbone.Collection(index)
+    console.log index
+    a = new Backbone.Collection(index)
+    console.log a
+    console.log a.models
+    console.log '---'
+    console.log a.models
+    a

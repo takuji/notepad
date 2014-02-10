@@ -1,3 +1,6 @@
+#
+# model: Notepad
+#
 class NotesScene extends Marionette.Layout
   template: '#notes-template'
   id: 'notes'
@@ -15,27 +18,36 @@ class NotesScene extends Marionette.Layout
     'DELETE': 'deleteCurrentNote'
 
   initialize: ->
-    @current_note = @model.notes[0] if @model.notes.length > 0
+    @current_note = null
     @keymap = Keymap.createFromData(@keymapData, @)
     $(window).on 'resize', => @_resize()
     console.log "NotesScene created at #{new Date()}"
 
   onRender: ->
-    @note_list_region.show new NoteListView(collection: @model.notes)
-    @note_region.show new NoteView(model: @current_note)
-    @listenTo @note_list_region.currentView, 'note:selected', @onNoteSelected
+    note_list_view = new NoteListView(collection: @model.note_index)
+    note_view = new NoteView(model: @current_note)
+    @note_list_region.show(note_list_view)
+    @note_region.show(note_view)
+    @listenTo note_list_view, 'note:selected', @onNoteSelected
 
   onShow: ->
     @_resize()
+    @model.loadIndex().then(
+      ((note_index)=>
+        @model.note_index.reset(note_index.models)))
 
   _resize: ->
     $window = $(window)
     margin = @$el.offset().top
     @$el.height($window.height() - margin)
 
-  onNoteSelected: (note)->
-    @current_note = note
-    @note_region.currentView.changeNote(@current_note)
+  onNoteSelected: (note_info)->
+    @model.getNote(note_info.id)
+    .then((note)=>
+      console.log '------------->>>'
+      console.log note
+      @current_note = note
+      @note_region.currentView.changeNote(@current_note))
 
   nextNote: ->
     console.log 'next note'
@@ -68,6 +80,7 @@ class NoteListItemView extends Marionette.ItemView
     'dblclick': 'onDoubleClicked'
 
   initialize: ->
+    console.log @model
     console.log "NoteListItemView#initialize #{@model.id}"
 
   serializeData: ->
@@ -78,6 +91,9 @@ class NoteListItemView extends Marionette.ItemView
 
   onDoubleClicked: (e)->
     @editNote()
+
+  onRender: ->
+    console.log 'NoteListItemView.onRender'
 
   select: ->
     @$el.addClass 'selected'
