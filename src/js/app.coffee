@@ -8,6 +8,10 @@ class Notepad extends Backbone.Model
     @note_index = new Backbone.Collection()
     console.log 'Application initialized.'
 
+  createNote: ->
+    note = @notes.createNote()
+    @saveNote(note)
+
   getNote: (note_id)->
     note = @notes.get(note_id)
     Q.fcall =>

@@ -61,8 +61,7 @@ class NotesScene extends Marionette.Layout
 
   newNote: ->
     console.log 'new note'
-    new_note = @model.notes.createNote()
-    location.href = "#notes/#{new_note.id}/edit"
+    @model.createNote().then(((note)=> location.href = "#notes/#{new_note.id}/edit"))
 
   editCurrentNote: ->
     console.log 'edit current note'
