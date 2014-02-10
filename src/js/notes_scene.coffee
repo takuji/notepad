@@ -34,7 +34,9 @@ class NotesScene extends Marionette.Layout
     @_resize()
     @model.loadIndex().then(
       ((note_index)=>
-        @model.note_index.reset(note_index.models)))
+        @model.note_index.reset(note_index.models)),
+      ((error)=>
+        console.info error))
 
   _resize: ->
     $window = $(window)
