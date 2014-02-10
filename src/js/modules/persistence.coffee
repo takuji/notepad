@@ -7,9 +7,12 @@ class FileSystemRepository
     console.log @root_path
 
   save: (note)->
-    Q.fcall (=> @saveSync(note))
+    Q.fcall (=> @saveNoteSync(note))
 
-  saveSync: (note)->
+  saveNote: (note)->
+    Q.fcall (=> @saveNoteSync(note))
+
+  saveNoteSync: (note)->
     dir_path = @getNoteDirectory(note)
     @_prepareDirectory dir_path, (err)->
       if err
@@ -69,9 +72,4 @@ class FileSystemRepository
     console.log json
     index = _.map json, (attrs)-> new Backbone.Model(attrs)
     console.log index
-    a = new Backbone.Collection(index)
-    console.log a
-    console.log a.models
-    console.log '---'
-    console.log a.models
-    a
+    new Backbone.Collection(index)
