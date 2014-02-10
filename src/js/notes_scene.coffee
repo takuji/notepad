@@ -180,9 +180,13 @@ class NoteListView extends Marionette.CollectionView
         @children.findByIndex(idx - 1)
 
 class NoteView extends Marionette.ItemView
-  template: '#note-template'
   id: 'note'
   className: 'note'
+  template: (serializedData)->
+    if @current_note
+      _.template $('#note-template').html(), serializeData
+    else
+      _.template $('#note-empty-template').html(), {}
 
   serializeData: ->
     console.log "serializing.. #{@model}"
