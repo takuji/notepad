@@ -59,9 +59,17 @@ class NotesScene extends Marionette.Layout
     console.log 'prev note'
     @note_list_region.currentView.selectPrevNote()
 
+  # Action to create a new note
+  # - create a note data
+  # - save it
+  # - set it to the note edite scene
+  # - open the note edit scene
   newNote: ->
     console.log 'new note'
-    @model.createNote().then(((note)=> location.href = "#notes/#{new_note.id}/edit"))
+    @model.createNote()
+    .then((note)=>
+      console.log "Note #{note.id} created"
+      location.href = "#notes/#{note.id}/edit")
 
   editCurrentNote: ->
     console.log 'edit current note'
@@ -184,8 +192,8 @@ class NoteView extends Marionette.ItemView
   id: 'note'
   className: 'note'
   template: (serializedData)->
-    if @current_note
-      _.template $('#note-template').html(), serializeData
+    if serializedData.content
+      _.template $('#note-template').html(), serializedData
     else
       _.template $('#note-empty-template').html(), {}
 
@@ -193,8 +201,6 @@ class NoteView extends Marionette.ItemView
     console.log "serializing.. #{@model}"
     if @model
       @model.toJSON()
-    else
-      {title: 'Untitled', html: ''}
 
   changeNote: (note)->
     console.log note
