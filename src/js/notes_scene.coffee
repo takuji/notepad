@@ -33,10 +33,10 @@ class NotesScene extends Marionette.Layout
   onShow: ->
     @_resize()
     @model.loadIndex().then(
-      ((note_index)=>
-        @model.note_index.reset(note_index.models)),
-      ((error)=>
-        console.info error))
+      (note_index)=>
+        @model.note_index.reset(note_index.models)
+      (error)=>
+        console.info error)
 
   _resize: ->
     $window = $(window)
@@ -44,12 +44,10 @@ class NotesScene extends Marionette.Layout
     @$el.height($window.height() - margin)
 
   onNoteSelected: (note_info)->
-    @model.getNote(note_info.id)
-    .then((note)=>
-      console.log '------------->>>'
-      console.log note
-      @current_note = note
-      @note_region.currentView.changeNote(@current_note))
+    @model.getNoteAsync(note_info.id).then(
+      (note)=>
+        @current_note = note
+        @note_region.currentView.changeNote(@current_note))
 
   nextNote: ->
     console.log 'next note'
@@ -71,6 +69,7 @@ class NotesScene extends Marionette.Layout
       console.log "Note #{note.id} created"
       location.href = "#notes/#{note.id}/edit")
 
+  # Action to open the note edit scene to start editing the current note
   editCurrentNote: ->
     console.log 'edit current note'
     @note_list_region.currentView.editCurrentNote()

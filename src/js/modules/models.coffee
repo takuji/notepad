@@ -1,3 +1,42 @@
+class Notepad extends Backbone.Model
+  initialize: (attrs, options)->
+    @settings = {}
+    @scenes = ['notes', 'note-edit']
+    @current_scene = @scenes[0]
+    @repository = new FileSystemRepository()
+    @notes = new NoteCollection()
+    @note_index = new Backbone.Collection()
+    console.log 'Application initialized.'
+
+  createNote: ->
+    note = @notes.createNote()
+    @saveNote(note)
+
+  getNoteAsync: (note_id)->
+    note = @notes.get(note_id)
+    Q.fcall =>
+      if note
+        note
+      else
+        @repository.loadNote(note_id)
+
+  updateIndex: (note)->
+    if @note_index
+      @note_index.updateIndex(note)
+
+  saveNote: (note)->
+    @repository.save(note).then(
+      ()=>
+        console.log "Note #{note.id} is saved successfully"
+        @updateIndex(note)
+        @repository.saveIndex(@note_index)
+      (error)=>
+        console.log 'Failed to save')
+
+  loadIndex: ->
+    @repository.loadIndex()
+
+
 class Note extends Backbone.Model
   initialize: ->
     console.log @attributes
