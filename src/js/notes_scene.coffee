@@ -106,6 +106,15 @@ class NoteListItemView extends Marionette.ItemView
   editNote: ->
     location.href = "#notes/#{@model.id}/edit"
 
+  getRect: ->
+    pos = @$el.position()
+    {
+      left:   pos.left,
+      top:    pos.top
+      right:  pos.left + @$el.width()
+      bottom: pos.top + @$el.height()
+    }
+
 
 class NoteListView extends Marionette.CollectionView
   itemView: NoteListItemView
@@ -123,7 +132,9 @@ class NoteListView extends Marionette.CollectionView
     note = view.model
     @_unselectCurrent()
     @_selectCurrent(view)
+    @_scrollToShowCurrentView()
     @trigger 'note:selected', note
+    console.log 'NoteListView.onNoteSelected'
 
   onItemRemoved: (itemView)->
     console.log "NoteListView.itemRemoved #{itemView.model.id}"
@@ -173,6 +184,25 @@ class NoteListView extends Marionette.CollectionView
       idx = @collection.indexOf @current_item_view.model
       if idx > 0
         @children.findByIndex(idx - 1)
+
+  _scrollToShowCurrentView: ->
+    region = @$el.parent()
+    region_height = region.height()
+    region_top    = region.position().top
+    note_list_top = @$el.position().top
+    item_top      = @current_item_view.$el.position().top
+    item_bottom   = item_top + @current_item_view.$el.outerHeight()
+    item_top_in_note_list  = item_top - note_list_top
+    item_bottom_in_note_list = item_bottom - note_list_top
+    console.log "region_top:#{region_top} note_list_top:#{note_list_top} item_top:#{item_top} item_bottom:#{item_bottom} item_top_in_note_list:#{item_top_in_note_list}"
+    console.log "region_height: #{region_height}, item_bottom - region_top: #{item_bottom - region_top}"
+    if item_top < region_top
+      console.log 'Hidden upwards'
+      region.scrollTop(item_top_in_note_list)
+    else if item_bottom - region_top > region_height
+      console.log 'Hidden downwards'
+      region.scrollTop(item_bottom_in_note_list - region_height)
+    console.log "_scrollToShowCurrentView"
 
 class NoteView extends Marionette.ItemView
   id: 'note'
