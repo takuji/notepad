@@ -103,24 +103,25 @@ NoteIndexItem.fromNote = (note)->
 #
 class Note extends Backbone.Model
   initialize: ->
-    @listenTo @, 'change:content', @onContentUpdated
-    @onContentUpdated()
-
-  onContentUpdated: ->
+    @changed = false
     @compile()
-    @updateTitle()
+
+  updateContent: (content)->
+    if content != @get('content')
+      @changed = true
+      @set(content: content, title: @_titleOfContent(content))
+      @compile()
+      console.log 'Note.updateContent'
 
   compile: ->
-    @set html: marked(@get('content'))
+    if @get('content')
+      @set html: marked(@get('content'))
 
-  updateTitle: ->
-    @set title: @resolveTitle()
-
-  resolveTitle: ->
-    if _.isEmpty(@get('content'))
+  _titleOfContent: (content)->
+    if _.isEmpty(content)
       'Untitled'
     else
-      @get('content').split('\n')[0]
+      content.split('\n')[0]
 
   getMap: ->
     new NoteMap().attachNote(@)

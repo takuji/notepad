@@ -151,12 +151,13 @@ class NoteEditorView extends Marionette.ItemView
   onRender: ->
     @$textarea = @$('textarea')
     @$textarea.val(@model.get('content'))
+    console.log 'NoteEditorView.onRender'
 
   onShow: ->
     console.log 'NoteDeitorView.onShow'
 
   onKeyUp: ->
-    @model.set('content': @$textarea.val())
+    @model.updateContent(@$textarea.val())
 
   onKeyDown: (e)->
     key = Key.fromEvent(e)
