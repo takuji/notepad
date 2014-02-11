@@ -6,7 +6,6 @@ class Notepad extends Backbone.Model
     @repository = new FileSystemRepository()
     @notes      = new NoteCollection()
     @note_index = new NoteIndex()
-    @note_index.listenTo @notes, 'change', @note_index.onNoteUpdated
     @note_index.listenTo @notes, 'add', @note_index.onNoteAdded
 
   createNote: ->
@@ -33,8 +32,9 @@ class Notepad extends Backbone.Model
 
   saveNote: (note)->
     @repository.saveNote(note).then(
-      (a)=>
+      ()=>
         console.log "Note #{note.id} saved."
+        @note_index.onNoteUpdated(note)
         @saveNoteIndex()
         note)
 
