@@ -60,12 +60,12 @@ class Note extends Backbone.Model
       @get('content').split('\n')[0]
 
   getIndex: ->
-    new NoteIndex().attachNote(@)
+    new NoteMap().attachNote(@)
 
   getInfo: ->
     {id: @id, title: @get('title'), created_at: @get('created_at'), updated_at: @get('updated_at')}
 
-class NoteIndex extends Backbone.Model
+class NoteMap extends Backbone.Model
   initialize: ->
     @index_items = new Backbone.Collection()
 
@@ -95,7 +95,7 @@ class NoteIndex extends Backbone.Model
         idx.title.match(/^(#+)(.*)$/)
         title = $.trim(RegExp.$2)
         depth = RegExp.$1.length
-        new NoteIndexItem($.extend(idx, {depth: depth, title: title}))
+        new NoteMapItem($.extend(idx, {depth: depth, title: title}))
       )
     else
       []
@@ -103,7 +103,7 @@ class NoteIndex extends Backbone.Model
   hoge: ->
     alert 'Hoge!'
 
-class NoteIndexItem extends Backbone.Model
+class NoteMapItem extends Backbone.Model
 
 
 class NoteCollection extends Backbone.Collection

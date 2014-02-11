@@ -21,7 +21,7 @@ class NoteEditScene extends Marionette.Layout
     console.log "scene: #{@$el.width()}"
     if @current_note
       index = @current_note.getIndex()
-      @sidebar.show(new NoteIndexView(model: index, collection: index.getItems()))
+      @sidebar.show(new NoteMapView(model: index, collection: index.getItems()))
       console.log @sidebar.$el.width()
       @main.show(new NoteEditMain(model: @current_note))
       console.log @main.$el.width()
@@ -78,9 +78,9 @@ class NoteEditMain extends Marionette.Layout
     @editor.currentView.focus()
 
 #
-# model: NoteIndexItem
+# model: NoteMapItem
 #
-class NoteIndexItemView extends Marionette.ItemView
+class NoteMapItemView extends Marionette.ItemView
   template: '#note-index-item-template'
   tagName: 'li'
   className: 'indexItem'
@@ -94,10 +94,10 @@ class NoteIndexItemView extends Marionette.ItemView
     @trigger 'clicked', @model
 
 #
-# model: NoteIndex
+# model: NoteMap
 #
-class NoteIndexView extends Marionette.CompositeView
-  itemView: NoteIndexItemView
+class NoteMapView extends Marionette.CompositeView
+  itemView: NoteMapItemView
   itemViewContainer: 'ul'
   template: '#note-index-template'
   className: 'note-index'
@@ -105,7 +105,7 @@ class NoteIndexView extends Marionette.CompositeView
   initialize: ->
 
   onRender: ->
-    console.log "NoteIndexView#onRender #{@$el.width()}"
+    console.log "NoteMapView#onRender #{@$el.width()}"
 
   onShow: ->
 
