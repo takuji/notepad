@@ -4,7 +4,7 @@ $.fn.extend
     p = @offset()
     {left: p.left - $window.scrollLeft(), top: p.top - $window.scrollTop()}
 
-  getCaretPos: ->
+  getCaretPosition: ->
     el = @[0]
     if el.selectionStart
       el.selectionStart
@@ -47,16 +47,13 @@ $.fn.extend
             cursorMoved loc
 
   getCaretLocation: ->
-    pos = @getCaretPos()
+    pos = @getCaretPosition()
     prevPos = @data('prevLocation')
     if !prevPos? || (prevPos.pos != pos)
       content = @.val()
-      caretPos = @textareaHelper('caretPos')
       {
         pos: pos
-        caretPos: caretPos
-        l_line: content.substr(0, pos).split("\n").length
-        p_line: (caretPos.top - 10) / 20 + 1
+        line_no: content.substr(0, pos).split("\n").length
       }
     else
       prevPos

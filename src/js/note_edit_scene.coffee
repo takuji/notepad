@@ -197,8 +197,57 @@ class NoteEditorView extends Marionette.ItemView
     @$textarea.val().split("\n").length
 
   forwardHeadingLevel: ->
+    caret_loc = @$textarea.getCaretLocation()
+    line_no = caret_loc.line_no
+    caret_pos = caret_loc.pos
+    @_nextHeadingLevel line_no,
+      nextLevel: (level)=> (level + 1) % 7
+      nextCaretPos: (nextLevel, level) => if nextLevel > level then caret_pos + 1 else caret_pos - 6
 
   backwardHeadingLevel: ->
+    caret_loc = @$textarea.getCaretLocation()
+    line_no = caret_loc.line_no
+    caret_pos = caret_loc.pos
+    @_nextHeadingLevel line_no,
+      nextLevel: (level)=> (level + 6) % 7
+      nextCaretPos: (nextLevel, level)=> if nextLevel > level then caret_pos + 6 else caret_pos - 1
+
+  _nextHeadingLevel: (line_no, funcs)->
+    line = @getLine(line_no)
+    console.log line
+    level = @_headingLevelOfString(line)
+    console.log "heading level = #{level}"
+    nextLevel = funcs.nextLevel(level)
+    h = @_makeHeading(nextLevel)
+    heading = @_extractHeading(line)
+    new_line = h + heading
+    text = @$textarea.val()
+    @$textarea.val @_replaceLine(text, line_no, new_line)
+    new_caret_pos = funcs.nextCaretPos(nextLevel, level)
+    @$textarea.setCaretPosition(new_caret_pos)
+
+  getLine: (line_no)->
+    @$textarea.val().split("\n")[line_no - 1]
+
+  _headingLevelOfString: (line) ->
+    level = 0
+    while line[level] == '#'
+      level += 1
+    if level <= 6 then level else 0
+
+  _makeHeading: (level)->
+    h = ''
+    _.times(level, -> h += '#')
+    h
+
+  _extractHeading: (line)->
+    line.replace /^#+/, ''
+
+  _replaceLine: (text, line_no, new_text)->
+    range = @_rangeOfLine(line_no, text)
+    t1 = text.substring(0, range.start)
+    t2 = if range.end >= 0 then text.substring(range.end) else ''
+    t1 + new_text + t2
 
 #
 #
