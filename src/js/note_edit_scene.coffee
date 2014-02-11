@@ -186,7 +186,15 @@ class NoteEditorView extends Marionette.ItemView
     {start: pos, end: newLinePos}
 
   scrollTo: (line_no)->
+    y0 = @$textarea.offset().top
+    content_height = @$textarea.textareaHelper('height')
+    line_count = @lineCount()
+    y  = content_height * (line_no - 1) / line_count
+    console.log "line_no=#{line_no}, y0=#{y0}, h=#{content_height}, lines=#{line_count}, y=#{y}"
+    @$textarea.scrollTop(Math.floor(y))
 
+  lineCount: ->
+    @$textarea.val().split("\n").length
 
   forwardHeadingLevel: ->
 
