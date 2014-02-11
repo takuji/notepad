@@ -21,8 +21,11 @@ class NoteEditScene extends Marionette.Layout
   onRender: ->
     if @current_note
       note_map = @current_note.getMap()
-      @sidebar.show(new NoteMapView(model: note_map, collection: note_map.getItems()))
-      @main.show(new NoteEditMain(model: @current_note))
+      note_map_view = new NoteMapView(model: note_map, collection: note_map.getItems())
+      main_view = new NoteEditMain(model: @current_note)
+      @sidebar.show(note_map_view)
+      @main.show(main_view)
+      @listenTo note_map_view, 'clicked', @onNoteMapClicked
     $(window).on 'resize', => @_resize()
     console.log "NoteEditScene.onRender"
 
@@ -30,6 +33,11 @@ class NoteEditScene extends Marionette.Layout
     @_resize()
     @main.currentView.focus()
     console.log "NoteEditScene.onShow"
+
+  onNoteMapClicked: (note_map)->
+    console.log note_map
+    @goToLine(note_map.get('line'))
+    console.log 'NoteEditScene.onNoteMapClicked'
 
   _resize: ->
     $window = $(window)
@@ -54,6 +62,9 @@ class NoteEditScene extends Marionette.Layout
       ()=>
         location.href = '#notes')
 
+  goToLine: (line_no)->
+    @main.currentView.goToLine(line_no)
+
 #
 #
 #
@@ -64,8 +75,10 @@ class NoteEditMain extends Marionette.Layout
     preview: '#preview'
 
   onRender: ->
-    @editor.show(new NoteEditorView(model: @model))
-    @preview.show(new NotePreviewView(model: @model))
+    editor  = new NoteEditorView(model: @model)
+    preview = new NotePreviewView(model: @model)
+    @editor.show(editor)
+    @preview.show(preview)
     console.log "NoteEditorView#onRender #{@$el.width()}"
 
   onShow: ->
@@ -76,6 +89,9 @@ class NoteEditMain extends Marionette.Layout
 
   focus: ->
     @editor.currentView.focus()
+
+  goToLine: (line_no)->
+    @editor.currentView.goToLine(line_no)
 
 #
 # model: NoteMapItem
@@ -103,11 +119,15 @@ class NoteMapView extends Marionette.CompositeView
   className: 'note-index'
 
   initialize: ->
+    @on 'itemview:clicked', @onItemClicked
 
   onRender: ->
     console.log "NoteMapView#onRender #{@$el.width()}"
 
   onShow: ->
+
+  onItemClicked: (item_view)->
+    @trigger 'clicked', item_view.model
 
 
 #
@@ -147,6 +167,26 @@ class NoteEditorView extends Marionette.ItemView
 
   focus: ->
     @$('textarea').focus()
+
+  goToLine: (line_no)->
+    @moveCaretToLine(line_no)
+    @scrollTo(line_no)
+    console.log "NoteEditorView.goToLine #{line_no}"
+
+  moveCaretToLine: (line_no)->
+    pos = @_rangeOfLine(line_no, @$textarea.val())
+    @$textarea.setCaretPosition(pos.start)
+
+  _rangeOfLine: (line_no, text)->
+    pos = 0
+    _.times line_no - 1, ->
+      newLinePos = text.indexOf("\n", pos)
+      pos = newLinePos + 1
+    newLinePos = text.indexOf("\n", pos)
+    {start: pos, end: newLinePos}
+
+  scrollTo: (line_no)->
+
 
   forwardHeadingLevel: ->
 
