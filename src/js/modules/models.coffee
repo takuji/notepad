@@ -4,9 +4,9 @@ class Notepad extends Backbone.Model
     @scenes = ['notes', 'note-edit']
     @current_scene = @scenes[0]
     @repository = new FileSystemRepository()
-    @notes = new NoteCollection()
-    @note_index = new Backbone.Collection()
-    console.log 'Application initialized.'
+    @notes      = new NoteCollection()
+    @note_index = new NoteIndex()
+    @note_index.listenTo @notes, 'change', @note_index.onNoteUpdated
 
   createNote: ->
     note = @notes.createNote()
@@ -18,22 +18,23 @@ class Notepad extends Backbone.Model
       if note
         note
       else
-        @repository.loadNote(note_id)
+        @loadNote(note_id)
+
+  loadNote: (note_id)->
+    @repository.loadNote(note_id).then(
+      (json)=> 
+        note = new Note(json)
+        @notes.add(note)
+        note)
 
   saveNote: (note)->
-    @repository.save(note).then(
-      ()=>
-        console.log "Note #{note.id} is saved successfully"
-        @updateIndex(note)
-        @repository.saveIndex(@note_index)
-      (error)=>
-        console.log 'Failed to save')
+    @repository.save(note)
 
-  updateIndex: (note)->
-    if @note_index
-      @note_index.updateIndex(note)
+  saveNoteIndex: ->
+    @repository.saveIndex(@note_index)
 
-
+  # Load note index from the storage
+  # and reset the note index.
   loadIndex: ->
     @repository.loadIndex().then(
       (arr)=> 
@@ -48,6 +49,9 @@ class NoteIndex extends Backbone.Collection
   updateIndex: (note)->
     item = @get(note.id)
     item.reset(note)
+
+  onNoteUpdated: (note)->
+    console.log "NoteIndex.onNoteUpdated #{note.id}"
 
 
 class NoteIndexItem extends Backbone.Model

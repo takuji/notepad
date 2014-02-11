@@ -27,7 +27,7 @@ class FileSystemRepository
 
   loadNoteSync: (id)->
     content = fs.readFileSync("#{@root_path}/notes/#{id}/content.md", 'utf-8')
-    new Note(id: id, content: content)
+    {id: id, content: content}
 
   getNoteDirectory: (note)->
     "#{@root_path}/notes/#{note.id}"

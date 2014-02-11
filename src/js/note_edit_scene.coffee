@@ -43,12 +43,11 @@ class NoteEditScene extends Marionette.Layout
   changeNoteAsync: (note_id)->
     @model.getNoteAsync(note_id).then(
       (note)=>
-        @current_note = note
-    )
+        @current_note = note)
 
   saveCurrentNote: ->
-    console.log 'Saving...'
     if @current_note
+      console.log 'Saving...'
       @model.saveNote(@current_note)
 
 #
