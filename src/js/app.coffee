@@ -1,6 +1,7 @@
 class Router extends Backbone.Router
   routes:
     'notes': 'list'
+    'notes/new': 'newNote'
     'notes/:id/edit': 'edit'
 
   initialize: (option)->
@@ -16,10 +17,29 @@ class Router extends Backbone.Router
     @app.changeNoteAsync(id).then(
       ()=> @showScreen('note_edit'))
 
+  newNote: ->
+    @app.createNote
+
   showScreen: (scene_id)->
     @app.changeScene(scene_id)
 
+#
+#
+#
+class Toolbar extends Backbone.View
+  events:
+    'click #toolbar-item-new-note': 'onNewNoteClicked'
 
+  onNewNoteClicked: (e)->
+    @model.createNote().then(
+      (note)=>
+        location.href = "#notes/#{note.id}/edit")
+
+
+
+#
+#
+#
 class App extends Marionette.Application
 
   init: (notepad)->
@@ -37,7 +57,7 @@ class App extends Marionette.Application
     # Initialize router
     @router = new Router(app: @)
     @router.list()
-    # Load existing notes
+    @toolbar = new Toolbar(el: $('#toolbar'), model: notepad)
     Backbone.history.start()
 
   changeScene: (scene_id)->
