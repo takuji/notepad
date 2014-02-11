@@ -30,7 +30,7 @@ class NotesScene extends Marionette.Layout
     @note_region.show(note_view)
     @listenTo note_list_view, 'note:selected', @onNoteSelected
     # Load note index data
-    @model.loadIndex().then(
+    @model.getNoteIndex().then(
       (note_index)=> console.log "NOTE INDEX UPDATED")
     console.log 'NotesScene.onRender'
 
@@ -50,11 +50,9 @@ class NotesScene extends Marionette.Layout
         @note_region.currentView.changeNote(@current_note))
 
   nextNote: ->
-    console.log 'next note'
     @note_list_region.currentView.selectNextNote()
 
   prevNote: ->
-    console.log 'prev note'
     @note_list_region.currentView.selectPrevNote()
 
   # Action to create a new note
@@ -63,15 +61,12 @@ class NotesScene extends Marionette.Layout
   # - set it to the note edite scene
   # - open the note edit scene
   newNote: ->
-    console.log 'new note'
-    @model.createNote()
-    .then((note)=>
-      console.log "Note #{note.id} created"
-      location.href = "#notes/#{note.id}/edit")
+    @model.createNote().then(
+      (note)=>
+        location.href = "#notes/#{note.id}/edit")
 
   # Action to open the note edit scene to start editing the current note
   editCurrentNote: ->
-    console.log 'edit current note'
     @note_list_region.currentView.editCurrentNote()
 
   deleteCurrentNote: ->
@@ -88,8 +83,6 @@ class NoteListItemView extends Marionette.ItemView
     'dblclick': 'onDoubleClicked'
 
   initialize: ->
-    console.log @model
-    console.log "NoteListItemView#initialize #{@model.id}"
 
   serializeData: ->
     _.extend @model.toJSON(), updated_at: moment(@model.get('updated_at')).format('YYYY/MM/DD')
@@ -122,29 +115,24 @@ class NoteListView extends Marionette.CollectionView
   initialize: (options)->
     @on 'itemview:note:selected', @onNoteSelected, @
     @current_item_view = null
-    console.log 'NoteListView#initialize'
 
   onRender: ->
-    console.log @._events
-    console.log 'NoteListView#onRender'
+    console.log 'NoteListView.onRender'
 
   onNoteSelected: (view)->
     note = view.model
-    console.log "Note #{note.id} selected."
     @_unselectCurrent()
     @_selectCurrent(view)
     @trigger 'note:selected', note
 
   onItemRemoved: (itemView)->
-    console.log "NoteListView#itemRemoved #{itemView.model.id}"
+    console.log "NoteListView.itemRemoved #{itemView.model.id}"
 
   onClose: ->
-    console.log @._events
-    console.log 'NoteListView#onClose'
+    console.log 'NoteListView.onClose'
 
   onItemAdded: (view)->
-    console.log "NoteListView#onItemAdded #{view.model.id}"
-
+    console.log "NoteListView.onItemAdded #{view.model.id}"
 
   selectNextNote: ->
     view = @nextNoteView()
@@ -154,7 +142,6 @@ class NoteListView extends Marionette.CollectionView
 
   selectPrevNote: ->
     view = @prevNoteView()
-    console.log "view #{view}"
     if view
       @_unselectCurrent()
       view.select()
@@ -197,11 +184,9 @@ class NoteView extends Marionette.ItemView
       _.template $('#note-empty-template').html(), {}
 
   serializeData: ->
-    console.log "serializing.. #{@model}"
     if @model
       @model.toJSON()
 
   changeNote: (note)->
-    console.log note
     @model = note
     @render()

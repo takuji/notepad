@@ -12,25 +12,24 @@ class NoteEditScene extends Marionette.Layout
 
   keymapData:
     'CTRL-S': 'saveCurrentNote'
+    'CTRL-L': 'saveAndQuit'
 
   initialize: ->
     @current_note = null
     @keymap = Keymap.createFromData(@keymapData, @)
 
   onRender: ->
-    console.log "scene: #{@$el.width()}"
     if @current_note
-      index = @current_note.getIndex()
-      @sidebar.show(new NoteMapView(model: index, collection: index.getItems()))
-      console.log @sidebar.$el.width()
+      note_map = @current_note.getMap()
+      @sidebar.show(new NoteMapView(model: note_map, collection: note_map.getItems()))
       @main.show(new NoteEditMain(model: @current_note))
-      console.log @main.$el.width()
     $(window).on 'resize', => @_resize()
+    console.log "NoteEditScene.onRender"
 
   onShow: ->
-    console.log 'onShow!'
     @_resize()
     @main.currentView.focus()
+    console.log "NoteEditScene.onShow"
 
   _resize: ->
     $window = $(window)
@@ -50,6 +49,11 @@ class NoteEditScene extends Marionette.Layout
       console.log 'Saving...'
       @model.saveNote(@current_note)
 
+  saveAndQuit: ->
+    @model.saveNote(@current_note).then(
+      ()=>
+        location.href = '#notes')
+
 #
 #
 #
@@ -60,17 +64,14 @@ class NoteEditMain extends Marionette.Layout
     preview: '#preview'
 
   onRender: ->
-    console.log "NoteEditorView#onRender #{@$el.width()}"
     @editor.show(new NoteEditorView(model: @model))
     @preview.show(new NotePreviewView(model: @model))
+    console.log "NoteEditorView#onRender #{@$el.width()}"
 
   onShow: ->
     console.log "NoteEditMain.onShow"
-    #@resize()
 
   resize: ->
-    console.log @$el.width()
-    console.log @preview.$el.width()
     @editor.$el.width(@$el.width() - @preview.$el.width())
 
   focus: ->
@@ -135,12 +136,9 @@ class NoteEditorView extends Marionette.ItemView
     console.log 'NoteDeitorView.onShow'
 
   onKeyUp: ->
-    console.log 'onKeyUp'
-    console.log @$textarea.val()
     @model.set('content': @$textarea.val())
 
   onKeyDown: (e)->
-    console.log 'keydown'
     key = Key.fromEvent(e)
     action = @keymap.get(key)
     if action
@@ -149,10 +147,8 @@ class NoteEditorView extends Marionette.ItemView
 
   focus: ->
     @$('textarea').focus()
-    console.log "FOOOOOOOOOOOOOOOOOOOOCUSSSSSSSSSS"
 
   forwardHeadingLevel: ->
-    console.log 'TAAAAAAAAAAAAAAAAAB'
 
   backwardHeadingLevel: ->
 

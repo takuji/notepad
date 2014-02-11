@@ -13,14 +13,17 @@ class FileSystemRepository
     Q.fcall (=> @saveNoteSync(note))
 
   saveNoteSync: (note)->
-    dir_path = @getNoteDirectory(note)
-    @_prepareDirectory dir_path, (err)->
-      if err
-        throw err
-      file_path = "#{dir_path}/content.md"
-      fs.writeFile file_path, note.get('content'), (err)=>
+    if note
+      @_prepareDirectory @getNoteDirectory(note), (err)=>
         if err
           throw err
+        @_saveNote(note)
+
+  _saveNote: (note)->
+    file_path = @getNoteFilePath(note)
+    fs.writeFileSync file_path, note.get('content')
+    console.log "Note is saved to #{file_path}"
+    note
 
   loadNote: (id)->
     Q.fcall (=> @loadNoteSync(id))
@@ -31,6 +34,9 @@ class FileSystemRepository
 
   getNoteDirectory: (note)->
     "#{@root_path}/notes/#{note.id}"
+
+  getNoteFilePath: (note)->
+    "#{@getNoteDirectory(note)}/content.md"
 
   getNotesDirectory: ->
     "#{@root_path}/notes"
@@ -49,20 +55,21 @@ class FileSystemRepository
             @_prepareDirectory(dir_path, callback)
           callback(err) if callback
 
-  saveIndex: (index)->
-    Q.fcall (=> @saveIndexSync(index))
+  saveNoteIndex: (index)->
+    Q.fcall (=> @saveNoteIndexSync(index))
 
-  saveIndexSync: (index)->
+  saveNoteIndexSync: (index)->
     @_prepareDirectory @getNotesDirectory(), (err)=>
       if err
         throw err
       fs.writeFile @getIndexFilePath(), JSON.stringify(index.toJSON()), (err)=>
         if err
           throw err
+        console.log "Note index is saved to #{@getIndexFilePath()}"
 
-  loadIndex: ->
-    Q.fcall (=> @loadIndexSync())
+  loadNoteIndex: ->
+    Q.fcall (=> @loadNoteIndexSync())
 
-  loadIndexSync: ->
+  loadNoteIndexSync: ->
     s = fs.readFileSync @getIndexFilePath()
     JSON.parse(s)

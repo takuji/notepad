@@ -7,10 +7,14 @@ class Notepad extends Backbone.Model
     @notes      = new NoteCollection()
     @note_index = new NoteIndex()
     @note_index.listenTo @notes, 'change', @note_index.onNoteUpdated
+    @note_index.listenTo @notes, 'add', @note_index.onNoteAdded
 
   createNote: ->
-    note = @notes.createNote()
-    @saveNote(note)
+    note = @notes.newNote()
+    @saveNote(note).then(
+      ()=>
+        @saveNoteIndex()
+        note)
 
   getNoteAsync: (note_id)->
     note = @notes.get(note_id)
@@ -28,15 +32,25 @@ class Notepad extends Backbone.Model
         note)
 
   saveNote: (note)->
-    @repository.save(note)
+    @repository.saveNote(note).then(
+      (a)=>
+        console.log "Note #{note.id} saved."
+        @saveNoteIndex()
+        note)
 
   saveNoteIndex: ->
-    @repository.saveIndex(@note_index)
+    @repository.saveNoteIndex(@note_index)
 
+  getNoteIndex: ->
+    Q.fcall =>
+      if @note_index.isUpToDate()
+        @note_index
+      else
+        @loadNoteIndex()
   # Load note index from the storage
   # and reset the note index.
-  loadIndex: ->
-    @repository.loadIndex().then(
+  loadNoteIndex: ->
+    @repository.loadNoteIndex().then(
       (arr)=> 
         items = _.map arr, (json)=> new NoteIndexItem(json)
         @note_index.reset(items)
@@ -46,6 +60,10 @@ class Notepad extends Backbone.Model
 #
 #
 class NoteIndex extends Backbone.Collection
+  initialize: ->
+    @up_to_date = false
+    @listenTo @, 'reset', => @up_to_date = true
+
   updateIndex: (note)->
     item = @get(note.id)
     item.reset(note)
@@ -54,16 +72,37 @@ class NoteIndex extends Backbone.Collection
     @updateIndex(note)
     console.log "NoteIndex.onNoteUpdated #{note.id}"
 
+  onNoteAdded: (note)->
+    @unshift NoteIndexItem.fromNote(note)
+    console.log "NoteIndex.onNoteAdded #{note.id}"
+    note
 
+  isUpToDate: ->
+    @up_to_date
+
+#
+#
+#
 class NoteIndexItem extends Backbone.Model
   reset: (note)->
     if @id == note.id
-      @set(title: note.title, updated_at: note.updated_at)
+      @set(
+        title: note.get('title')
+        updated_at: note.get('updated_at'))
+
+NoteIndexItem.fromNote = (note)->
+  new NoteIndexItem(
+    id: note.id
+    title: note.get('title')
+    created_at: note.get('created_at')
+    updated_at: note.get('updated_at'))
 
 
+#
+#
+#
 class Note extends Backbone.Model
   initialize: ->
-    console.log @attributes
     @listenTo @, 'change:content', @onContentUpdated
     @onContentUpdated()
 
@@ -83,7 +122,7 @@ class Note extends Backbone.Model
     else
       @get('content').split('\n')[0]
 
-  getIndex: ->
+  getMap: ->
     new NoteMap().attachNote(@)
 
   getInfo: ->
@@ -137,8 +176,9 @@ class NoteCollection extends Backbone.Collection
     @listenTo @, 'add', @onNoteAdded
     console.log "@id_seed is #{@id_seed}"
 
-  createNote: (params)->
-    console.log "LENGTH: #{@length}"
+  # Creates a new note instance and add it to the head of this collection
+  # Returns the new note.
+  newNote: (params)->
     note = new Note(id: @_nextNoteId(), title: 'Untitled', content: '')
     @unshift(note)
     note
