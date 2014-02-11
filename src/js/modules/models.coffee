@@ -20,10 +20,6 @@ class Notepad extends Backbone.Model
       else
         @repository.loadNote(note_id)
 
-  updateIndex: (note)->
-    if @note_index
-      @note_index.updateIndex(note)
-
   saveNote: (note)->
     @repository.save(note).then(
       ()=>
@@ -33,8 +29,31 @@ class Notepad extends Backbone.Model
       (error)=>
         console.log 'Failed to save')
 
+  updateIndex: (note)->
+    if @note_index
+      @note_index.updateIndex(note)
+
+
   loadIndex: ->
-    @repository.loadIndex()
+    @repository.loadIndex().then(
+      (arr)=> 
+        items = _.map arr, (json)=> new NoteIndexItem(json)
+        @note_index.reset(items)
+        @note_index)
+
+#
+#
+#
+class NoteIndex extends Backbone.Collection
+  updateIndex: (note)->
+    item = @get(note.id)
+    item.reset(note)
+
+
+class NoteIndexItem extends Backbone.Model
+  reset: (note)->
+    if @id == note.id
+      @set(title: note.title, updated_at: note.updated_at)
 
 
 class Note extends Backbone.Model

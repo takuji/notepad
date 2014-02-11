@@ -18,8 +18,6 @@ class FileSystemRepository
       if err
         throw err
       file_path = "#{dir_path}/content.md"
-      console.log file_path
-      console.log note.get('content')
       fs.writeFile file_path, note.get('content'), (err)=>
         if err
           throw err
@@ -29,7 +27,6 @@ class FileSystemRepository
 
   loadNoteSync: (id)->
     content = fs.readFileSync("#{@root_path}/notes/#{id}/content.md", 'utf-8')
-    console.log content
     new Note(id: id, content: content)
 
   getNoteDirectory: (note)->
@@ -68,8 +65,4 @@ class FileSystemRepository
 
   loadIndexSync: ->
     s = fs.readFileSync @getIndexFilePath()
-    json = JSON.parse(s)
-    console.log json
-    index = _.map json, (attrs)-> new Backbone.Model(attrs)
-    console.log index
-    new Backbone.Collection(index)
+    JSON.parse(s)

@@ -25,18 +25,18 @@ class NotesScene extends Marionette.Layout
 
   onRender: ->
     note_list_view = new NoteListView(collection: @model.note_index)
-    note_view = new NoteView(model: @current_note)
+    note_view      = new NoteView(model: @current_note)
     @note_list_region.show(note_list_view)
     @note_region.show(note_view)
     @listenTo note_list_view, 'note:selected', @onNoteSelected
+    # Load note index data
+    @model.loadIndex().then(
+      (note_index)=> console.log "NOTE INDEX UPDATED")
+    console.log 'NotesScene.onRender'
 
   onShow: ->
     @_resize()
-    @model.loadIndex().then(
-      (note_index)=>
-        @model.note_index.reset(note_index.models)
-      (error)=>
-        console.info error)
+    console.log 'NotesScene.onShow'
 
   _resize: ->
     $window = $(window)
