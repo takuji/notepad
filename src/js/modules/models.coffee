@@ -51,6 +51,7 @@ class NoteIndex extends Backbone.Collection
     item.reset(note)
 
   onNoteUpdated: (note)->
+    @updateIndex(note)
     console.log "NoteIndex.onNoteUpdated #{note.id}"
 
 
