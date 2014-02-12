@@ -96,8 +96,9 @@
 
     >li {
       cursor: pointer;
-      padding: 0 10px;
+      padding: 2px 4px;
       //white-space: nowrap;
+      font-size: 10px;
 
       .title {
         padding: 0 5px;
@@ -118,31 +119,28 @@
       }
 
       &[data-depth="2"] {
-        font-size: 90%;
         padding-left: 20px;
+        font-size: 90%;
         color: #222;
       }
 
       &[data-depth="3"] {
-        font-size: 80%;
         color: #444;
+        font-size: 80%;
         padding-left: 30px;
       }
 
       &[data-depth="4"] {
-        font-size: 75%;
         color: #666;
         padding-left: 40px;
       }
 
       &[data-depth="5"] {
-        font-size: 70%;
         color: #666;
         padding-left: 50px;
       }
 
       &[data-depth="6"] {
-        font-size: 65%;
         color: #666;
         padding-left: 60px;
       }
