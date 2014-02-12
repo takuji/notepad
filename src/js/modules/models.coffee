@@ -8,6 +8,12 @@ class Notepad extends Backbone.Model
     @note_index = new NoteIndex()
     @note_index.listenTo @notes, 'add', @note_index.onNoteAdded
 
+  prepareWorkspace: ->
+    @repository.createWorkspace().then(
+      ()=> @
+      (error)=>
+        throw error)
+
   createNote: ->
     note = @notes.newNote()
     @saveNote(note).then(
@@ -54,7 +60,9 @@ class Notepad extends Backbone.Model
       (arr)=> 
         items = _.map arr, (json)=> new NoteIndexItem(json)
         @note_index.reset(items)
-        @note_index)
+        @note_index
+      (error)=>
+        console.log error)
 
 #
 #
@@ -104,16 +112,21 @@ NoteIndexItem.fromNote = (note)->
 class Note extends Backbone.Model
   initialize: ->
     @changed = false
-    @compile()
+    @_updateTitle()
+    @_compile()
 
   updateContent: (content)->
     if content != @get('content')
       @changed = true
-      @set(content: content, title: @_titleOfContent(content))
-      @compile()
+      @set content: content, title: @_titleOfContent(content)
+      @_compile()
       console.log 'Note.updateContent'
+    console.log @attributes
 
-  compile: ->
+  _updateTitle: ->
+    @set title: @_titleOfContent(@get('content'))
+
+  _compile: ->
     if @get('content')
       @set html: marked(@get('content'))
 
@@ -129,6 +142,10 @@ class Note extends Backbone.Model
   getInfo: ->
     {id: @id, title: @get('title'), created_at: @get('created_at'), updated_at: @get('updated_at')}
 
+
+#
+#
+#
 class NoteMap extends Backbone.Model
   initialize: ->
     @index_items = new Backbone.Collection()

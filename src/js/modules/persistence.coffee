@@ -6,6 +6,12 @@ class FileSystemRepository
     {@root_path} = @settings
     console.log @root_path
 
+  createWorkspace: ->
+    Q.fcall =>
+      @_prepareDirectory @getNotesDirectory(), (error)=>
+        if error
+          throw error
+
   save: (note)->
     Q.fcall (=> @saveNoteSync(note))
 
@@ -21,7 +27,8 @@ class FileSystemRepository
 
   _saveNote: (note)->
     file_path = @getNoteFilePath(note)
-    fs.writeFileSync file_path, note.get('content')
+    s = JSON.stringify(note.toJSON())
+    fs.writeFileSync file_path, s, {encoding: 'utf-8'}
     console.log "Note is saved to #{file_path}"
     note
 
@@ -29,14 +36,14 @@ class FileSystemRepository
     Q.fcall (=> @loadNoteSync(id))
 
   loadNoteSync: (id)->
-    content = fs.readFileSync("#{@root_path}/notes/#{id}/content.md", 'utf-8')
-    {id: id, content: content}
+    json = fs.readFileSync("#{@root_path}/notes/#{id}/note.json", 'utf-8')
+    JSON.parse(json)
 
   getNoteDirectory: (note)->
     "#{@root_path}/notes/#{note.id}"
 
   getNoteFilePath: (note)->
-    "#{@getNoteDirectory(note)}/content.md"
+    "#{@getNoteDirectory(note)}/note.json"
 
   getNotesDirectory: ->
     "#{@root_path}/notes"
@@ -62,13 +69,15 @@ class FileSystemRepository
     @_prepareDirectory @getNotesDirectory(), (err)=>
       if err
         throw err
-      fs.writeFile @getIndexFilePath(), JSON.stringify(index.toJSON()), (err)=>
+      json = JSON.stringify(index.toJSON())
+      console.log json
+      fs.writeFile @getIndexFilePath(), json, {encoding: 'utf-8'}, (err)=>
         if err
           throw err
         console.log "Note index is saved to #{@getIndexFilePath()}"
 
   loadNoteIndex: ->
-    Q.fcall (=> @loadNoteIndexSync())
+    Q.fcall ()=> @loadNoteIndexSync()
 
   loadNoteIndexSync: ->
     s = fs.readFileSync @getIndexFilePath()

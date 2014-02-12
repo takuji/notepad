@@ -31,7 +31,8 @@ class NotesScene extends Marionette.Layout
     @listenTo note_list_view, 'note:selected', @onNoteSelected
     # Load note index data
     @model.getNoteIndex().then(
-      (note_index)=> console.log "NOTE INDEX UPDATED")
+      (note_index)=> console.log "NOTE INDEX UPDATED"
+      (error)=> console.log "NOTE INDEX NOT LOADED")
     console.log 'NotesScene.onRender'
 
   onShow: ->
@@ -208,6 +209,7 @@ class NoteView extends Marionette.ItemView
   id: 'note'
   className: 'note'
   template: (serializedData)->
+    console.log serializedData
     if serializedData.content
       _.template $('#note-template').html(), serializedData
     else

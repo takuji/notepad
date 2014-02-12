@@ -84,8 +84,12 @@ class App extends Marionette.Application
       action.fire()
 
 notepad = new Notepad()
+notepad.prepareWorkspace().then(
+  (notepad)->
+    app = new App()
+    app.addInitializer (options)->
+      app.init(notepad)
+    app.start()
+  (error)->
+    console.log error)
 
-app = new App()
-app.addInitializer (options)->
-  app.init(notepad)
-app.start()
