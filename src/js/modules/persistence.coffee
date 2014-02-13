@@ -71,17 +71,6 @@ class FileSystemRepository
   saveNoteIndex: (index)->
     @prepareDirectory(@getNotesDirectory())
     .then(()=> @_saveNoteIndex(index))
-    .then((index)=> , (err)=>
-      if err
-        throw err
-      json = JSON.stringify(index.toJSON())
-      console.log json
-      fs.writeFile @getIndexFilePath(), json, {encoding: 'utf-8'}, (err)=>
-        if err
-          throw err
-        console.log "Note index is saved to #{@getIndexFilePath()}"
-
-    Q.fcall (=> @saveNoteIndexSync(index))
 
   _saveNoteIndex: (index)->
     json = JSON.stringify(index.toJSON())
@@ -93,18 +82,6 @@ class FileSystemRepository
         d.resolve(index)
       console.log "Note index is saved to #{@getIndexFilePath()}"
     d.promise
-
-  saveNoteIndexSync: (index)->
-    @prepareDirectory(@getNotesDirectory())
-    .then(()=> , (err)=>
-      if err
-        throw err
-      json = JSON.stringify(index.toJSON())
-      console.log json
-      fs.writeFile @getIndexFilePath(), json, {encoding: 'utf-8'}, (err)=>
-        if err
-          throw err
-        console.log "Note index is saved to #{@getIndexFilePath()}"
 
   loadNoteIndex: ->
     Q.fcall ()=> @loadNoteIndexSync()

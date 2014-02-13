@@ -4,6 +4,7 @@
 #notes {
   >* {
     display: inline-block;
+    box-sizing: border-box;
     height: 100%;
     vertical-align: top;
   }
@@ -14,8 +15,16 @@
     overflow-y: scroll;
   }
 
+  #main {
+    width: 70%;
+  }
+
   .note {
     @include note-base;
+  }
+
+  .note-empty {
+    background-color: #ddd;
   }
 }
 

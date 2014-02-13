@@ -8,7 +8,7 @@ class NotesScene extends Marionette.Layout
 
   regions:
     note_list_region: '#sidebar'
-    note_region: '#note'
+    note_region: '#main'
 
   keymapData:
     'J': 'nextNote'
@@ -220,5 +220,10 @@ class NoteView extends Marionette.ItemView
       @model.toJSON()
 
   changeNote: (note)->
+    console.log 'NoteView.changeNote'
     @model = note
     @render()
+
+  onRender: ->
+    unless @model
+      @$el.addClass('note-empty')
