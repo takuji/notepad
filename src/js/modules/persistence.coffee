@@ -7,23 +7,40 @@ class FileSystemRepository
     console.log @root_path
 
   createWorkspace: ->
-    Q.fcall =>
-      @_prepareDirectory @getNotesDirectory(), (error)=>
-        if error
-          throw error
+    d = Q.defer()
+    mkdirp @getNotesDirectory(), (error)=>
+      if error
+        d.reject(error)
+      else
+        console.log "Directory #{@getNotesDirectory()} created."
+        d.resolve()
+    d.promise
 
-  save: (note)->
-    Q.fcall (=> @saveNoteSync(note))
+  prepareDirectory: (dir)->
+    d = Q.defer()
+    mkdirp dir, (error)=>
+      if error
+        d.reject(error)
+      else
+        d.resolve(dir)
+    d.promise
 
   saveNote: (note)->
-    Q.fcall (=> @saveNoteSync(note))
+    d = Q.defer()
+    @prepareDirectory(@getNoteDirectory(note))
+    .then((dir)=> @_saveNote(note))
+    .then((note)=> d.resolve(note))
+    .catch((error)=> d.reject(d))
+    d.promise
 
-  saveNoteSync: (note)->
-    if note
-      @_prepareDirectory @getNoteDirectory(note), (err)=>
-        if err
-          throw err
-        @_saveNote(note)
+  # _saveNote: (note)->
+  #   d = Q.defer()
+  #   fs.writeFile @getNoteFilePath(note), JSON.stringify(note.toJSON()), (error)=>
+  #     if error
+  #       d.reject(error)
+  #     else
+  #       d.resolve(note)
+  #   d.promise
 
   _saveNote: (note)->
     file_path = @getNoteFilePath(note)
@@ -51,22 +68,35 @@ class FileSystemRepository
   getIndexFilePath: ->
     "#{@getNotesDirectory()}/index.json"
 
-  _prepareDirectory: (dir_path, callback)->
-    fs.exists dir_path, (exists)=>
-      if exists
-        callback(null) if callback
-      else
-        fs.mkdir dir_path, (err)=>
-          if err && err.errno == 34
-            @_prepareDirectory(path.dirname(dir_path), callback)
-            @_prepareDirectory(dir_path, callback)
-          callback(err) if callback
-
   saveNoteIndex: (index)->
+    @prepareDirectory(@getNotesDirectory())
+    .then(()=> @_saveNoteIndex(index))
+    .then((index)=> , (err)=>
+      if err
+        throw err
+      json = JSON.stringify(index.toJSON())
+      console.log json
+      fs.writeFile @getIndexFilePath(), json, {encoding: 'utf-8'}, (err)=>
+        if err
+          throw err
+        console.log "Note index is saved to #{@getIndexFilePath()}"
+
     Q.fcall (=> @saveNoteIndexSync(index))
 
+  _saveNoteIndex: (index)->
+    json = JSON.stringify(index.toJSON())
+    d = Q.defer()
+    fs.writeFile @getIndexFilePath(), json, {encoding: 'utf-8'}, (err)=>
+      if err
+        d.reject(err)
+      else
+        d.resolve(index)
+      console.log "Note index is saved to #{@getIndexFilePath()}"
+    d.promise
+
   saveNoteIndexSync: (index)->
-    @_prepareDirectory @getNotesDirectory(), (err)=>
+    @prepareDirectory(@getNotesDirectory())
+    .then(()=> , (err)=>
       if err
         throw err
       json = JSON.stringify(index.toJSON())
