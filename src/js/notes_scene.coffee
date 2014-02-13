@@ -225,5 +225,4 @@ class NoteView extends Marionette.ItemView
     @render()
 
   onRender: ->
-    unless @model
-      @$el.addClass('note-empty')
+    @$el.toggleClass('note-empty', !@model?)

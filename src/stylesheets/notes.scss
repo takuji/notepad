@@ -17,6 +17,7 @@
 
   #main {
     width: 70%;
+    overflow-y: scroll;
   }
 
   .note {
@@ -25,6 +26,7 @@
 
   .note-empty {
     background-color: #ddd;
+    height: 100%;
   }
 }
 
