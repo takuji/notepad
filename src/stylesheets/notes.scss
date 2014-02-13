@@ -22,10 +22,11 @@
 
   .note {
     @include note-base;
+    padding: 10px;
   }
 
   .note-empty {
-    background-color: #ddd;
+    background-color: #f8f8f8;
     height: 100%;
   }
 }
