@@ -1,4 +1,7 @@
 {
   "name": "notepad",
-  "main": "index.html"
+  "main": "index.html",
+  "dependencies": {
+    "mkdirp": "~0.3.5"
+  }
 }

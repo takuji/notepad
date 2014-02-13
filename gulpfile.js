@@ -6,9 +6,18 @@ var zip = require('gulp-zip');
 var compass = require('gulp-compass');
 fs = require('fs');
 
-if (!fs.existsSync('build')) {
-	fs.mkdirSync('build');
-	fs.mkdirSync('build/src');
+var BUILD_DIR = 'build',
+		DEST_DIR  = BUILD_DIR + '/src',
+		MOD_DIR   = DEST_DIR + '/node_modules';
+
+if (!fs.existsSync(BUILD_DIR)) {
+	fs.mkdirSync(BUILD_DIR);
+}
+if (!fs.existsSync(DEST_DIR)) {
+	fs.mkdirSync(DEST_DIR);
+}
+if (!fs.existsSync(MOD_DIR)) {
+	fs.mkdirSync(MOD_DIR);
 }
 
 gulp.task('default', ['build-notepad.js', 'compass', 'copy-vendor', 'copy-resources', 'package', 'watch']);
