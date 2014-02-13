@@ -17,6 +17,7 @@ class NoteEditScene extends Marionette.Layout
   initialize: ->
     @current_note = null
     @keymap = Keymap.createFromData(@keymapData, @)
+    @active = false
 
   onRender: ->
     if @current_note
@@ -30,9 +31,14 @@ class NoteEditScene extends Marionette.Layout
     console.log "NoteEditScene.onRender"
 
   onShow: ->
+    @active = true
     @_resize()
     @main.currentView.focus()
     console.log "NoteEditScene.onShow"
+
+  onClose: ->
+    @active = false
+
 
   onNoteMapClicked: (note_map)->
     console.log note_map
@@ -40,11 +46,12 @@ class NoteEditScene extends Marionette.Layout
     console.log 'NoteEditScene.onNoteMapClicked'
 
   _resize: ->
-    $window = $(window)
-    @$el.height($window.height() - @$el.offset().top)
-    @main.$el.width($window.width() - @sidebar.$el.width())
-    @main.currentView.resize()
-    #@main.currentView.$el.width($window.width() - @sidebar.currentView.$el.width())
+    if @active
+      $window = $(window)
+      @$el.height($window.height() - @$el.offset().top)
+      @main.$el.width($window.width() - @sidebar.$el.width())
+      @main.currentView.resize()
+      #@main.currentView.$el.width($window.width() - @sidebar.currentView.$el.width())
 
   # 
   changeNoteAsync: (note_id)->
