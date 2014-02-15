@@ -29,6 +29,7 @@ class NotesScene extends Marionette.Layout
     @note_list_region.show(note_list_view)
     @note_region.show(note_view)
     @listenTo note_list_view, 'note:selected', @onNoteSelected
+    @listenTo note_list_view, 'note:delete', @deleteNote
     # Load note index data
     @model.getNoteIndex().then(
       (note_index)=> console.log "NOTE INDEX UPDATED"
@@ -72,14 +73,21 @@ class NotesScene extends Marionette.Layout
 
   deleteCurrentNote: ->
     console.log 'delete current note'
+    @model.deleteNote(@current_note.id)
 
+  deleteNote: (note_id)->
+    @model.deleteNote(note_id)
 
+#
+#
+#
 class NoteListItemView extends Marionette.ItemView
   template: '#note-list-item-template'
   tagName: 'li'
   className: 'note-list-item'
 
   events:
+    'click .delete': 'onDeleteClicked'
     'click': 'onClicked'
     'dblclick': 'onDoubleClicked'
 
@@ -90,6 +98,11 @@ class NoteListItemView extends Marionette.ItemView
 
   onClicked: (e)->
     @select()
+
+  onDeleteClicked: (e)->
+    e.stopImmediatePropagation()
+    @trigger 'note:delete'
+    console.log "DELETE?"
 
   onDoubleClicked: (e)->
     @editNote()
@@ -124,18 +137,23 @@ class NoteListView extends Marionette.CollectionView
 
   initialize: (options)->
     @on 'itemview:note:selected', @onNoteSelected, @
+    @on 'itemview:note:delete', @onDeleteClicked, @
     @current_item_view = null
 
   onRender: ->
     console.log 'NoteListView.onRender'
 
   onNoteSelected: (view)->
-    note = view.model
     @_unselectCurrent()
     @_selectCurrent(view)
     @_scrollToShowCurrentView()
-    @trigger 'note:selected', note
+    @trigger 'note:selected', view.model
     console.log 'NoteListView.onNoteSelected'
+
+  onDeleteClicked: (view)->
+    console.log 'NoteListView.onNoteDeleteClicked'
+    console.log view.model
+    @trigger 'note:delete', view.model.id
 
   onItemRemoved: (itemView)->
     console.log "NoteListView.itemRemoved #{itemView.model.id}"

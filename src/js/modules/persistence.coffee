@@ -5,11 +5,13 @@ class FileSystemRepository
   constructor: (options)->
     {@root_path} = @settings
     @note_index_storage = new NoteIndexStorage(file_path: @getNoteIndexFilePath())
+    @deleted_notes_storage = new NoteIndexStorage(file_path: @getDeletedNotesIndexFilePath())
     console.log @root_path
 
   createWorkspace: ->
-    @_createHomeDirectory().then(
-      ()=> @note_index_storage.prepare())
+    @_createHomeDirectory()
+    .then(()=> @note_index_storage.prepare())
+    .then(()=> @deleted_notes_storage.prepare())
 
   _createHomeDirectory: ->
     d = Q.defer()
@@ -64,12 +66,11 @@ class FileSystemRepository
   getIndexFilePath: ->
     "#{@getNotesDirectory()}/index.json"
 
+  getDeletedNotesIndexFilePath: ->
+    "#{@getNotesDirectory()}/deleted_notes.db"
+
   getNoteIndexFilePath: ->
     "#{@getNotesDirectory()}/index.db"
-
-  saveNoteIndex: (index)->
-    @prepareDirectory(@getNotesDirectory())
-    .then(()=> @_saveNoteIndex(index))
 
   saveNoteIndexItem: (note_index_item)->
     if note_index_item.get('_id')
@@ -77,19 +78,12 @@ class FileSystemRepository
     else
       @note_index_storage.add(note_index_item)
 
-  _saveNoteIndex: (index)->
-    json = JSON.stringify(index.toJSON())
-    d = Q.defer()
-    fs.writeFile @getIndexFilePath(), json, {encoding: 'utf-8'}, (err)=>
-      if err
-        d.reject(err)
-      else
-        d.resolve(index)
-      console.log "Note index is saved to #{@getIndexFilePath()}"
-    d.promise
-
   loadNoteIndex: ->
     @note_index_storage.getAll()
+
+  deleteNoteIndexItem: (note_index_item)->
+    @deleted_notes_storage.add(note_index_item)
+    .then(() => @note_index_storage.destroy(note_index_item))
 
 #
 #
