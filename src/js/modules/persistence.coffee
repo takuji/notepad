@@ -89,3 +89,87 @@ class FileSystemRepository
   loadNoteIndexSync: ->
     s = fs.readFileSync @getIndexFilePath()
     JSON.parse(s)
+
+class NoteIndexStorage
+  constructor: (options)->
+    unless @file_path
+      throw new Error 'file_path is required'
+    @file_path = options.file_path
+    @db = null
+    @ready = false
+
+  prepare: ->
+    @_prepare().then(
+      ()=>
+        @db = new Datastore(filename: @file_path, autoload: true)
+        @ready = true)
+
+  _prepare: ->
+    d = Q.defer()
+    fs.exists @file_path, (exists)=>
+      if exists || @ready
+        d.resolve()
+      else
+        mkdirp @file_path, (err)=>
+          if err
+            d.reject(err)
+          else
+            d.resolve()
+    d.promise
+
+  add: (index_item)->
+    d = Q.defer()
+    json = index_item.toJSON()
+    now = new Date()
+    json.created_at = now
+    json.updated_at = now
+    @db.insert json, (err, item)=>
+      if err
+        d.reject(err)
+      else
+        d.resolve(item)
+    d.promise
+
+  update: (index_item)->
+    d = Q.defer()
+    json = index_item.toJSON()
+    now = new Date()
+    id = json._id
+    delete json._id
+    json.updated_at = now
+    @db.update {_id: json._id}, json, {}, (err, num)=>
+      if err
+        d.reject(err)
+      else
+        d.resolve(num)
+    d.promise
+
+  destroy: (index_item)->
+    d = Q.defer()
+    @db.remove {_id: index_item.get('_id')}, {}, (err)=>
+      if err
+        d.reject(err)
+      else
+        d.resolve()
+    d.promise
+
+  getAll: (options)->
+    d = Q.defer()
+    @db.find({}).sort({updated_at: -1}).exec (err, items)=>
+      if err
+        d.reject(err)
+      else
+        d.resolve(items)
+    d.promise
+
+  # _hoge: (f, context, args)->
+  #   d = Q.defer()
+  #   callback = (err, result)=>
+  #     if err
+  #       d.reject(err)
+  #     else
+  #       d.resolve(result)
+  #   args.push callback
+  #   f.apply context, args
+  #   d.promise
+
