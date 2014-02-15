@@ -17,9 +17,7 @@ class Notepad extends Backbone.Model
   createNote: ->
     note = @notes.newNote()
     @saveNote(note).then(
-      ()=>
-        @saveNoteIndex()
-        note)
+      ()=> note)
 
   getNoteAsync: (note_id)->
     note = @notes.get(note_id)
@@ -36,16 +34,20 @@ class Notepad extends Backbone.Model
         @notes.add(note)
         note)
 
+  # Save a note and update it's index
   saveNote: (note)->
-    @repository.saveNote(note).then(
-      ()=>
-        console.log "Note #{note.id} saved."
-        @note_index.onNoteUpdated(note)
-        @saveNoteIndex()
-        note)
-
-  saveNoteIndex: ->
-    @repository.saveNoteIndex(@note_index)
+    if note.isModified()
+      @repository.saveNote(note).then(
+        ()=>
+          note.onSaved()
+          @note_index.onNoteUpdated(note)
+          item = @note_index.get(note.id)
+          @repository.saveNoteIndexItem(item).then(
+            (note_index_item)=> note))
+    else
+      d = Q.defer()
+      d.resolve(note)
+      d.promise
 
   getNoteIndex: ->
     Q.fcall =>
@@ -75,6 +77,8 @@ class NoteIndex extends Backbone.Collection
   updateIndex: (note)->
     item = @get(note.id)
     item.reset(note)
+    @remove item
+    @unshift item
 
   onNoteUpdated: (note)->
     @updateIndex(note)
@@ -97,6 +101,8 @@ class NoteIndexItem extends Backbone.Model
       @set(
         title: note.get('title')
         updated_at: note.get('updated_at'))
+    console.log "Note index of #{note.id} updated"
+    console.log @attributes
 
 NoteIndexItem.fromNote = (note)->
   new NoteIndexItem(
@@ -111,13 +117,19 @@ NoteIndexItem.fromNote = (note)->
 #
 class Note extends Backbone.Model
   initialize: ->
-    @changed = false
+    @_changed = false
     @_updateTitle()
     @_compile()
 
+  onSaved: ->
+    @_changed = false
+
+  isModified: ->
+    @_changed
+
   updateContent: (content)->
     if content != @get('content')
-      @changed = true
+      @_changed = true
       @set content: content, title: @_titleOfContent(content)
       @_compile()
       console.log 'Note.updateContent'

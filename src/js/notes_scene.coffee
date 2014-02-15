@@ -209,7 +209,6 @@ class NoteView extends Marionette.ItemView
   id: 'note'
   className: 'note'
   template: (serializedData)->
-    console.log serializedData
     if serializedData.content
       _.template $('#note-template').html(), serializedData
     else
