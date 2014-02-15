@@ -72,6 +72,7 @@ class NotesScene extends Marionette.Layout
 
   deleteCurrentNote: ->
     console.log 'delete current note'
+    @model.deleteNote(@current_note)
 
 
 class NoteListItemView extends Marionette.ItemView

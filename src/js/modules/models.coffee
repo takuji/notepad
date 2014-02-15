@@ -49,6 +49,14 @@ class Notepad extends Backbone.Model
       d.resolve(note)
       d.promise
 
+  deleteNote: (note)->
+    index_item = @note_index.get(note.id)
+    if index_item
+      @repository.deleteNoteIndexItem(index_item).then(
+        ()=>
+          @note_index.remove(index_item)
+          console.log "Note #{note.id} is moved to the deleted notes collection")
+
   getNoteIndex: ->
     Q.fcall =>
       if @note_index.isUpToDate()
