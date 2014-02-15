@@ -1,6 +1,6 @@
 class Notepad extends Backbone.Model
   initialize: (attrs, options)->
-    @settings = {}
+    @settings = new Settings()
     @scenes = ['notes', 'note-edit']
     @current_scene = @scenes[0]
     @repository = new FileSystemRepository()
@@ -73,6 +73,17 @@ class Notepad extends Backbone.Model
         @note_index
       (error)=>
         console.log error)
+
+#
+#
+#
+class Settings extends Backbone.Model
+  initialize: ->
+    @workspace =
+      home_directory: @_resolveHomeDirectory()
+
+  _resolveHomeDirectory: ->
+    process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
 
 #
 #

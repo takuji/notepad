@@ -16,9 +16,11 @@ class SettingsScene extends Marionette.Layout
   #   'N': 'newNote'
 
   initialize: ->
+    settings = @model.settings
+    @sections =
+      workspace: new WorkspaceSettingsView(settings)
     @keymap = Keymap.createFromData(@keymapData, @)
-    $(window).on 'resize', => @_resize()
-    console.log "SettingsScene created at #{new Date()}"
+    #$(window).on 'resize', => @_resize()
 
   onRender: ->
     # note_list_view = new NoteListView(collection: @model.note_index)
@@ -34,8 +36,11 @@ class SettingsScene extends Marionette.Layout
     console.log 'SettingsScene.onRender'
 
   onShow: ->
-    # @_resize()
+    @changeSection 'workspace'
     console.log 'SettingsScene.onShow'
+
+  changeSection: (section_id)->
+    @main.show @sections[section_id]
 
   _resize: ->
   #   $window = $(window)
@@ -45,3 +50,8 @@ class SettingsScene extends Marionette.Layout
 class WorkspaceSettingsView extends Marionette.ItemView
   template: '#workspace-settings-template'
   
+  onRender: ->
+    console.log 'WorkspaceSettingsView.onRender'
+
+  onShow: ->
+    console.log 'WorkspaceSettingsView.onShow'
