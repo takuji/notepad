@@ -79,11 +79,12 @@ class Notepad extends Backbone.Model
 #
 class Settings extends Backbone.Model
   initialize: ->
-    @workspace =
-      home_directory: @_resolveHomeDirectory()
+    @set
+      workspace:
+        home_directory: @defaultHomeDirectory()
 
-  _resolveHomeDirectory: ->
-    process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
+  defaultHomeDirectory: ->
+    "#{process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE}/.notepad"
 
 #
 #

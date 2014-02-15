@@ -13,4 +13,16 @@
 		background-color: #eee;
 		border-right: #ddd;
 	}
+
+	.settings-section {
+		box-sizing: border-box;
+		height: 100%;
+		padding: 20px;
+		background-color: #efe;
+
+		input[type="text"] {
+			width: 400px;
+			max-width: 100%;
+		}
+	}
 }

@@ -18,9 +18,10 @@ class SettingsScene extends Marionette.Layout
   initialize: ->
     settings = @model.settings
     @sections =
-      workspace: new WorkspaceSettingsView(settings)
+      workspace: new WorkspaceSettingsView(model: settings)
     @keymap = Keymap.createFromData(@keymapData, @)
-    #$(window).on 'resize', => @_resize()
+    @active = false
+    $(window).on 'resize', => @_resize()
 
   onRender: ->
     # note_list_view = new NoteListView(collection: @model.note_index)
@@ -33,25 +34,39 @@ class SettingsScene extends Marionette.Layout
     # @model.getNoteIndex().then(
     #   (note_index)=> console.log "NOTE INDEX UPDATED"
     #   (error)=> console.log "NOTE INDEX NOT LOADED")
+    @sidebar.show new SettingsSidebarView()
+    @changeSection 'workspace'
     console.log 'SettingsScene.onRender'
 
   onShow: ->
-    @changeSection 'workspace'
+    @active = true
+    @_resize()
     console.log 'SettingsScene.onShow'
+
+  onClose: ->
+    @active = false
 
   changeSection: (section_id)->
     @main.show @sections[section_id]
 
   _resize: ->
-  #   $window = $(window)
-  #   margin = @$el.offset().top
-  #   @$el.height($window.height() - margin)
+    if @active
+      $window = $(window)
+      @$el.height($window.height() - @$el.offset().top)
+      @main.$el.width($window.width() - @sidebar.$el.width())
 
 class WorkspaceSettingsView extends Marionette.ItemView
   template: '#workspace-settings-template'
+  className: 'settings-section'
+
+  initialize: ->
+    console.log @model.toJSON()
   
   onRender: ->
     console.log 'WorkspaceSettingsView.onRender'
 
   onShow: ->
     console.log 'WorkspaceSettingsView.onShow'
+
+class SettingsSidebarView extends Marionette.ItemView
+  template: '#plain-template'
