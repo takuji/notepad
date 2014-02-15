@@ -1,0 +1,16 @@
+#settings {
+  height: 100%;
+
+  >* {
+    display: inline-block;
+    box-sizing: border-box;
+    height: 100%;
+    vertical-align: top;
+  }
+
+	#sidebar {
+		width: 200px;
+		background-color: #eee;
+		border-right: #ddd;
+	}
+}

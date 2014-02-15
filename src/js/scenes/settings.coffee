@@ -41,3 +41,7 @@ class SettingsScene extends Marionette.Layout
   #   $window = $(window)
   #   margin = @$el.offset().top
   #   @$el.height($window.height() - margin)
+
+class WorkspaceSettingsView extends Marionette.ItemView
+  template: '#workspace-settings-template'
+  
