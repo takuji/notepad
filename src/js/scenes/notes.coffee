@@ -7,8 +7,8 @@ class NotesScene extends Marionette.Layout
   className: 'notes scene'
 
   regions:
-    note_list_region: '#sidebar'
-    note_region: '#main'
+    sidebar: '#sidebar'
+    main: '#main'
 
   keymapData:
     'J': 'nextNote'
@@ -26,8 +26,8 @@ class NotesScene extends Marionette.Layout
   onRender: ->
     note_list_view = new NoteListView(collection: @model.note_index)
     note_view      = new NoteView(model: @current_note)
-    @note_list_region.show(note_list_view)
-    @note_region.show(note_view)
+    @sidebar.show(note_list_view)
+    @main.show(note_view)
     @listenTo note_list_view, 'note:selected', @onNoteSelected
     @listenTo note_list_view, 'note:delete', @deleteNote
     # Load note index data
@@ -44,18 +44,20 @@ class NotesScene extends Marionette.Layout
     $window = $(window)
     margin = @$el.offset().top
     @$el.height($window.height() - margin)
+    console.log @sidebar.$el.width()
+    @main.$el.width($window.width() - @sidebar.$el.outerWidth())
 
   onNoteSelected: (note_info)->
     @model.getNoteAsync(note_info.id).then(
       (note)=>
         @current_note = note
-        @note_region.currentView.changeNote(@current_note))
+        @main.currentView.changeNote(@current_note))
 
   nextNote: ->
-    @note_list_region.currentView.selectNextNote()
+    @sidebar.currentView.selectNextNote()
 
   prevNote: ->
-    @note_list_region.currentView.selectPrevNote()
+    @sidebar.currentView.selectPrevNote()
 
   # Action to create a new note
   # - create a note data
@@ -69,7 +71,7 @@ class NotesScene extends Marionette.Layout
 
   # Action to open the note edit scene to start editing the current note
   editCurrentNote: ->
-    @note_list_region.currentView.editCurrentNote()
+    @sidebar.currentView.editCurrentNote()
 
   deleteCurrentNote: ->
     console.log 'delete current note'

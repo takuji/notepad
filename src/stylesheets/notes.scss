@@ -11,12 +11,14 @@
 
   #sidebar {
     width: 30%;
+    min-width: 200px;
+    max-width: 300px;
     border-right: 1px solid #ddd;
     overflow-y: scroll;
   }
 
   #main {
-    width: 70%;
+    // width: 70%;
     overflow-y: scroll;
   }
 

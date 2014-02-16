@@ -6,6 +6,8 @@
     "frame": true,
     "width": 960,
     "height": 720,
+    "min_width": 300,
+    "min_height": 200,
     "fullscreen": false
   },
   "dependencies": {

@@ -71,6 +71,7 @@ class WorkspaceSettingsView extends Marionette.ItemView
 class SettingsSidebarView extends Marionette.ItemView
   template: '#settings-sections-template'
   tagName: 'ul'
+  className: 'settings-section-list'
 
   events:
     'click li': 'onItemClicked'

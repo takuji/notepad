@@ -1,23 +1,26 @@
 @import "compass/css3/user-interface";
 
 .toolbar {
-	font-size: 16px;
+  position: relative;
+  font-size: 16px;
   @include user-select(none);
+  white-space: nowrap;
+  overflow: hidden;
 
-	.toolbar-item {
-		display: inline-block;
-		width: 50px;
-		padding: 10px;
-		text-align: center;
-		color: #444;
+  .toolbar-item {
+    display: inline-block;
+    width: 50px;
+    padding: 10px;
+    text-align: center;
+    color: #444;
 
-		&:hover {
-			background-color: #fafafa;
-		}
-	}
+    &:hover {
+      background-color: #fafafa;
+    }
+  }
 
-	.toolbar-item-group {
-		display: inline-block;
-		float: right;
-	}
+  .toolbar-item-group {
+    display: inline-block;
+    float: right;
+  }
 }
