@@ -18,6 +18,7 @@ class NotesScene extends Marionette.Layout
     'DELETE': 'deleteCurrentNote'
 
   initialize: ->
+    @active = false
     @current_note = null
     @keymap = Keymap.createFromData(@keymapData, @)
     $(window).on 'resize', => @_resize()
@@ -37,15 +38,19 @@ class NotesScene extends Marionette.Layout
     console.log 'NotesScene.onRender'
 
   onShow: ->
+    @active = true
     @_resize()
     console.log 'NotesScene.onShow'
 
+  onClose: ->
+    @active = false
+
   _resize: ->
-    $window = $(window)
-    margin = @$el.offset().top
-    @$el.height($window.height() - margin)
-    console.log @sidebar.$el.width()
-    @main.$el.width($window.width() - @sidebar.$el.outerWidth())
+    if @active
+      $window = $(window)
+      margin = @$el.offset().top
+      @$el.height($window.height() - margin)
+      @main.$el.width($window.width() - @sidebar.$el.outerWidth())
 
   onNoteSelected: (note_info)->
     @model.getNoteAsync(note_info.id).then(
