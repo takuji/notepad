@@ -11,7 +11,6 @@
   }
 
   #sidebar {
-    box-sizing: border-box;
     position: relative;
     width: 200px;
     background-color: #eee;
@@ -56,7 +55,6 @@
   width: 100%;
 
   textarea {
-    box-sizing: border-box;
     width: 100%;
     height: 100%;
     margin: 0;
@@ -69,7 +67,6 @@
 }
 
 .preview {
-  box-sizing: border-box;
   padding: 10px;
 }
 

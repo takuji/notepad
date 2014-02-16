@@ -4,7 +4,6 @@
 #notes {
   >* {
     display: inline-block;
-    box-sizing: border-box;
     height: 100%;
     vertical-align: top;
   }
@@ -49,7 +48,6 @@
 }
 
 .note-list-item {
-  box-sizing: border-box;
   position: relative;
   padding: 4px 6px 6px;
   border-bottom: 1px dotted #ddd;
