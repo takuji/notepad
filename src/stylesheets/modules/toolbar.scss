@@ -1,5 +1,8 @@
+@import "compass/css3/user-interface";
+
 .toolbar {
 	font-size: 16px;
+  @include user-select(none);
 
 	.toolbar-item {
 		display: inline-block;
