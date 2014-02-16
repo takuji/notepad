@@ -1,6 +1,12 @@
 {
   "name": "notepad",
   "main": "index.html",
+  "window": {
+  	"toolbar": true,
+  	"frame": true,
+  	"width": 960,
+  	"height": 720
+  },
   "dependencies": {
     "mkdirp": "~0.3.5",
     "nedb": "~0.10.3"

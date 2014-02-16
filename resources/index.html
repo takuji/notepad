@@ -83,9 +83,15 @@
 
   <script type="text/template" id="workspace-settings-template">
     <section>
-      <h2>Home Directory</h2>
-      <div><input type="text" value="<%= workspace.home_directory %>"></div>
+      <h2>Workspace Directory</h2>
+      <div><%= workspace.root_path %></div>
     </section>
+  </script>
+
+  <script type="text/template" id="settings-sections-template">
+    <% _.each(items, function(item){ %>
+      <li><a href="<%= item.path %>"><%= item.name %></a></div>
+    <% }); %>
   </script>
 
   <script type="text/template" id="plain-template">

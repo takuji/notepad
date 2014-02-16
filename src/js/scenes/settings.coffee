@@ -34,7 +34,7 @@ class SettingsScene extends Marionette.Layout
     # @model.getNoteIndex().then(
     #   (note_index)=> console.log "NOTE INDEX UPDATED"
     #   (error)=> console.log "NOTE INDEX NOT LOADED")
-    @sidebar.show new SettingsSidebarView()
+    @sidebar.show new SettingsSidebarView(collection: [])
     @changeSection 'workspace'
     console.log 'SettingsScene.onRender'
 
@@ -69,4 +69,21 @@ class WorkspaceSettingsView extends Marionette.ItemView
     console.log 'WorkspaceSettingsView.onShow'
 
 class SettingsSidebarView extends Marionette.ItemView
-  template: '#plain-template'
+  template: '#settings-sections-template'
+  tagName: 'ul'
+
+  events:
+    'click li': 'onItemClicked'
+
+  sections:
+    workspace:
+      path: '#settings/workspace'
+      name: 'Workspace'
+
+  initialize: ->
+    @collection = new Backbone.Collection()
+    _.each @sections, (attrs, name)=>
+      @collection.add(attrs)
+
+  onItemClicked: (e)->
+    console.log 'clicked!'
