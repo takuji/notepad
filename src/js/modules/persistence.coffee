@@ -23,7 +23,7 @@ class FileSystemRepository
         @settings
       (err)=>
         console.log 'failed to load the settings file. creating it.'
-        s = JSON.stringify(@settings.toJSON())
+        s = JSON.stringify(@settings.toJSON(), null, 2)
         FileUtils.spit(@getSettingsFilePath(), s)
         @settings)
 
