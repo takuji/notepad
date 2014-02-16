@@ -1,31 +1,18 @@
 class FileSystemRepository
 
   constructor: (options)->
-    @settings = new Settings()
+    @settings = options.settings
     @note_index_storage = null
     @deleted_notes_storage = null
 
   setupWorkspace: ->
-    @_prepareSettings()
-    .then(()=> @_createNotesDirectory())
-    .then(()=> 
+    @_createNotesDirectory()
+    .then(()=>
       @note_index_storage = new NoteIndexStorage(file_path: @getNoteIndexFilePath())
       @note_index_storage.prepare())
     .then(()=>
       @deleted_notes_storage = new NoteIndexStorage(file_path: @getDeletedNotesIndexFilePath())
       @deleted_notes_storage.prepare())
-
-  _prepareSettings: ->
-    FileUtils.slurp(@getSettingsFilePath()).then(
-      (s)=>
-        console.log "settings file loaded: #{s}"
-        @settings.set(JSON.parse(s))
-        @settings
-      (err)=>
-        console.log 'failed to load the settings file. creating it.'
-        s = JSON.stringify(@settings.toJSON(), null, 2)
-        FileUtils.spit(@getSettingsFilePath(), s)
-        @settings)
 
   _createNotesDirectory: ->
     FileUtils.createDirectory(@getNotesDirectory())
@@ -49,17 +36,8 @@ class FileSystemRepository
     FileUtils.slurp(@getNoteFilePath(note_id))
     .then((json)=> JSON.parse(json))
 
-  getHomeDirectory: ->
-    @settings.getHomeDirectory()
-
-  getSettingsFilePath: ->
-    "#{@getHomeDirectory()}/settings.json"
-
-  getWorkspaceDirectory: ->
-    @settings.getWorkspaceDirectory()
-
   getNotesDirectory: ->
-    "#{@getWorkspaceDirectory()}/notes"
+    "#{@settings.getWorkspaceDirectory()}/notes"
 
   getNoteIndexFilePath: ->
     "#{@getNotesDirectory()}/index.db"
@@ -72,7 +50,6 @@ class FileSystemRepository
 
   getNoteFilePath: (note_id)->
     "#{@getNoteDirectory(note_id)}/note.json"
-
 
   saveNoteIndexItem: (note_index_item)->
     if note_index_item.get('_id')

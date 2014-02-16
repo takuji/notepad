@@ -18,11 +18,12 @@ class NoteEditScene extends Marionette.Layout
     @current_note = null
     @keymap = Keymap.createFromData(@keymapData, @)
     @active = false
+    @settings = @model.settings.getSceneSettings('note_edit')
 
   onRender: ->
     if @current_note
       note_map = @current_note.getMap()
-      note_map_view = new NoteMapView(model: note_map, collection: note_map.getItems())
+      note_map_view = new NoteMapView(model: note_map, collection: note_map.getItems(), note_map_level: @settings.note_map_level)
       main_view = new NoteEditMain(model: @current_note)
       @sidebar.show(note_map_view)
       @main.show(main_view)
@@ -116,6 +117,12 @@ class NoteMapItemView extends Marionette.ItemView
   onClicked: ->
     @trigger 'clicked', @model
 
+  hide: ->
+    @$el.hide()
+
+  getLevel: ->
+    @model.get('depth')
+
 #
 # model: NoteMap
 #
@@ -125,8 +132,11 @@ class NoteMapView extends Marionette.CompositeView
   template: '#note-index-template'
   className: 'note-index'
 
-  initialize: ->
+  initialize: (options)->
+    console.log options
+    @note_map_level = options.note_map_level || 6
     @on 'itemview:clicked', @onItemClicked
+    console.log "INDENT LEVEL #{@note_map_level}"
 
   onRender: ->
     console.log "NoteMapView#onRender #{@$el.width()}"
@@ -136,7 +146,9 @@ class NoteMapView extends Marionette.CompositeView
   onItemClicked: (item_view)->
     @trigger 'clicked', item_view.model
 
-
+  onBeforeItemAdded: (view)->
+    if view.getLevel() > @note_map_level
+      view.hide()
 #
 #
 #

@@ -3,21 +3,21 @@ class Notepad extends Backbone.Model
     @settings = new Settings()
     @scenes = ['notes', 'note-edit']
     @current_scene = @scenes[0]
-    @repository = new FileSystemRepository()
+    @repository = new FileSystemRepository(settings: @settings)
     @notes      = new NoteCollection()
     @note_index = new NoteIndex()
     @note_index.listenTo @notes, 'add', @note_index.onNoteAdded
 
   prepareWorkspace: ->
-    @repository.setupWorkspace()
-    .then(()=> @_prepareSettingsFile())
+    @_prepareSettings()
+    .then(()=> @repository.setupWorkspace())
     .then(()=> @)
     .catch((error)=> throw error)
 
-  _prepareSettingsFile: ->
-
-
-  
+  _prepareSettings: ->
+    @settings.loadFile().then(
+      null
+      (err)=> @settings.creatDefaultFile())
 
   createNote: ->
     note = @notes.newNote()
@@ -86,21 +86,46 @@ class Settings extends Backbone.Model
   defaults: ->
     workspace:
       root_path: @defaultWorkspaceDirectory()
+    scenes:
+      note_edit:
+        note_map_level: 6
 
   initialize: ->
+
+  loadFile: ()->
+    FileUtils.slurp(@getFilePath()).then(
+      (s)=>
+        console.log "settings file loaded: #{s}"
+        @set(JSON.parse(s))
+        @)
+
+  creatDefaultFile: ->
+    s = JSON.stringify(@toJSON(), null, 2)
+    FileUtils.spit(@getFilePath(), s)
 
   # Returns the directory where the settings file is located
   getHomeDirectory: ->
     "#{process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE}/.notepad"
 
+  getFilePath: ->
+    "#{@getHomeDirectory()}/settings.json"
+
   defaultWorkspaceDirectory: ->
-    @getHomeDirectory()
+    "#{@getHomeDirectory()}/data"
 
   getWorkspaceDirectory: ->
     @get('workspace').root_path
 
   getNotesDirectory: ->
     "#{@defaultWorkspaceDirectory()}/notes"
+
+  getNoteEditSceneSettings: ->
+    @get('note_edit_scene')
+
+  getSceneSettings: (scene)->
+    console.log '------------------->>'
+    console.log @toJSON()
+    @get('scenes')[scene]
 
 #
 #
