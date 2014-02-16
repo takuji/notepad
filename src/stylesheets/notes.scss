@@ -3,6 +3,8 @@
 @import "note";
 
 #notes {
+  white-space: nowrap;
+  
   >* {
     display: inline-block;
     height: 100%;
