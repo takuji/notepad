@@ -3,6 +3,7 @@ class Router extends Backbone.Router
     'notes': 'list'
     'notes/new': 'newNote'
     'notes/:id/edit': 'edit'
+    'settings': 'settings'
 
   initialize: (option)->
     @app = option.app
@@ -19,6 +20,10 @@ class Router extends Backbone.Router
 
   newNote: ->
     @app.createNote
+
+  settings: ->
+    console.log 'settings'
+    @showScreen 'settings'
 
   showScreen: (scene_id)->
     @app.changeScene(scene_id)
@@ -50,6 +55,7 @@ class App extends Marionette.Application
     @scenes =
       notes: new NotesScene(model: notepad)
       note_edit: new NoteEditScene(model: notepad)
+      settings: new SettingsScene(model: notepad)
     @resize()
     $window = $(window)
     $window.on 'resize', => @resize()

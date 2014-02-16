@@ -15,6 +15,11 @@
       <a class="toolbar-item" href="#" id="toolbar-item-new-note">
         <i class="fa fa-plus"></i>
       </a>
+      <div class="toolbar-item-group">
+        <a class="toolbar-item" href="#settings">
+          <i class="fa fa-cog"></i>
+        </a>
+      </div>
     </div>
   </header>
   <div id="container">
@@ -70,6 +75,20 @@
 
   <script type="text/template" id="note-preview-template">
   	<article class="note"><%= html %></article>
+  </script>
+
+  <script type="text/template" id="settings-template">
+    <div id="sidebar"></div><div id="main">Main content</div>
+  </script>
+
+  <script type="text/template" id="workspace-settings-template">
+    <section>
+      <h2>Home Directory</h2>
+      <div><input type="text" value="<%= workspace.home_directory %>"></div>
+    </section>
+  </script>
+
+  <script type="text/template" id="plain-template">
   </script>
 
   <script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>

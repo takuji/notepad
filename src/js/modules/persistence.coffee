@@ -1,76 +1,78 @@
 class FileSystemRepository
-  settings:
-    root_path: "#{process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE}/.notepad"
 
   constructor: (options)->
-    {@root_path} = @settings
-    @note_index_storage = new NoteIndexStorage(file_path: @getNoteIndexFilePath())
-    @deleted_notes_storage = new NoteIndexStorage(file_path: @getDeletedNotesIndexFilePath())
-    console.log @root_path
+    @settings = new Settings()
+    @note_index_storage = null
+    @deleted_notes_storage = null
 
-  createWorkspace: ->
-    @_createHomeDirectory()
-    .then(()=> @note_index_storage.prepare())
-    .then(()=> @deleted_notes_storage.prepare())
+  setupWorkspace: ->
+    @_prepareSettings()
+    .then(()=> @_createNotesDirectory())
+    .then(()=> 
+      @note_index_storage = new NoteIndexStorage(file_path: @getNoteIndexFilePath())
+      @note_index_storage.prepare())
+    .then(()=>
+      @deleted_notes_storage = new NoteIndexStorage(file_path: @getDeletedNotesIndexFilePath())
+      @deleted_notes_storage.prepare())
 
-  _createHomeDirectory: ->
-    d = Q.defer()
-    mkdirp @getNotesDirectory(), (error)=>
-      if error
-        d.reject(error)
-      else
-        console.log "Directory #{@getNotesDirectory()} created."
-        d.resolve()
-    d.promise
+  _prepareSettings: ->
+    FileUtils.slurp(@getSettingsFilePath()).then(
+      (s)=>
+        console.log "settings file loaded: #{s}"
+        @settings.set(JSON.parse(s))
+        @settings
+      (err)=>
+        console.log 'failed to load the settings file. creating it.'
+        s = JSON.stringify(@settings.toJSON(), null, 2)
+        FileUtils.spit(@getSettingsFilePath(), s)
+        @settings)
 
-  prepareDirectory: (dir)->
-    d = Q.defer()
-    mkdirp dir, (error)=>
-      if error
-        d.reject(error)
-      else
-        d.resolve(dir)
-    d.promise
+  _createNotesDirectory: ->
+    FileUtils.createDirectory(@getNotesDirectory())
 
   saveNote: (note)->
     d = Q.defer()
-    @prepareDirectory(@getNoteDirectory(note))
+    FileUtils.createDirectory(@getNoteDirectory(note.id))
     .then((dir)=> @_saveNote(note))
     .then((note)=> d.resolve(note))
     .catch((error)=> d.reject(d))
     d.promise
 
   _saveNote: (note)->
-    file_path = @getNoteFilePath(note)
+    file_path = @getNoteFilePath(note.id)
     s = JSON.stringify(note.toJSON())
     fs.writeFileSync file_path, s, {encoding: 'utf-8'}
     console.log "Note is saved to #{file_path}"
     note
 
-  loadNote: (id)->
-    Q.fcall (=> @loadNoteSync(id))
+  loadNote: (note_id)->
+    FileUtils.slurp(@getNoteFilePath(note_id))
+    .then((json)=> JSON.parse(json))
 
-  loadNoteSync: (id)->
-    json = fs.readFileSync("#{@root_path}/notes/#{id}/note.json", 'utf-8')
-    JSON.parse(json)
+  getHomeDirectory: ->
+    @settings.getHomeDirectory()
 
-  getNoteDirectory: (note)->
-    "#{@root_path}/notes/#{note.id}"
+  getSettingsFilePath: ->
+    "#{@getHomeDirectory()}/settings.json"
 
-  getNoteFilePath: (note)->
-    "#{@getNoteDirectory(note)}/note.json"
+  getWorkspaceDirectory: ->
+    @settings.getWorkspaceDirectory()
 
   getNotesDirectory: ->
-    "#{@root_path}/notes"
+    "#{@getWorkspaceDirectory()}/notes"
 
-  getIndexFilePath: ->
-    "#{@getNotesDirectory()}/index.json"
+  getNoteIndexFilePath: ->
+    "#{@getNotesDirectory()}/index.db"
 
   getDeletedNotesIndexFilePath: ->
     "#{@getNotesDirectory()}/deleted_notes.db"
 
-  getNoteIndexFilePath: ->
-    "#{@getNotesDirectory()}/index.db"
+  getNoteDirectory: (note_id)->
+    "#{@getNotesDirectory()}/#{note_id}"
+
+  getNoteFilePath: (note_id)->
+    "#{@getNoteDirectory(note_id)}/note.json"
+
 
   saveNoteIndexItem: (note_index_item)->
     if note_index_item.get('_id')
@@ -161,15 +163,3 @@ class NoteIndexStorage
       else
         d.resolve(items)
     d.promise
-
-  # _hoge: (f, context, args)->
-  #   d = Q.defer()
-  #   callback = (err, result)=>
-  #     if err
-  #       d.reject(err)
-  #     else
-  #       d.resolve(result)
-  #   args.push callback
-  #   f.apply context, args
-  #   d.promise
-

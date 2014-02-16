@@ -1,6 +1,6 @@
 class Notepad extends Backbone.Model
   initialize: (attrs, options)->
-    @settings = {}
+    @settings = new Settings()
     @scenes = ['notes', 'note-edit']
     @current_scene = @scenes[0]
     @repository = new FileSystemRepository()
@@ -9,10 +9,15 @@ class Notepad extends Backbone.Model
     @note_index.listenTo @notes, 'add', @note_index.onNoteAdded
 
   prepareWorkspace: ->
-    @repository.createWorkspace().then(
-      ()=> @
-      (error)=>
-        throw error)
+    @repository.setupWorkspace()
+    .then(()=> @_prepareSettingsFile())
+    .then(()=> @)
+    .catch((error)=> throw error)
+
+  _prepareSettingsFile: ->
+
+
+  
 
   createNote: ->
     note = @notes.newNote()
@@ -73,6 +78,29 @@ class Notepad extends Backbone.Model
         @note_index
       (error)=>
         console.log error)
+
+#
+#
+#
+class Settings extends Backbone.Model
+  defaults: ->
+    workspace:
+      root_path: @defaultWorkspaceDirectory()
+
+  initialize: ->
+
+  # Returns the directory where the settings file is located
+  getHomeDirectory: ->
+    "#{process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE}/.notepad"
+
+  defaultWorkspaceDirectory: ->
+    @getHomeDirectory()
+
+  getWorkspaceDirectory: ->
+    @get('workspace').root_path
+
+  getNotesDirectory: ->
+    "#{@defaultWorkspaceDirectory()}/notes"
 
 #
 #
