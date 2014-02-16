@@ -2,10 +2,11 @@
   "name": "notepad",
   "main": "index.html",
   "window": {
-  	"toolbar": true,
-  	"frame": true,
-  	"width": 960,
-  	"height": 720
+    "toolbar": true,
+    "frame": true,
+    "width": 960,
+    "height": 720,
+    "fullscreen": false
   },
   "dependencies": {
     "mkdirp": "~0.3.5",
