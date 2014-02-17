@@ -123,8 +123,6 @@ class Settings extends Backbone.Model
     @get('note_edit_scene')
 
   getSceneSettings: (scene)->
-    console.log '------------------->>'
-    console.log @toJSON()
     @get('scenes')[scene]
 
 #
@@ -193,8 +191,6 @@ class Note extends Backbone.Model
       @_changed = true
       @set content: content, title: @_titleOfContent(content)
       @_compile()
-      console.log 'Note.updateContent'
-    console.log @attributes
 
   _updateTitle: ->
     @set title: @_titleOfContent(@get('content'))
