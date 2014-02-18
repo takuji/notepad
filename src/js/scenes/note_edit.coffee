@@ -155,7 +155,13 @@ class NoteMapView extends Marionette.CompositeView
 
   onContentParsed: (data)->
     note_map_items = _.map data, (attrs)=> new NoteMapItem(attrs)
-    @collection.reset(note_map_items)
+    if @collection.length == note_map_items.length
+      for item, i in note_map_items
+        unless @collection.at(i).isSame(item)
+          @collection.reset(note_map_items)
+          break
+    else
+      @collection.reset(note_map_items)
 
   onItemClicked: (item_view)->
     @trigger 'clicked', item_view.model

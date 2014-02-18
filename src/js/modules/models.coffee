@@ -221,6 +221,8 @@ class NoteMap extends Backbone.Collection
 #
 #
 class NoteMapItem extends Backbone.Model
+  isSame: (other)->
+    @get('title') == other.get('title') && @get('depth') == other.get('depth')
 
 #
 #
