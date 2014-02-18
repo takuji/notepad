@@ -20,7 +20,7 @@ if (!fs.existsSync(MOD_DIR)) {
 	fs.mkdirSync(MOD_DIR);
 }
 
-gulp.task('default', ['build-notepad.js', 'compass', 'copy-vendor', 'copy-resources', 'watch']);
+gulp.task('default', ['build-notepad.js', 'compass', 'copy-vendor', 'copy-resources', 'package', 'watch']);
 
 gulp.task('build-notepad.js', function() {
 	return gulp.src(['src/js/requirements.coffee', 'src/js/lib/*.coffee', 'src/js/modules/*.coffee', 'src/js/scenes/*.coffee', 'src/js/app.coffee'])
@@ -41,6 +41,7 @@ gulp.task('watch', function () {
   gulp.watch('src/js/**/*.coffee', ['build-notepad.js']);
   gulp.watch('src/stylesheets/**/*.scss', ['compass']);
   gulp.watch('resources/**/*', ['copy-resources']);
+  gulp.watch(DEST_DIR + '/**/*', ['package']);
 });
 
 gulp.task('package', function() {
@@ -61,7 +62,7 @@ gulp.task('package-mac', function() {
 });
 
 gulp.task('compass', function() {
-  return gulp.src('./src/stylesheets/notepad.scss')
-    .pipe(compass({config_file: './config.rb', css: DEST_DIR}))
+  return gulp.src('src/stylesheets/notepad.scss')
+    .pipe(compass({config_file: './config.rb', sass: 'src/stylesheets', css: DEST_DIR + '/stylesheets'}))
     .pipe(gulp.dest(DEST_DIR + '/stylesheets'));
 });

@@ -9,6 +9,7 @@
     display: inline-block;
     height: 100%;
     vertical-align: top;
+    white-space: normal;
   }
 
   #sidebar {
@@ -110,7 +111,7 @@
       font-size: 120%;
       color: #666;
       &:hover {
-        background-color: $border-color2;
+        background-color: #ddd;
       }
     }
   }
