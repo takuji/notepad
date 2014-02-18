@@ -22,8 +22,8 @@ class NoteEditScene extends Marionette.Layout
 
   onRender: ->
     if @current_note
-      note_map = @current_note.getMap()
-      note_map_view = new NoteMapView(model: note_map, collection: note_map.getItems(), note_map_level: @settings.note_map_level)
+      note_map = new NoteMap()
+      note_map_view = new NoteMapView(model: @current_note, collection: note_map, note_map_level: @settings.note_map_level)
       main_view = new NoteEditMain(model: @current_note)
       @sidebar.show(note_map_view)
       @main.show(main_view)
@@ -133,8 +133,10 @@ class NoteMapView extends Marionette.CompositeView
   className: 'note-index'
 
   initialize: (options)->
-    console.log options
     @note_map_level = options.note_map_level || 6
+    @note_map_worker = new Worker('js/note_map_worker.js')
+    @note_map_worker.onmessage = (e)=> @onContentParsed(e.data)
+    @listenTo @model, 'change:content', @onContentChanged
     @on 'itemview:clicked', @onItemClicked
     console.log "INDENT LEVEL #{@note_map_level}"
 
@@ -142,6 +144,18 @@ class NoteMapView extends Marionette.CompositeView
     console.log "NoteMapView#onRender #{@$el.width()}"
 
   onShow: ->
+    @_updateNoteMap()
+    console.log 'NoteMapView.onShow'
+
+  _updateNoteMap: ->
+    @note_map_worker.postMessage(@model.get('content'))
+
+  onContentChanged: (note)->
+    @_updateNoteMap()
+
+  onContentParsed: (data)->
+    note_map_items = _.map data, (attrs)=> new NoteMapItem(attrs)
+    @collection.reset(note_map_items)
 
   onItemClicked: (item_view)->
     @trigger 'clicked', item_view.model
@@ -159,6 +173,7 @@ class NoteEditorView extends Marionette.ItemView
   events:
     'keyup textarea': 'onKeyUp'
     'keydown textarea': 'onKeyDown'
+    'change textarea': 'onChanged'
 
   keymapData:
     'TAB': 'forwardHeadingLevel'
@@ -166,6 +181,8 @@ class NoteEditorView extends Marionette.ItemView
 
   initialize: ->
     @keymap = Keymap.createFromData(@keymapData, @)
+    @markdown_worker = new Worker('js/markdown_worker.js')
+    @markdown_worker.onmessage = (e)=> @onMarkdownWorkerMessage(e)
 
   onRender: ->
     @$textarea = @$('textarea')
@@ -176,7 +193,8 @@ class NoteEditorView extends Marionette.ItemView
     console.log 'NoteDeitorView.onShow'
 
   onKeyUp: ->
-    @model.updateContent(@$textarea.val())
+    if @model.get('content').length != @$textarea.val().length
+      @updateModel()
 
   onKeyDown: (e)->
     key = Key.fromEvent(e)
@@ -184,6 +202,14 @@ class NoteEditorView extends Marionette.ItemView
     if action
       e.preventDefault()
       action.fire()
+
+  onMarkdownWorkerMessage: (e)->
+    @model.set html: e.data
+
+  updateModel: ->
+    content = @$textarea.val()
+    @model.updateContent(content)
+    @markdown_worker.postMessage(content)
 
   focus: ->
     @$('textarea').focus()

@@ -190,7 +190,7 @@ class Note extends Backbone.Model
     if content != @get('content')
       @_changed = true
       @set content: content, title: @_titleOfContent(content)
-      @_compile()
+      # @_compile()
 
   _updateTitle: ->
     @set title: @_titleOfContent(@get('content'))
@@ -215,47 +215,16 @@ class Note extends Backbone.Model
 #
 #
 #
-class NoteMap extends Backbone.Model
-  initialize: ->
-    @index_items = new Backbone.Collection()
+class NoteMap extends Backbone.Collection
 
-  attachNote: (note)->
-    @stopListening()
-    @listenTo note, 'change:content', => @_updateItems(note.get('content'))
-    @listenTo note, 'change:title', => @_updateTitle(note.get('title'))
-    @_updateItems(note.get('content'))
-    @_updateTitle(note.get('title'))
-    @
-
-  getItems: ->
-    @index_items
-
-  _updateItems: (content)->
-    @index_items.reset(@_createIndexListFromContent(content))
-
-  _updateTitle: (title)->
-    @set(title: title)
-
-  _createIndexListFromContent: (markdownString)->
-    if markdownString
-      lines = markdownString.split("\n")
-      lines_with_index = $.map(lines, (line, i)->{title: line, line: i + 1})
-      indexes = $.grep(lines_with_index, (title_and_index, i)->title_and_index.title.match("^#+"))
-      $.map(indexes, (idx)->
-        idx.title.match(/^(#+)(.*)$/)
-        title = $.trim(RegExp.$2)
-        depth = RegExp.$1.length
-        new NoteMapItem($.extend(idx, {depth: depth, title: title}))
-      )
-    else
-      []
-
-  hoge: ->
-    alert 'Hoge!'
-
+#
+#
+#
 class NoteMapItem extends Backbone.Model
 
-
+#
+#
+#
 class NoteCollection extends Backbone.Collection
   initialize: ->
     console.log @
