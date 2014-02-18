@@ -2,10 +2,10 @@
 
 # Set this to the root of your project when deployed:
 http_path = "/"
-css_dir = "build/src/stylesheets"
+css_dir = "build/app.nw/stylesheets"
 sass_dir = "src/stylesheets"
-images_dir = "build/src/images"
-javascripts_dir = "build/src/js"
+images_dir = "build/app.nw/images"
+javascripts_dir = "build/app.nw/js"
 
 # You can select your preferred output style here (can be overridden via the command line):
 # output_style = :expanded or :nested or :compact or :compressed
