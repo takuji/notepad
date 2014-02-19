@@ -225,7 +225,7 @@ class NoteEditorView extends Marionette.ItemView
 
   goToLine: (line_no)->
     @moveCaretToLine(line_no)
-    @scrollTo(line_no)
+    @$textarea.scrollToCaretPos()
     console.log "NoteEditorView.goToLine #{line_no}"
 
   moveCaretToLine: (line_no)->
@@ -239,14 +239,6 @@ class NoteEditorView extends Marionette.ItemView
       pos = newLinePos + 1
     newLinePos = text.indexOf("\n", pos)
     {start: pos, end: newLinePos}
-
-  scrollTo: (line_no)->
-    y0 = @$textarea.offset().top
-    content_height = @$textarea.textareaHelper('height')
-    line_count = @lineCount()
-    y  = content_height * (line_no - 1) / line_count
-    console.log "line_no=#{line_no}, y0=#{y0}, h=#{content_height}, lines=#{line_count}, y=#{y}"
-    @$textarea.scrollTop(Math.floor(y))
 
   lineCount: ->
     @$textarea.val().split("\n").length

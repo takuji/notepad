@@ -57,3 +57,13 @@ $.fn.extend
       }
     else
       prevPos
+
+  scrollToCaretPos: ->
+    cur_pos = @getCaretPosition()
+    @setCaretPosition(0)
+    base_pos = @textareaHelper('caretPos')
+    @setCaretPosition(cur_pos)
+    target_pos = @textareaHelper('caretPos')
+    y = target_pos.top - base_pos.top
+    console.log y
+    @scrollTop(y)
