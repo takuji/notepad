@@ -73,8 +73,8 @@
 .note-index {
   position: absolute;
   top: 0;
-  bottom: 4px;
-  left: 4px;
+  // bottom: 4px;
+  // left: 4px;
   right: 0;
   //background-color: $index-background-color;
   overflow: scroll;
@@ -91,16 +91,16 @@
 
     >li {
       cursor: pointer;
-      padding: 2px 4px;
-      //white-space: nowrap;
-      font-size: 10px;
+      font-size: 12px;
+      padding: 5px;
+      @include border-radius(4px);
 
       .title {
         padding: 0 5px;
       }
 
       &:hover {
-        background-color: #f8e0e0;
+        background-color: #fff;
       }
 
       i {
@@ -109,35 +109,33 @@
 
       &[data-depth="1"] {
         margin-top: 8px;
-        font-size: 100%;
+        font-size: 13px;
         color: #000;
       }
 
       &[data-depth="2"] {
-        padding-left: 20px;
-        font-size: 90%;
+        margin-left: 1em;
         color: #222;
       }
 
       &[data-depth="3"] {
         color: #444;
-        font-size: 80%;
-        padding-left: 30px;
+        margin-left: 2em;
       }
 
       &[data-depth="4"] {
         color: #666;
-        padding-left: 40px;
+        margin-left: 3em;
       }
 
       &[data-depth="5"] {
         color: #666;
-        padding-left: 50px;
+        margin-left: 4em;
       }
 
       &[data-depth="6"] {
         color: #666;
-        padding-left: 60px;
+        margin-left: 5em;
       }
 
     }
