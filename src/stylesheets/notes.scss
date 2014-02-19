@@ -16,13 +16,14 @@
     width: 30%;
     min-width: 200px;
     max-width: 300px;
-    border-right: 1px solid #ddd;
+    // border-right: 1px solid #ddd;
     overflow-y: scroll;
   }
 
   #main {
     // width: 70%;
     overflow-y: scroll;
+    background-color: #f8f8f8
   }
 
   .note {
@@ -31,7 +32,6 @@
   }
 
   .note-empty {
-    background-color: #f8f8f8;
     height: 100%;
   }
 }
@@ -57,7 +57,7 @@
 .note-list-item {
   position: relative;
   padding: 6px;
-  border-bottom: 1px dotted #ddd;
+  // border-bottom: 1px dotted #ddd;
   cursor: pointer;
 
   &:last-child {
