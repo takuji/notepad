@@ -221,8 +221,19 @@ class NoteMap extends Backbone.Collection
 #
 #
 class NoteMapItem extends Backbone.Model
+  initialize: (attrs)->
+    unless attrs.line || attrs.title || attrs.depth
+      throw new Error("Required parameter is missing")
+
+  # note map items are the same if their title and depth are equal respectively.
   isSame: (other)->
     @get('title') == other.get('title') && @get('depth') == other.get('depth')
+
+  adjustLine: (other)->
+    if @isSame(other)
+      if @get('line') != other.get('line')
+        @set 'line', other.get('line') if @get('line') != other.get('line')
+
 
 #
 #
