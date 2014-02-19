@@ -6,9 +6,11 @@
   }
 
   h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
     font-size: 190%;
-    margin-top: 40px;
-    margin-bottom: 10px;
+    // margin-top: 40px;
+    // margin-bottom: 10px;
 
     &:first-child {
       margin-top: 10px;
@@ -16,13 +18,13 @@
   }
 
   h2 {
-    font-size: 140%;
-    margin-bottom: 10px;
+    font-size: 1.5em;
+    margin: 0.83em 0;
   }
 
   h3 {
-    font-size: 115%;
-    margin-bottom: 10px;
+    font-size: 1.17em;
+    margin: 1em 0;
   }
 
   h4 {
@@ -40,8 +42,24 @@
     margin-bottom: 5px;
   }
 
-  pre > code {
-    background: whitesmoke;
+  pre, code {
+    font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+  }
+
+  pre {
+    //--- from bootstrap
+    display: block;
+    padding: 9.5px;
+    margin: 0 0 10px;
+    //font-size: 13px;
+    line-height: 1.428571429;
+    word-break: break-all;
+    word-wrap: break-word;
+    color: #333333;
+    background-color: whitesmoke;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    //--- end
   }
 
   p {
@@ -55,5 +73,10 @@
     li {
 
     }
+  }
+
+  pre {
+    font-family: monospace;
+    margin: 1em 0;
   }
 }
