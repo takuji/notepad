@@ -87,10 +87,18 @@ class NoteEditMain extends Marionette.Layout
     preview = new NotePreviewView(model: @model)
     @editor.show(editor)
     @preview.show(preview)
+    @listenTo editor, 'scrolled', @onEditorScrolled
     console.log "NoteEditorView#onRender #{@$el.width()}"
 
   onShow: ->
     console.log "NoteEditMain.onShow"
+
+  onEditorScrolled: (percent)->
+    h1 = @preview.$el.height()
+    h2 = @preview.currentView.$el.outerHeight()
+    if h2 > h1
+      d = percent * (h2 - h1)
+      @preview.$el.scrollTop(d)
 
   resize: ->
     @editor.$el.width(@$el.width() - @preview.$el.width())
@@ -182,7 +190,7 @@ class NoteEditorView extends Marionette.ItemView
   events:
     'keyup textarea': 'onKeyUp'
     'keydown textarea': 'onKeyDown'
-    'change textarea': 'onChanged'
+    'scroll textarea': 'onScrolled'
 
   keymapData:
     'TAB': 'forwardHeadingLevel'
@@ -196,6 +204,7 @@ class NoteEditorView extends Marionette.ItemView
   onRender: ->
     @$textarea = @$('textarea')
     @$textarea.val(@model.get('content'))
+    @$textarea.scroll((e)=> @onScrolled(e))
     console.log 'NoteEditorView.onRender'
 
   onShow: ->
@@ -211,6 +220,13 @@ class NoteEditorView extends Marionette.ItemView
     if action
       e.preventDefault()
       action.fire()
+
+  onScrolled: (e)->
+    h1 = @$textarea.outerHeight()
+    h2 = @$textarea.prop('scrollHeight')
+    if h2 > h1
+      percent = @$textarea.scrollTop() / (h2 - h1)
+      @trigger 'scrolled', percent
 
   onMarkdownWorkerMessage: (e)->
     @model.set html: e.data
@@ -316,6 +332,9 @@ class NotePreviewView extends Marionette.ItemView
 
   serializeData: ->
     {html: @html}
+
+  onRender: ->
+    @$article = @$('article.note')
 
   onShow: ->
     console.log 'NotePreviewView.onShow'
