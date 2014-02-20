@@ -73,13 +73,13 @@
 .note-index {
   position: absolute;
   top: 0;
-  // bottom: 4px;
-  // left: 4px;
+  bottom: 0px;
+  left: 0px;
   right: 0;
   //background-color: $index-background-color;
   overflow: scroll;
   //border: 1px #ddd solid;
-  border-right: 1px $border-color1 solid;
+  //border-right: 1px $border-color1 solid;
   //@include border-radius(10px);
   //@include box-shadow(rgba(#ccc, 0.5) 0px 0px 4px 2px inset);
   //@include border-radius(6px);
