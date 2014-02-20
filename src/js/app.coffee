@@ -47,7 +47,7 @@ class Toolbar extends Backbone.View
 #
 class App extends Marionette.Application
 
-  init: (notepad)->
+  prepareUI: (notepad)->
     @keymaps =
       global: new Keymap()
       scene: null
@@ -89,13 +89,21 @@ class App extends Marionette.Application
     if action
       action.fire()
 
-notepad = new Notepad()
-notepad.prepareWorkspace().then(
-  (notepad)->
-    app = new App()
-    app.addInitializer (options)->
-      app.init(notepad)
-    app.start()
-  (error)->
-    console.log error)
+  onClose: ->
+    @scenes.note_edit.saveCurrentNote()
+
+app = new App()
+app.addInitializer (options)->
+  notepad = new Notepad()
+  notepad.prepareWorkspace().then(
+    (notepad)->
+      app.prepareUI(notepad)
+    (error)->
+      console.log error)
+app.start()
+
+gui = require('nw.gui')
+win = gui.Window.get()
+win.on 'close', ->
+  app.onClose().finally(()-> win.close(true))
 

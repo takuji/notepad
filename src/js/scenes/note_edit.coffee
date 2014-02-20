@@ -61,9 +61,8 @@ class NoteEditScene extends Marionette.Layout
         @current_note = note)
 
   saveCurrentNote: ->
-    if @current_note
-      console.log 'Saving...'
-      @model.saveNote(@current_note)
+    console.log 'Saving...'
+    @model.saveNote(@current_note)
 
   saveAndQuit: ->
     @model.saveNote(@current_note).then(

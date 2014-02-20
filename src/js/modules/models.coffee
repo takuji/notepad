@@ -41,7 +41,7 @@ class Notepad extends Backbone.Model
 
   # Save a note and update it's index
   saveNote: (note)->
-    if note.isModified()
+    if note && note.isModified()
       @repository.saveNote(note).then(
         ()=>
           note.onSaved()
