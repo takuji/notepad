@@ -9,10 +9,14 @@ class Notepad extends Backbone.Model
     @note_index.listenTo @notes, 'add', @note_index.onNoteAdded
 
   prepareWorkspace: ->
-    @_prepareSettings()
+    @_prepareHomeDirectory()
+    .then(()=> @_prepareSettings())
     .then(()=> @repository.setupWorkspace())
     .then(()=> @)
     .catch((error)=> throw error)
+
+  _prepareHomeDirectory: ->
+    FileUtils.createDirectory(@settings.getHomeDirectory())
 
   _prepareSettings: ->
     @settings.loadFile().then(
