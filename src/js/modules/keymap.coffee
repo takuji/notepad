@@ -8,7 +8,6 @@ class Keymap
     @key[key.ctrl][key.shift][key.code]
 
   set: (key, action)->
-    console.log "Key Added #{key}"
     @key[key.ctrl][key.shift][key.code] = action
 
 Keymap.createFromData = (keymap_data, context)->

@@ -5,6 +5,8 @@ $text-color1: #333;
 $text-color2: #666600;
 $index-mark-color: #484;
 
+@import "compass/css3";
+
 html {
 
 }
@@ -15,4 +17,18 @@ body {
 
 * {
 	box-sizing: border-box;
+}
+
+button {
+	padding: 10px 14px;
+	border: 1px solid #aaa;
+	@include border-radius(6px);
+	background-color: #fff;
+	outline-width: 0;
+
+	&:hover {
+		border-color: #00f;
+		color: #00f;
+		cursor: pointer;
+	}
 }

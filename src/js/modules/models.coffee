@@ -17,7 +17,7 @@ class Notepad extends Backbone.Model
   _prepareSettings: ->
     @settings.loadFile().then(
       null
-      (err)=> @settings.creatDefaultFile())
+      (err)=> @settings.save())
 
   createNote: ->
     note = @notes.newNote()
@@ -124,6 +124,13 @@ class Settings extends Backbone.Model
 
   getSceneSettings: (scene)->
     @get('scenes')[scene]
+
+  changeWorkspaceDirectory: (path)->
+    @get('workspace').root_path = path
+
+  save: ->
+    s = JSON.stringify(@toJSON(), null, 2)
+    FileUtils.spit(@getFilePath(), s)
 
 #
 #

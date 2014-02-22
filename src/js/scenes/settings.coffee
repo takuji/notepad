@@ -59,6 +59,10 @@ class WorkspaceSettingsView extends Marionette.ItemView
   template: '#workspace-settings-template'
   className: 'settings-section'
 
+  events:
+    'change #workspace-root_path': 'onRootPathChanged'
+    'click #save-button': 'onSaveButtonClicked'
+
   initialize: ->
     console.log @model.toJSON()
   
@@ -67,6 +71,17 @@ class WorkspaceSettingsView extends Marionette.ItemView
 
   onShow: ->
     console.log 'WorkspaceSettingsView.onShow'
+
+  onRootPathChanged: (e)->
+    console.log 'WorkspaceSettingsView.onRootPathChanged'
+    path = e.target.files[0].path
+    @model.changeWorkspaceDirectory(path)
+    @render()
+
+  onSaveButtonClicked: (e)->
+    @model.save()
+    location.href = 'index.html'
+
 
 class SettingsSidebarView extends Marionette.ItemView
   template: '#settings-sections-template'
