@@ -253,7 +253,7 @@ class NoteCollection extends Backbone.Collection
     note
 
   _nextNoteId: ->
-    Date.now()
+    cuid()
 
   onNoteAdded: (note)->
     console.log "Note #{note.id} added"

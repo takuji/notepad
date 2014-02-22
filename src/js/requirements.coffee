@@ -5,3 +5,4 @@ Datastore = require('nedb')
 gui = require('nw.gui')
 Shell = gui.Shell
 Window = gui.Window
+cuid = require('cuid')
