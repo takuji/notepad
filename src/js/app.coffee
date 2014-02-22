@@ -102,8 +102,7 @@ app.addInitializer (options)->
       console.log error)
 app.start()
 
-gui = require('nw.gui')
-win = gui.Window.get()
+win = Window.get()
 win.on 'close', ->
   app.onClose().finally(()-> win.close(true))
 
