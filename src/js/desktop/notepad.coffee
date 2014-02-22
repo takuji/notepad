@@ -7,11 +7,13 @@ class Notepad extends Backbone.Model
     @notes      = new NoteCollection()
     @note_index = new NoteIndex()
     @note_index.listenTo @notes, 'add', @note_index.onNoteAdded
+    @historian = new Historian(settings: @settings)
 
   prepareWorkspace: ->
     @_prepareHomeDirectory()
     .then(()=> @_prepareSettings())
     .then(()=> @repository.setupWorkspace())
+    .then(()=> @historian.prepare())
     .then(()=> @)
     .catch((error)=> throw error)
 
@@ -25,7 +27,11 @@ class Notepad extends Backbone.Model
 
   createNote: ->
     note = @notes.newNote()
-    @saveNote(note).then(
+    @saveNote(note)
+    .then(()=>
+      event = new NoteHistoryEvent(note: note, event: 'create')
+      @historian.addEvent(event))
+    .then(
       ()=> note)
 
   getNoteAsync: (note_id)->
@@ -61,10 +67,14 @@ class Notepad extends Backbone.Model
   deleteNote: (note_id)->
     index_item = @note_index.get(note_id)
     if index_item
-      @repository.deleteNoteIndexItem(index_item).then(
-        ()=>
-          @note_index.remove(index_item)
-          console.log "Note #{note_id} is moved to the deleted notes collection")
+      note = @notes.get(note_id)
+      @repository.deleteNoteIndexItem(index_item)
+      .then(()=>
+        @note_index.remove(index_item)
+        console.log "Note #{note_id} is moved to the deleted notes collection")
+      .then(()=>
+        event = new NoteHistoryEvent(note: note, event: 'delete')
+        @historian.addEvent(event))
 
   getNoteIndex: ->
     Q.fcall =>
