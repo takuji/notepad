@@ -320,7 +320,6 @@ class NotePreviewView extends Marionette.ItemView
 
   events:
     'click a': 'onLinkClicked'
-    'mouseover': 'onMouseOver'
 
   initialize: ->
     @listenTo @model, 'change:content', @onNoteUpdated
@@ -332,12 +331,7 @@ class NotePreviewView extends Marionette.ItemView
 
   onLinkClicked: (e)->
     e.preventDefault()
-    url = $(e.target).attr('href')
-    Shell.openExternal url
-    console.log url
-
-  onMouseOver: (e)->
-    console.log 'mouseover'
+    Shell.openExternal $(e.target).attr('href')
 
   updateHtml: ->
     @html = marked(@model.get('content') || '')
