@@ -93,6 +93,8 @@ class Settings extends Backbone.Model
     scenes:
       note_edit:
         note_map_level: 6
+    toolbar:
+      dev_tools: false
 
   initialize: ->
 
@@ -128,6 +130,9 @@ class Settings extends Backbone.Model
 
   getSceneSettings: (scene)->
     @get('scenes')[scene]
+
+  getToolbarSettings: ->
+    @get('toolbar')
 
   changeWorkspaceDirectory: (path)->
     @get('workspace').root_path = path

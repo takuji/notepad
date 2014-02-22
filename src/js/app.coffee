@@ -34,13 +34,22 @@ class Router extends Backbone.Router
 class Toolbar extends Backbone.View
   events:
     'click #toolbar-item-new-note': 'onNewNoteClicked'
+    'click #dev-tools': 'onDevToolsClicked'
+
+  initialize: ->
+    settings = @model.settings.getToolbarSettings()
+    if settings.dev_tools
+      @$('#dev-tools').css('display', 'inline-block')
 
   onNewNoteClicked: (e)->
     @model.createNote().then(
       (note)=>
         location.href = "#notes/#{note.id}/edit")
 
-
+  onDevToolsClicked: (e)->
+    e.preventDefault()
+    Window.get().showDevTools()
+    console.log 'Toolbar.onNewNoteClicked'
 
 #
 #
