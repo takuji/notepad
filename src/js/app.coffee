@@ -78,7 +78,25 @@ class App extends Marionette.Application
   resize: ->
     $scene = $('#scene')
     margin = $scene.offset().top
-    $scene.height($(window).height() - margin)
+    $window = $(window)
+    $scene.height($window.height() - margin)
+
+  saveWindowSize: (win)->
+    size =
+      x: win.x
+      y: win.y
+      width: win.width
+      height: win.height
+    localStorage.window_size = JSON.stringify(size)
+    console.log localStorage.window_size
+
+  loadWindowSize: (win)->
+    json = localStorage.window_size
+    if json
+      size = JSON.parse(json)
+      if size.x? && size.y? && size.width? && size.height?
+        win.moveTo(size.x, size.y)
+        win.resizeTo(size.width, size.height)
 
   onKeyDown: (e)->
     key = Key.fromEvent(e)
@@ -93,16 +111,22 @@ class App extends Marionette.Application
     @scenes.note_edit.saveCurrentNote()
 
 app = new App()
+win = Window.get()
+
+win.on 'close', ->
+  app.onClose().finally(()-> win.close(true))
+win.on 'move', (x, y)->
+  app.saveWindowSize(win)
+win.on 'resize', (w, h)->
+  app.saveWindowSize(win)
+
 app.addInitializer (options)->
   notepad = new Notepad()
+  app.loadWindowSize(win)
   notepad.prepareWorkspace().then(
     (notepad)->
       app.prepareUI(notepad)
     (error)->
       console.log error)
 app.start()
-
-win = Window.get()
-win.on 'close', ->
-  app.onClose().finally(()-> win.close(true))
 
