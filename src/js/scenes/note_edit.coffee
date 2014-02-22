@@ -318,6 +318,9 @@ class NotePreviewView extends Marionette.ItemView
   template: '#note-preview-template'
   className: 'preview'
 
+  events:
+    'click a': 'onLinkClicked'
+
   initialize: ->
     @listenTo @model, 'change:content', @onNoteUpdated
     @updateHtml()
@@ -325,6 +328,10 @@ class NotePreviewView extends Marionette.ItemView
   onNoteUpdated: ->
     @updateHtml()
     @render()
+
+  onLinkClicked: (e)->
+    e.preventDefault()
+    Shell.openExternal $(e.target).attr('href')
 
   updateHtml: ->
     @html = marked(@model.get('content') || '')
@@ -334,6 +341,7 @@ class NotePreviewView extends Marionette.ItemView
 
   onRender: ->
     @$article = @$('article.note')
+    console.log 'NotePreviewView.onRender'
 
   onShow: ->
     console.log 'NotePreviewView.onShow'

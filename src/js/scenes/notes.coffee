@@ -239,6 +239,13 @@ class NoteView extends Marionette.ItemView
     else
       _.template $('#note-empty-template').html(), {}
 
+  events:
+    'click a': 'onLinkClicked'
+
+  onLinkClicked: (e)->
+    e.preventDefault()
+    Shell.openExternal $(e.target).attr('href')
+
   serializeData: ->
     if @model
       @model.toJSON()
