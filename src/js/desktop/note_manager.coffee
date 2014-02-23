@@ -1,4 +1,4 @@
-class FileSystemRepository
+class NoteManager
 
   constructor: (options)->
     @settings = options.settings
@@ -51,6 +51,9 @@ class FileSystemRepository
   getNoteFilePath: (note_id)->
     "#{@getNoteDirectory(note_id)}/note.json"
 
+  getNoteHistoryFilePath: (note_id)->
+    "#{@getNoteDirectory(note_id)}/history.db"
+
   saveNoteIndexItem: (note_index_item)->
     if note_index_item.get('_id')
       @note_index_storage.update(note_index_item)
@@ -60,9 +63,23 @@ class FileSystemRepository
   loadNoteIndex: ->
     @note_index_storage.getAll()
 
+  loadActiveNoteIndex: ->
+    @note_index_storage.onlyActive()
+
   deleteNoteIndexItem: (note_index_item)->
-    @deleted_notes_storage.add(note_index_item)
-    .then(() => @note_index_storage.destroy(note_index_item))
+    note_index_item.delete()
+    @note_index_storage.update(note_index_item)
+
+  addEvent: (note_event)->
+    console.log note_event
+    d = Q.defer()
+    db = new Datastore(filename: @getNoteHistoryFilePath(note_event.get('note_id')), autoload: true)
+    db.insert note_event.toJSON(), (err, item)=>
+      if err
+        d.reject(err)
+      else
+        d.resolve(note_event)
+    d.promise
 
 #
 #
@@ -135,6 +152,15 @@ class NoteIndexStorage
   getAll: (options)->
     d = Q.defer()
     @db.find({}).sort({updated_at: -1}).exec (err, items)=>
+      if err
+        d.reject(err)
+      else
+        d.resolve(items)
+    d.promise
+
+  onlyActive: (options)->
+    d = Q.defer()
+    @db.find({deleted: {$ne: true}}).sort({updated_at: -1}).exec (err, items)=>
       if err
         d.reject(err)
       else

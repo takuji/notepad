@@ -32,7 +32,7 @@ class NotesScene extends Marionette.Layout
     @listenTo note_list_view, 'note:selected', @onNoteSelected
     @listenTo note_list_view, 'note:delete', @deleteNote
     # Load note index data
-    @model.getNoteIndex().then(
+    @model.getActiveNoteIndex().then(
       (note_index)=> console.log "NOTE INDEX UPDATED"
       (error)=> console.log "NOTE INDEX NOT LOADED")
     console.log 'NotesScene.onRender'
@@ -99,6 +99,7 @@ class NoteListItemView extends Marionette.ItemView
     'dblclick': 'onDoubleClicked'
 
   initialize: ->
+    @listenTo @model, 'change', @render
 
   serializeData: ->
     _.extend @model.toJSON(), updated_at: moment(@model.get('updated_at')).format('YYYY/MM/DD')
@@ -115,6 +116,9 @@ class NoteListItemView extends Marionette.ItemView
     @editNote()
 
   onRender: ->
+    if @model.get('deleted')
+      @$el.hide()
+      console.log "Note #{@model.id} is hidden because it is deleted."
     console.log 'NoteListItemView.onRender'
 
   select: ->
@@ -163,7 +167,7 @@ class NoteListView extends Marionette.CollectionView
     @trigger 'note:delete', view.model.id
 
   onItemRemoved: (itemView)->
-    console.log "NoteListView.itemRemoved #{itemView.model.id}"
+    #console.log "NoteListView.itemRemoved #{itemView.model.id}"
 
   onClose: ->
     console.log 'NoteListView.onClose'

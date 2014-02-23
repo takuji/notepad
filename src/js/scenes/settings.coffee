@@ -24,16 +24,6 @@ class SettingsScene extends Marionette.Layout
     $(window).on 'resize', => @_resize()
 
   onRender: ->
-    # note_list_view = new NoteListView(collection: @model.note_index)
-    # note_view      = new NoteView(model: @current_note)
-    # @note_list_region.show(note_list_view)
-    # @note_region.show(note_view)
-    # @listenTo note_list_view, 'note:selected', @onNoteSelected
-    # @listenTo note_list_view, 'note:delete', @deleteNote
-    # # Load note index data
-    # @model.getNoteIndex().then(
-    #   (note_index)=> console.log "NOTE INDEX UPDATED"
-    #   (error)=> console.log "NOTE INDEX NOT LOADED")
     @sidebar.show new SettingsSidebarView(collection: [])
     @changeSection 'workspace'
     console.log 'SettingsScene.onRender'

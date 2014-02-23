@@ -4,6 +4,7 @@ class Router extends Backbone.Router
     'notes/new': 'newNote'
     'notes/:id/edit': 'edit'
     'settings': 'settings'
+    'history': 'history'
 
   initialize: (option)->
     @app = option.app
@@ -22,8 +23,10 @@ class Router extends Backbone.Router
     @app.createNote
 
   settings: ->
-    console.log 'settings'
     @showScreen 'settings'
+
+  history: ->
+    @showScreen 'history'
 
   showScreen: (scene_id)->
     @app.changeScene(scene_id)
@@ -42,6 +45,7 @@ class Toolbar extends Backbone.View
       @$('#dev-tools').css('display', 'inline-block')
 
   onNewNoteClicked: (e)->
+    console.log 'Toolbar.onNewNoteClicked'
     @model.createNote().then(
       (note)=>
         location.href = "#notes/#{note.id}/edit")
@@ -65,6 +69,7 @@ class App extends Marionette.Application
       notes: new NotesScene(model: notepad)
       note_edit: new NoteEditScene(model: notepad)
       settings: new SettingsScene(model: notepad)
+      history: new HistoryScene(model: notepad)
     @resize()
     $window = $(window)
     $window.on 'resize', => @resize()

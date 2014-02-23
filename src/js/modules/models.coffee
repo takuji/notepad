@@ -36,6 +36,12 @@ class NoteIndexItem extends Backbone.Model
     console.log "Note index of #{note.id} updated"
     console.log @attributes
 
+  delete: ->
+    @set deleted: true
+
+  isActive: ->
+    @get('deleted') != true
+
 NoteIndexItem.fromNote = (note)->
   new NoteIndexItem(
     id: note.id

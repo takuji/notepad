@@ -15,6 +15,9 @@
       <a class="toolbar-item" href="#" id="toolbar-item-new-note">
         <i class="fa fa-plus"></i>
       </a>
+      <a class="toolbar-item" href="#history" id="toolbar-item-history">
+        <i class="fa fa-clock-o"></i>
+      </a>
       <div class="toolbar-item-group">
         <a class="toolbar-item" href="#" id="dev-tools">
           <i class="fa fa-wrench"></i>
@@ -102,6 +105,18 @@
   </script>
 
   <script type="text/template" id="plain-template">
+  </script>
+
+  <script type="text/template" id="history-scene-template">
+    <div id="main">Main content</div><div id="sub"></div>
+  </script>
+
+  <script type="text/template" id="timeline-item-view-template">
+    <div>
+      <span><%= datetime %></span>
+      <a href="#notes/<%= id %>/edit"><%= title %></a>
+      <span><%= event.code %></span>
+    </div>
   </script>
 
   <script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>

@@ -1,4 +1,7 @@
-class Historian
+#
+#
+#
+class HistoryManager
   constructor: (options)->
     @settings = options.settings
     @history_file = null
@@ -18,12 +21,15 @@ class Historian
     "#{@getHistoryDirectory()}/current.db"
 
   addEvent: (history_event)->
-    console.log 'Historian.addEvent'
+    console.log 'HistoryManager.addEvent'
     @history_file.add(history_event)
 
   loadHistoryEvents: ->
-    @note_index_storage.getAll()
+    @history_file.getAll()
 
+#
+#
+#
 class HistoryFile
   constructor: (options)->
     unless options.file_path
@@ -31,7 +37,7 @@ class HistoryFile
     @file_path = options.file_path
     @db = new Datastore(filename: @file_path)
 
-  _loadFile: ->
+  _loadDatabase: ->
     d = Q.defer()
     @db.loadDatabase (err)=>
       if err
@@ -41,26 +47,26 @@ class HistoryFile
     d.promise
 
   add: (history_event)->
-    @_loadFile()
+    @_loadDatabase()
     .then(()=> @_add(history_event))
 
   _add: (history_event)->
     console.log "HisotyFile.add"
     d = Q.defer()
     json = history_event.toJSON()
-    now = new Date()
-    json.created_at = now
-    json.updated_at = now
     @db.insert json, (err, item)=>
       if err
         d.reject(err)
       else
-        d.resolve(item)
+        d.resolve(history_event)
     d.promise
 
   getAll: (options)->
+    @_loadDatabase().then(()=> @_getAll(options))
+
+  _getAll: (options)->
     d = Q.defer()
-    @db.find({}).sort({updated_at: -1}).exec (err, items)=>
+    @db.find({}).sort({datetime: -1}).exec (err, items)=>
       if err
         d.reject(err)
       else
