@@ -63,9 +63,12 @@ class NoteManager
   loadNoteIndex: ->
     @note_index_storage.getAll()
 
+  loadActiveNoteIndex: ->
+    @note_index_storage.onlyActive()
+
   deleteNoteIndexItem: (note_index_item)->
-    @deleted_notes_storage.add(note_index_item)
-    .then(() => @note_index_storage.destroy(note_index_item))
+    note_index_item.delete()
+    @note_index_storage.update(note_index_item)
 
   addEvent: (note_event)->
     console.log note_event
@@ -149,6 +152,15 @@ class NoteIndexStorage
   getAll: (options)->
     d = Q.defer()
     @db.find({}).sort({updated_at: -1}).exec (err, items)=>
+      if err
+        d.reject(err)
+      else
+        d.resolve(items)
+    d.promise
+
+  onlyActive: (options)->
+    d = Q.defer()
+    @db.find({deleted: {$ne: true}}).sort({updated_at: -1}).exec (err, items)=>
       if err
         d.reject(err)
       else

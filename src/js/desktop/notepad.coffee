@@ -73,20 +73,18 @@ class Notepad extends Backbone.Model
       note = @notes.get(note_id)
       @note_manager.deleteNoteIndexItem(index_item)
       .then(()=>
-        @note_index.remove(index_item)
-        console.log "Note #{note_id} is moved to the deleted notes collection")
-      .then(()=>
         event = NoteDeleteEvent.create(note)
         @history_manager.addEvent(event))
       .then((event)=>
         @note_manager.addEvent(event))
 
-  getNoteIndex: ->
+  getActiveNoteIndex: ->
     Q.fcall =>
       if @note_index.isUpToDate()
         @note_index
       else
-        @loadNoteIndex()
+        @loadActiveNoteIndex()
+
   # Load note index from the storage
   # and reset the note index.
   loadNoteIndex: ->
@@ -98,11 +96,22 @@ class Notepad extends Backbone.Model
       (error)=>
         console.log error)
 
+  loadActiveNoteIndex: ->
+    @note_manager.loadActiveNoteIndex().then(
+      (arr)=> 
+        items = _.map arr, (json)=> new NoteIndexItem(json)
+        @note_index.reset(items)
+        @note_index
+      (error)=>
+        console.log error)
+
   getNoteIndexItem: (note_id)->
-    @getNoteIndex().then((note_index)=> note_index.get(note_id))
+    @getActiveNoteIndex().then((note_index)=> note_index.get(note_id))
 
   getHistoryEvents: ->
-    @history_manager.loadHistoryEvents()
+    @history_manager.loadHistoryEvents().then(
+      (attrs_list)=>
+        attrs_list.map((attrs)=> new HistoryEvent(attrs)))
 
 #
 #

@@ -17,23 +17,29 @@ class HistoryScene extends Marionette.Layout
 
   onRender: ->
     timeline_view = new TimelineView()
-    note_view      = new NoteView(model: @current_note)
+    note_view     = new NoteView()
     @main.show(timeline_view)
     @sub.show(note_view)
     # Load history data
-    @model.getHistoryEvents().then(
-      (history_events)=>
-        console.log "History Events Loaded"
-        _.each history_events, (attr)=>
-          event = new HistoryEvent(attr)
-          @model.getNoteIndexItem(attr.note_id).then(
-            (note_index_item)=>
-              item = TimelineItem.create(event: event, note_index_item: note_index_item)
-              timeline_view.addTimelineItem(item))
+    Q.all([
+      @model.getHistoryEvents()
+      @model.loadNoteIndex()
+    ]).then(
+      (results)=>
+        [history_events, note_index] = results
+        console.log "------------------------ #{note_index.length} #{history_events.length}"
+        timeline_items = @_buildTimelineItems(history_events, note_index)
+        console.log timeline_items.length
+        timeline_items.forEach (item)=> timeline_view.addTimelineItem(item)
       (error)=>
         console.log err
         console.log "History Events NOT LOADED")
     console.log 'HistoryScene.onRender'
+
+  _buildTimelineItems: (history_events, note_index)->
+    history_events.map (event)=>
+      note_index_item = note_index.get(event.get('note_id'))
+      TimelineItem.create(event: event, note_index_item: note_index_item)
 
   onShow: ->
     @active = true
@@ -42,6 +48,7 @@ class HistoryScene extends Marionette.Layout
 
   onClose: ->
     @active = false
+    @note_index = null
 
   _resize: ->
     if @active
@@ -59,6 +66,7 @@ class TimelineItem extends Backbone.Model
 
 TimelineItem.create = (params)->
   note_index_item = params.note_index_item
+  console.log note_index_item
   event = params.event
   id = event.get('note_id')
   title = if note_index_item? then note_index_item.get('title') else id
