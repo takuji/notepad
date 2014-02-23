@@ -1,0 +1,19 @@
+#history {
+  white-space: nowrap;
+  
+  >* {
+    display: inline-block;
+    height: 100%;
+    vertical-align: top;
+    white-space: normal;
+  }
+
+  #main {
+    width: 50%;
+  }
+
+  #sub {
+    width: 50%;
+    background-color: #eee;
+  }
+}

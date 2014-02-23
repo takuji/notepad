@@ -98,6 +98,9 @@ class Notepad extends Backbone.Model
       (error)=>
         console.log error)
 
+  getNoteIndexItem: (note_id)->
+    @getNoteIndex().then((note_index)=> note_index.get(note_id))
+
   getHistoryEvents: ->
     @history_manager.loadHistoryEvents()
 

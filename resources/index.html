@@ -111,8 +111,12 @@
     <div id="main">Main content</div><div id="sub"></div>
   </script>
 
-  <script type="text/template" id="timeline-view-template">
-    Timeline
+  <script type="text/template" id="timeline-item-view-template">
+    <div>
+      <span><%= datetime %></span>
+      <a href="#notes/<%= id %>/edit"><%= title %></a>
+      <span><%= event.code %></span>
+    </div>
   </script>
 
   <script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>

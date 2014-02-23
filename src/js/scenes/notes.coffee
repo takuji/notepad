@@ -163,7 +163,7 @@ class NoteListView extends Marionette.CollectionView
     @trigger 'note:delete', view.model.id
 
   onItemRemoved: (itemView)->
-    console.log "NoteListView.itemRemoved #{itemView.model.id}"
+    #console.log "NoteListView.itemRemoved #{itemView.model.id}"
 
   onClose: ->
     console.log 'NoteListView.onClose'
