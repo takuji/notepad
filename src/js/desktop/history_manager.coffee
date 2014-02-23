@@ -1,4 +1,7 @@
-class Historian
+#
+#
+#
+class HistoryManager
   constructor: (options)->
     @settings = options.settings
     @history_file = null
@@ -18,12 +21,15 @@ class Historian
     "#{@getHistoryDirectory()}/current.db"
 
   addEvent: (history_event)->
-    console.log 'Historian.addEvent'
+    console.log 'HistoryManager.addEvent'
     @history_file.add(history_event)
 
   loadHistoryEvents: ->
-    @note_index_storage.getAll()
+    @history_file.getAll()
 
+#
+#
+#
 class HistoryFile
   constructor: (options)->
     unless options.file_path
@@ -48,14 +54,11 @@ class HistoryFile
     console.log "HisotyFile.add"
     d = Q.defer()
     json = history_event.toJSON()
-    now = new Date()
-    json.created_at = now
-    json.updated_at = now
     @db.insert json, (err, item)=>
       if err
         d.reject(err)
       else
-        d.resolve(item)
+        d.resolve(history_event)
     d.promise
 
   getAll: (options)->

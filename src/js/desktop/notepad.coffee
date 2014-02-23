@@ -3,17 +3,17 @@ class Notepad extends Backbone.Model
     @settings = new Settings()
     @scenes = ['notes', 'note-edit']
     @current_scene = @scenes[0]
-    @repository = new FileSystemRepository(settings: @settings)
-    @notes      = new NoteCollection()
-    @note_index = new NoteIndex()
+    @note_manager    = new NoteManager(settings: @settings)
+    @history_manager = new HistoryManager(settings: @settings)
+    @notes           = new NoteCollection()
+    @note_index      = new NoteIndex()
     @note_index.listenTo @notes, 'add', @note_index.onNoteAdded
-    @historian = new Historian(settings: @settings)
 
   prepareWorkspace: ->
     @_prepareHomeDirectory()
     .then(()=> @_prepareSettings())
-    .then(()=> @repository.setupWorkspace())
-    .then(()=> @historian.prepare())
+    .then(()=> @note_manager.setupWorkspace())
+    .then(()=> @history_manager.prepare())
     .then(()=> @)
     .catch((error)=> throw error)
 
@@ -29,8 +29,11 @@ class Notepad extends Backbone.Model
     note = @notes.newNote()
     @saveNote(note)
     .then(()=>
-      event = new NoteHistoryEvent(note: note, event: 'create')
-      @historian.addEvent(event))
+      NoteCreateEvent.create(note))
+    .then((event)=>
+      @history_manager.addEvent(event))
+    .then((event)=>
+      @note_manager.addEvent(event))
     .then(
       ()=> note)
 
@@ -43,7 +46,7 @@ class Notepad extends Backbone.Model
         @loadNote(note_id)
 
   loadNote: (note_id)->
-    @repository.loadNote(note_id).then(
+    @note_manager.loadNote(note_id).then(
       (json)=> 
         note = new Note(json)
         @notes.add(note)
@@ -52,12 +55,12 @@ class Notepad extends Backbone.Model
   # Save a note and update it's index
   saveNote: (note)->
     if note && note.isModified()
-      @repository.saveNote(note).then(
+      @note_manager.saveNote(note).then(
         ()=>
           note.onSaved()
           @note_index.onNoteUpdated(note)
           item = @note_index.get(note.id)
-          @repository.saveNoteIndexItem(item).then(
+          @note_manager.saveNoteIndexItem(item).then(
             (note_index_item)=> note))
     else
       d = Q.defer()
@@ -68,13 +71,15 @@ class Notepad extends Backbone.Model
     index_item = @note_index.get(note_id)
     if index_item
       note = @notes.get(note_id)
-      @repository.deleteNoteIndexItem(index_item)
+      @note_manager.deleteNoteIndexItem(index_item)
       .then(()=>
         @note_index.remove(index_item)
         console.log "Note #{note_id} is moved to the deleted notes collection")
       .then(()=>
-        event = new NoteHistoryEvent(note: note, event: 'delete')
-        @historian.addEvent(event))
+        event = NoteDeleteEvent.create(note)
+        @history_manager.addEvent(event))
+      .then((event)=>
+        @note_manager.addEvent(event))
 
   getNoteIndex: ->
     Q.fcall =>
@@ -85,13 +90,16 @@ class Notepad extends Backbone.Model
   # Load note index from the storage
   # and reset the note index.
   loadNoteIndex: ->
-    @repository.loadNoteIndex().then(
+    @note_manager.loadNoteIndex().then(
       (arr)=> 
         items = _.map arr, (json)=> new NoteIndexItem(json)
         @note_index.reset(items)
         @note_index
       (error)=>
         console.log error)
+
+  getHistoryEvents: ->
+    @history_manager.loadHistoryEvents()
 
 #
 #
