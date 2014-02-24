@@ -66,10 +66,12 @@ TimelineItem.create = (params)->
   note_index_item = params.note_index_item
   console.log note_index_item
   event = params.event
-  id = event.get('note_id')
+  id = event.get('id')
+  note_id = event.get('note_id')
   title = if note_index_item? then note_index_item.get('title') else id
   new TimelineItem
     id: id
+    note_id: note_id
     title: title
     datetime: event.get('datetime')
     event: event.toJSON()
