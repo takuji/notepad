@@ -91,8 +91,7 @@ class Notepad extends Backbone.Model
     @note_manager.loadNoteIndex().then(
       (arr)=> 
         items = _.map arr, (json)=> new NoteIndexItem(json)
-        @note_index.reset(items)
-        @note_index
+        new NoteIndex(items)
       (error)=>
         console.log error)
 
