@@ -82,7 +82,7 @@ class TimelineItemView extends Marionette.ItemView
     'click a': 'onLinkClicked'
 
   serializeData: ->
-    _.extend @model.toJSON(), datetime: moment(@model.get('datetime')).format('YYYY-MM-DD HH:MM')
+    _.extend @model.toJSON(), datetime: moment(@model.get('datetime')).format('YYYY-MM-DD HH:mm')
 
   onRender: ->
 
