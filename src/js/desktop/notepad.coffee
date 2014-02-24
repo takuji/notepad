@@ -70,9 +70,10 @@ class Notepad extends Backbone.Model
   deleteNote: (note_id)->
     index_item = @note_index.get(note_id)
     if index_item
-      note = @notes.get(note_id)
+      @note_index.remove(index_item)
       @note_manager.deleteNoteIndexItem(index_item)
       .then(()=>
+        note = @notes.get(note_id)
         event = NoteDeleteEvent.create(note)
         @history_manager.addEvent(event))
       .then((event)=>
