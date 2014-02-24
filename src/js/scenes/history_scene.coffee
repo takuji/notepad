@@ -27,9 +27,7 @@ class HistoryScene extends Marionette.Layout
     ]).then(
       (results)=>
         [history_events, note_index] = results
-        console.log "------------------------ #{note_index.length} #{history_events.length}"
         timeline_items = @_buildTimelineItems(history_events, note_index)
-        console.log timeline_items.length
         timeline_items.forEach (item)=> timeline_view.addTimelineItem(item)
       (error)=>
         console.log err
@@ -80,9 +78,17 @@ class TimelineItemView extends Marionette.ItemView
   template: '#timeline-item-view-template'
   tagName: 'li'
 
+  events:
+    'click a': 'onLinkClicked'
+
   serializeData: ->
     _.extend @model.toJSON(), datetime: moment(@model.get('datetime')).format('YYYY-MM-DD HH:MM')
 
+  onRender: ->
+
+  onLinkClicked: (e)->
+    e.preventDefault()
+    @trigger 'selected'
 
 class TimelineView extends Marionette.CollectionView
   itemView: TimelineItemView
@@ -92,10 +98,13 @@ class TimelineView extends Marionette.CollectionView
 
   initialize: ->
     @collection = new History()
+    @on 'itemview:selected', @onItemSelected
 
   onRender: ->
 
   onShow: ->
+
+  onItemSelected: (view)->
 
   addTimelineItem: (timeline_item)->
     @collection.push(timeline_item)
