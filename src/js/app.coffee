@@ -53,7 +53,7 @@ class Toolbar extends Backbone.View
   onDevToolsClicked: (e)->
     e.preventDefault()
     Window.get().showDevTools()
-    console.log 'Toolbar.onNewNoteClicked'
+    console.log 'Toolbar.onDevToolsClicked'
 
 #
 #
