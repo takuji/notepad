@@ -16,4 +16,16 @@
     width: 50%;
     background-color: #eee;
   }
+
+  .timeline-item {
+    padding: 5px;
+
+    .datetime {
+      padding-right: 5px;
+    }
+
+    &:nth-child(even) {
+      background-color: #eee;
+    }
+  }
 }

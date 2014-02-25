@@ -79,6 +79,7 @@ TimelineItem.create = (params)->
 class TimelineItemView extends Marionette.ItemView
   template: '#timeline-item-view-template'
   tagName: 'li'
+  className: 'timeline-item'
 
   events:
     'click a': 'onLinkClicked'
