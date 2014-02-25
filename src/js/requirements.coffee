@@ -6,3 +6,4 @@ gui = require('nw.gui')
 Shell = gui.Shell
 Window = gui.Window
 cuid = require('cuid')
+hljs = require('highlight.js')

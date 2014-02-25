@@ -13,6 +13,7 @@
   "dependencies": {
     "mkdirp": "~0.3.5",
     "nedb": "~0.10.3",
-    "cuid": "~1.2.1"
+    "cuid": "~1.2.1",
+    "highlight.js": "~8.0.0"
   }
 }
