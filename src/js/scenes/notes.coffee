@@ -268,6 +268,3 @@ class NoteView extends Marionette.ItemView
   _highlight: ->
     @$('pre > code').each (i, e)=>
       hljs.highlightBlock(e)
-      # $code = $(e)
-      # highlighted = hljs.highlightAuto($code.text()).value
-      # $code.html highlighted
