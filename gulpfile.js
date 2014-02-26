@@ -65,11 +65,8 @@ gulp.task('export-package', ['package'], function() {
 });
 
 gulp.task('package-mac', function() {
-	process.chdir(BUILD_DIR);
-	var result = gulp.src(['app.nw/**/*'])
-		.pipe(gulp.dest('../mac/Notepad.app/Contents/Resources/app.nw'));
-	process.chdir('..');
-	return result;
+	return gulp.src(['app.nw'])
+		.pipe(gulp.dest('mac/Notepad.app/Contents/Resources'));
 });
 
 gulp.task('compass', function() {
