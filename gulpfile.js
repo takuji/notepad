@@ -24,7 +24,13 @@ gulp.task('default', ['build', 'watch']);
 gulp.task('build', ['build-notepad.js', 'build-workers', 'compass', 'copy-vendor', 'copy-resources', 'export-package']);
 
 gulp.task('build-notepad.js', function() {
-	return gulp.src(['src/js/requirements.coffee', 'src/js/lib/*.coffee', 'src/js/modules/*.coffee', 'src/js/desktop/*.coffee', 'src/js/scenes/*.coffee', 'src/js/app.coffee'])
+	return gulp.src(['src/js/requirements.coffee',
+                   'src/js/lib/*.coffee',
+                   'src/js/modules/*.coffee',
+                   'src/js/desktop/*.coffee',
+                   'src/js/views/*.coffee',
+                   'src/js/scenes/*.coffee',
+                   'src/js/app.coffee'])
 		.pipe(coffee({bare: true}).on('error', gutil.log))
 		.pipe(concat('notepad.js'))
 		.pipe(gulp.dest(DEST_DIR + '/js/'));

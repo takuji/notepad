@@ -19,14 +19,13 @@ class NotesScene extends Marionette.Layout
 
   initialize: ->
     @active = false
-    @current_note = null
     @keymap = Keymap.createFromData(@keymapData, @)
     $(window).on 'resize', => @_resize()
     console.log "NotesScene created at #{new Date()}"
 
   onRender: ->
     note_list_view = new NoteListView(collection: @model.note_index)
-    note_view      = new NoteView(model: @current_note)
+    note_view      = new EmptyNoteView()
     @sidebar.show(note_list_view)
     @main.show(note_view)
     @listenTo note_list_view, 'note:selected', @onNoteSelected
@@ -53,10 +52,8 @@ class NotesScene extends Marionette.Layout
       @main.$el.width($window.width() - @sidebar.$el.outerWidth())
 
   onNoteSelected: (note_info)->
-    @model.getNoteAsync(note_info.id).then(
-      (note)=>
-        @current_note = note
-        @main.currentView.changeNote(@current_note))
+    @model.selectNote(note_info.id).then(
+      (note)=> @main.show(new NoteView(model: note)))
 
   nextNote: ->
     @sidebar.currentView.selectNextNote()
@@ -232,45 +229,3 @@ class NoteListView extends Marionette.CollectionView
       region.scrollTop(item_bottom_in_note_list - region_height)
     console.log "_scrollToShowCurrentView"
 
-class NoteView extends Marionette.ItemView
-  id: 'note'
-  className: 'note'
-  template: (serializedData)->
-    if serializedData.content
-      _.template $('#note-template').html(), serializedData
-    else
-      _.template $('#note-empty-template').html(), {}
-
-  events:
-    'click a': 'onLinkClicked'
-
-  onLinkClicked: (e)->
-    e.preventDefault()
-    Shell.openExternal $(e.target).attr('href')
-
-  serializeData: ->
-    if @model
-      @model.toJSON()
-
-  changeNote: (note)->
-    console.log 'NoteView.changeNote'
-    @model = note
-    @render()
-
-  onRender: ->
-    @$el.toggleClass('note-empty', !@model?)
-    if @model?
-      unless @model.isHighlighted()
-        setTimeout(
-          ()=> @_highlight()
-          0)
-
-  _highlight: ->
-    try
-      @$('pre > code').each (i, e)=>
-        hljs.highlightBlock(e)
-        @model.set
-          html: @$el.html()
-          highlighted: true
-    catch e
-      console.error e
