@@ -68,8 +68,10 @@ class Note extends Backbone.Model
   updateContent: (content)->
     if content != @get('content')
       @_changed = true
-      @set content: content, title: @_titleOfContent(content)
-      # @_compile()
+      @set
+        content: content
+        title: @_titleOfContent(content)
+        highlighted: false
 
   _updateTitle: ->
     @set title: @_titleOfContent(@get('content'))

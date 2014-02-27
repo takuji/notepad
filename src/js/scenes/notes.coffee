@@ -271,6 +271,8 @@ class NoteView extends Marionette.ItemView
     try
       @$('pre > code').each (i, e)=>
         hljs.highlightBlock(e)
-        @model.set 'html': @$el.html(), 'highlighted': true
+        @model.set
+          html: @$el.html()
+          highlighted: true
     catch e
       console.error e
