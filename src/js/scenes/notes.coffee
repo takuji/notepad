@@ -261,10 +261,16 @@ class NoteView extends Marionette.ItemView
 
   onRender: ->
     @$el.toggleClass('note-empty', !@model?)
-    setTimeout(
-      ()=> @_highlight()
-      0)
+    if @model?
+      unless @model.isHighlighted()
+        setTimeout(
+          ()=> @_highlight()
+          0)
 
   _highlight: ->
-    @$('pre > code').each (i, e)=>
-      hljs.highlightBlock(e)
+    try
+      @$('pre > code').each (i, e)=>
+        hljs.highlightBlock(e)
+        @model.set 'html': @$el.html(), 'highlighted': true
+    catch e
+      console.error e

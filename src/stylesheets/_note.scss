@@ -62,9 +62,10 @@
     border-radius: 4px;
     //--- end
 
-    // &>code {
-    //   padding: 9.5px;
-    // }
+    &>code {
+      // padding: 9.5px;
+      background-color: whitesmoke;
+    }
   }
 
   p {
