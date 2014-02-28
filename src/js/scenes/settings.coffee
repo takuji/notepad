@@ -11,7 +11,7 @@ class SettingsScene extends Marionette.Layout
     main: '#main'
 
   keymapData:
-    'J': 'nextNote'
+    'J': 'nextSection'
   #   'K': 'prevNote'
   #   'N': 'newNote'
 
@@ -44,6 +44,9 @@ class SettingsScene extends Marionette.Layout
       $window = $(window)
       @$el.height($window.height() - @$el.offset().top)
       @main.$el.width($window.width() - @sidebar.$el.width())
+
+  nextSection: ->
+    console.log 'SettingsScene.nextSection'
 
 class WorkspaceSettingsView extends Marionette.ItemView
   template: '#workspace-settings-template'

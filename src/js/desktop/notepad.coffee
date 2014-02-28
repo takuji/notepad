@@ -8,6 +8,7 @@ class Notepad extends Backbone.Model
     @notes           = new NoteCollection()
     @note_index      = new NoteIndex()
     @note_index.listenTo @notes, 'add', @note_index.onNoteAdded
+    @current_note = null
 
   prepareWorkspace: ->
     @_prepareHomeDirectory()
@@ -39,11 +40,17 @@ class Notepad extends Backbone.Model
 
   getNoteAsync: (note_id)->
     note = @notes.get(note_id)
-    Q.fcall =>
-      if note
-        note
-      else
-        @loadNote(note_id)
+    if note
+      Q(note)
+    else
+      @loadNote(note_id)
+
+  selectNote: (note_id)->
+    @getNoteAsync(note_id)
+    .then((note)=> @current_note = note)
+    .then((note)=>
+      @trigger 'current_note_changed', note
+      note)
 
   loadNote: (note_id)->
     @note_manager.loadNote(note_id).then(

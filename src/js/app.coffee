@@ -40,6 +40,7 @@ class Toolbar extends Backbone.View
     'click #dev-tools': 'onDevToolsClicked'
 
   initialize: ->
+    @listenTo @model, 'current_note_changed', @onCurrentNoteChanged
     settings = @model.settings.getToolbarSettings()
     if settings.dev_tools
       @$('#dev-tools').css('display', 'inline-block')
@@ -54,6 +55,9 @@ class Toolbar extends Backbone.View
     e.preventDefault()
     Window.get().showDevTools()
     console.log 'Toolbar.onDevToolsClicked'
+
+  onCurrentNoteChanged: (note)->
+    @$('.current-note').html(note.get('title'))
 
 #
 #
