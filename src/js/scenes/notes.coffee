@@ -224,8 +224,6 @@ class NoteListView extends Marionette.CollectionView
     item_bottom   = item_top + @current_item_view.$el.outerHeight()
     item_top_in_note_list  = item_top - note_list_top
     item_bottom_in_note_list = item_bottom - note_list_top
-    console.log "region_top:#{region_top} note_list_top:#{note_list_top} item_top:#{item_top} item_bottom:#{item_bottom} item_top_in_note_list:#{item_top_in_note_list}"
-    console.log "region_height: #{region_height}, item_bottom - region_top: #{item_bottom - region_top}"
     if item_top < region_top
       console.log 'Hidden upwards'
       region.scrollTop(item_top_in_note_list)
