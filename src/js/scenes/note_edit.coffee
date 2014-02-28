@@ -15,21 +15,31 @@ class NoteEditScene extends Marionette.Layout
     'CTRL-L': 'saveAndQuit'
 
   initialize: ->
-    @current_note = null
     @keymap = Keymap.createFromData(@keymapData, @)
     @active = false
     @settings = @model.settings.getSceneSettings('note_edit')
 
+  _setupSubViews: (note)->
+    note_map_view = new NoteMapView(
+      model: note
+      collection: new NoteMap()
+      note_map_level: @settings.note_map_level)
+    main_view = new NoteEditMain(model: note)
+    @sidebar.show(note_map_view)
+    @main.show(main_view)
+    @listenTo note_map_view, 'clicked', @onNoteMapClicked
+
   onRender: ->
-    if @current_note
-      note_map = new NoteMap()
-      note_map_view = new NoteMapView(model: @current_note, collection: note_map, note_map_level: @settings.note_map_level)
-      main_view = new NoteEditMain(model: @current_note)
-      @sidebar.show(note_map_view)
-      @main.show(main_view)
-      @listenTo note_map_view, 'clicked', @onNoteMapClicked
+    @_setupSubViews(@model.getCurrentNote())
     $(window).on 'resize', => @_resize()
     console.log "NoteEditScene.onRender"
+
+  onShowing: (options)->
+    note_id = options.id
+    @model.getNoteAsync(note_id).then(
+      (note)=>
+        @current_note = note)
+    console.log 'NoteEditScene.onShowing'
 
   onShow: ->
     @active = true
@@ -40,9 +50,7 @@ class NoteEditScene extends Marionette.Layout
   onClose: ->
     @active = false
 
-
   onNoteMapClicked: (note_map)->
-    console.log note_map
     @goToLine(note_map.get('line'))
     console.log 'NoteEditScene.onNoteMapClicked'
 
@@ -53,12 +61,6 @@ class NoteEditScene extends Marionette.Layout
       @main.$el.width($window.width() - @sidebar.$el.width())
       @main.currentView.resize()
       #@main.currentView.$el.width($window.width() - @sidebar.currentView.$el.width())
-
-  # 
-  changeNoteAsync: (note_id)->
-    @model.getNoteAsync(note_id).then(
-      (note)=>
-        @current_note = note)
 
   saveCurrentNote: ->
     console.log 'Saving...'
@@ -145,6 +147,7 @@ class NoteMapView extends Marionette.CompositeView
     @note_map_worker.onmessage = (e)=> @onContentParsed(e.data)
     @listenTo @model, 'change:content', @onContentChanged
     @on 'itemview:clicked', @onItemClicked
+    console.log @collection
     console.log "INDENT LEVEL #{@note_map_level}"
 
   onRender: ->

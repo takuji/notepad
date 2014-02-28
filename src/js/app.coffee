@@ -8,28 +8,21 @@ class Router extends Backbone.Router
 
   initialize: (option)->
     @app = option.app
-    console.log 'Router initialized.'
 
   list: ->
-    console.log 'list'
-    @showScreen('notes')
+    @app.changeScene('notes')
 
   edit: (id)->
-    console.log "edit #{id}"
-    @app.changeNoteAsync(id).then(
-      ()=> @showScreen('note_edit'))
+    @app.changeScene('note_edit', id: id)
 
   newNote: ->
     @app.createNote
 
   settings: ->
-    @showScreen 'settings'
+    @app.changeScene('settings')
 
   history: ->
-    @showScreen 'history'
-
-  showScreen: (scene_id)->
-    @app.changeScene(scene_id)
+    @app.changeScene('history')
 
 #
 #
@@ -84,14 +77,12 @@ class App extends Marionette.Application
     @toolbar = new Toolbar(el: $('#toolbar'), model: notepad)
     Backbone.history.start()
 
-  changeScene: (scene_id)->
+  changeScene: (scene_id, options)->
     console.log "Changing scene to #{scene_id}"
     scene = @scenes[scene_id]
     @keymaps.scene = scene.keymap
+    scene.onShowing(options) if scene.onShowing?
     @sceneRegion.show @scenes[scene_id]
-
-  changeNoteAsync: (note_id)->
-    @scenes['note_edit'].changeNoteAsync(note_id)
 
   resize: ->
     $scene = $('#scene')
