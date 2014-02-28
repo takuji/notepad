@@ -40,9 +40,11 @@ class Toolbar extends Backbone.View
 
   onNewNoteClicked: (e)->
     console.log 'Toolbar.onNewNoteClicked'
-    @model.createNote().then(
-      (note)=>
-        location.href = "#notes/#{note.id}/edit")
+    @model.createNote()
+    .then((note)=>
+      @model.selectNote(note.id))
+    .then((note)=>
+      location.href = "#notes/#{note.id}/edit")
 
   onDevToolsClicked: (e)->
     e.preventDefault()
