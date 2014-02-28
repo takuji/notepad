@@ -20,7 +20,8 @@ if (!fs.existsSync(MOD_DIR)) {
 	fs.mkdirSync(MOD_DIR);
 }
 
-gulp.task('default', ['build-notepad.js', 'build-workers', 'compass', 'copy-vendor', 'copy-resources', 'export-package', 'watch']);
+gulp.task('default', ['build', 'watch']);
+gulp.task('build', ['build-notepad.js', 'build-workers', 'compass', 'copy-vendor', 'copy-resources', 'export-package']);
 
 gulp.task('build-notepad.js', function() {
 	return gulp.src(['src/js/requirements.coffee', 'src/js/lib/*.coffee', 'src/js/modules/*.coffee', 'src/js/desktop/*.coffee', 'src/js/scenes/*.coffee', 'src/js/app.coffee'])
