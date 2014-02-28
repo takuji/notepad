@@ -75,7 +75,7 @@ class NoteEditScene extends Marionette.Layout
     @main.currentView.goToLine(line_no)
 
 #
-#
+# model: Note
 #
 class NoteEditMain extends Marionette.Layout
   template: '#note-main-views-template'
@@ -213,8 +213,12 @@ class NoteEditorView extends Marionette.ItemView
     console.log 'NoteDeitorView.onShow'
 
   onKeyUp: ->
-    if @model.get('content').length != @$textarea.val().length
+    if @_contentChanged()
       @updateModel()
+
+  _contentChanged: ->
+     @model.get('content').length != @$textarea.val().length ||
+     @model.get('content') != @$textarea.val()
 
   onKeyDown: (e)->
     key = Key.fromEvent(e)
@@ -325,22 +329,18 @@ class NotePreviewView extends Marionette.ItemView
     'click a': 'onLinkClicked'
 
   initialize: ->
-    @listenTo @model, 'change:content', @onNoteUpdated
-    @updateHtml()
+    @listenTo @model, 'change:html', @onNoteUpdated
 
   onNoteUpdated: ->
-    @updateHtml()
+    console.log @model.get 'html'
     @render()
 
   onLinkClicked: (e)->
     e.preventDefault()
     Shell.openExternal $(e.target).attr('href')
 
-  updateHtml: ->
-    @html = marked(@model.get('content') || '')
-
   serializeData: ->
-    {html: @html}
+    {html: @model.get('html')}
 
   onRender: ->
     @$article = @$('article.note')
