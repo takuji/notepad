@@ -46,9 +46,11 @@ class Notepad extends Backbone.Model
       @loadNote(note_id)
 
   selectNote: (note_id)->
-    @getNoteAsync(note_id).then(
-      (note)=>
-        @current_note = note)
+    @getNoteAsync(note_id)
+    .then((note)=> @current_note = note)
+    .then((note)=>
+      @trigger 'current_note_changed', note
+      note)
 
   loadNote: (note_id)->
     @note_manager.loadNote(note_id).then(
