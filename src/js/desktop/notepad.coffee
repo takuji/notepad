@@ -124,6 +124,9 @@ class Notepad extends Backbone.Model
       (attrs_list)=>
         attrs_list.map((attrs)=> new HistoryEvent(attrs)))
 
+  getArchivedNoteIndex: ->
+    new Backbone.Collection()
+
 #
 #
 #
