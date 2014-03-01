@@ -45,7 +45,8 @@
   }
 
   pre, code {
-    font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+    // font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+    font-family: monospace;
   }
 
   pre {
@@ -65,6 +66,7 @@
 
     &>code {
       // padding: 9.5px;
+      padding: 0;
       background-color: whitesmoke;
     }
   }
@@ -83,8 +85,8 @@
     margin-bottom: 10px;
   }
 
-  pre {
-    font-family: monospace;
-    margin: 1em 0;
-  }
+  // pre {
+  //   font-family: monospace;
+  //   margin: 1em 0;
+  // }
 }
