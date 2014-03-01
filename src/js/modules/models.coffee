@@ -34,7 +34,6 @@ class NoteIndexItem extends Backbone.Model
         title: note.get('title')
         updated_at: note.get('updated_at'))
     console.log "Note index of #{note.id} updated"
-    console.log @attributes
 
   delete: ->
     @set deleted: true
@@ -74,7 +73,6 @@ class Note extends Backbone.Model
 
   updateHtml: (html)->
     @set html: html
-    console.log html
     @_changed = true
 
   _updateTitle: ->
@@ -127,10 +125,7 @@ class NoteMapItem extends Backbone.Model
 #
 class NoteCollection extends Backbone.Collection
   initialize: ->
-    console.log @
-    console.log @length
     @listenTo @, 'add', @onNoteAdded
-    console.log "@id_seed is #{@id_seed}"
 
   # Creates a new note instance and add it to the head of this collection
   # Returns the new note.
