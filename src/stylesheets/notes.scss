@@ -1,6 +1,5 @@
 @import "compass/css3";
 @import "compass/css3/user-interface";
-@import "note";
 
 #notes {
   white-space: nowrap;
@@ -24,11 +23,6 @@
     // width: 70%;
     overflow-y: scroll;
     background-color: #f8f8f8
-  }
-
-  .note {
-    @include note-base;
-    padding: 10px;
   }
 
   .note-empty {

@@ -323,7 +323,7 @@ class NoteEditorView extends Marionette.ItemView
 #
 class NotePreviewView extends Marionette.ItemView
   template: '#note-preview-template'
-  className: 'preview'
+  className: 'preview note-view'
 
   events:
     'click a': 'onLinkClicked'
@@ -343,8 +343,19 @@ class NotePreviewView extends Marionette.ItemView
     {html: @model.get('html')}
 
   onRender: ->
-    @$article = @$('article.note')
+    @_highlightCodesAsync()
     console.log 'NotePreviewView.onRender'
 
   onShow: ->
     console.log 'NotePreviewView.onShow'
+
+  _highlightCodesAsync: ->
+    setTimeout(
+      ()=>
+        @_highlightCodes()
+      0)
+
+  _highlightCodes: ->
+    @$('pre > code').each (i, e)=>
+      hljs.highlightBlock(e)
+      @model.highlighted = @$el.html()
