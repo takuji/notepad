@@ -10,14 +10,21 @@ class NoteView extends Marionette.ItemView
 
   initialize: ->
     @highlighted = null
+    @active = false
 
   onLinkClicked: (e)->
     e.preventDefault()
     Shell.openExternal $(e.target).attr('href')
 
   onRender: ->
-    unless @highlighted
-      @_highlightCodesAsync()
+    # unless @highlighted
+    #   @_highlightCodesAsync()
+
+  onShow: ->
+    @active = true
+
+  onClose: ->
+    @active = false
 
   _highlightCodesAsync: ->
     setTimeout(
@@ -27,8 +34,9 @@ class NoteView extends Marionette.ItemView
 
   _highlightCodes: ->
     @$('pre > code').each (i, e)=>
-      hljs.highlightBlock(e)
-      @highlighted = @$el.html()
+      if @active
+        hljs.highlightBlock(e)
+    @highlighted = @$el.html()
 
 #
 #
