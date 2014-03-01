@@ -17,7 +17,7 @@ class HistoryScene extends Marionette.Layout
 
   onRender: ->
     timeline_view = new TimelineView()
-    note_view     = new NoteView()
+    note_view     = new EmptyNoteView()
     @main.show(timeline_view)
     @sub.show(note_view)
     # Load history data
