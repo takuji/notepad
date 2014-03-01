@@ -57,7 +57,6 @@ class Note extends Backbone.Model
   initialize: ->
     @_changed = false
     @_updateTitle()
-    @_compile()
 
   onSaved: ->
     @_changed = false
@@ -72,6 +71,11 @@ class Note extends Backbone.Model
         content: content
         title: @_titleOfContent(content)
         highlighted: false
+
+  updateHtml: (html)->
+    @set html: html
+    console.log html
+    @_changed = true
 
   _updateTitle: ->
     @set title: @_titleOfContent(@get('content'))

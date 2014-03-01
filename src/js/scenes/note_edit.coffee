@@ -235,7 +235,7 @@ class NoteEditorView extends Marionette.ItemView
       @trigger 'scrolled', percent
 
   onMarkdownWorkerMessage: (e)->
-    @model.set html: e.data
+    @model.updateHtml e.data
 
   updateModel: ->
     content = @$textarea.val()
@@ -354,6 +354,13 @@ class NotePreviewView extends Marionette.ItemView
     highlighter = new CodeHighlighter(@el)
     @highlighters.push highlighter
     highlighter.run()
+    .then(
+      ()=>
+        # all code block are highlighted
+        @model.updateHtml(@$el.html())
+      (err)=>
+        unless highlighter.isCancelled()
+          console.log err)
 
   _clearHighlightingJobs: ->
     _.each @highlighters, (hl)=> hl.cancel()
@@ -371,15 +378,35 @@ class CodeHighlighter
     @cancelled = false
 
   run: ->
-    unless @cancelled
-      @$elem.find('pre > code').each (i, e)=>
-        setTimeout(
-          ()=> @_highlightUnlessCancelled(e)
-          0)
+    if @cancelled
+      Q.reject(new Error('Already cancelled'))
+    else
+      jobs = @$elem.find('pre > code').map((i, code)=> @_highlight(code))
+      Q.all(jobs)
 
-  _highlightUnlessCancelled: (e)->
-    unless @cancelled
-      hljs.highlightBlock(e)
+  _highlight: (code)->
+    if @cancelled
+      Q.reject(new Error('Already cancelled'))
+    else
+      @_highlightAsync(code)
+
+  _highlightAsync: (code)->
+    d = Q.defer()
+    setTimeout(
+      ()=>
+        try
+          if @cancelled
+            d.reject(new Error('cancelled'))
+          else
+            hljs.highlightBlock(code)
+            d.resolve()
+        catch e
+          d.reject(e)
+      0)
+    d.promise
 
   cancel: ->
     @cancelled = true
+
+  isCancelled: ->
+    @cancelled
