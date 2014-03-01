@@ -330,9 +330,9 @@ class NotePreviewView extends Marionette.ItemView
 
   initialize: ->
     @listenTo @model, 'change:html', @onNoteUpdated
+    @highlighters = []
 
   onNoteUpdated: ->
-    console.log @model.get 'html'
     @render()
 
   onLinkClicked: (e)->
@@ -342,20 +342,44 @@ class NotePreviewView extends Marionette.ItemView
   serializeData: ->
     {html: @model.get('html')}
 
+  onBeforeRender: ->
+    @_clearHighlightingJobs()
+    console.log 'NotePreviewView.onBeforeRender'
+
   onRender: ->
-    @_highlightCodesAsync()
+    @_highlight()
     console.log 'NotePreviewView.onRender'
+
+  _highlight: ->
+    highlighter = new CodeHighlighter(@el)
+    @highlighters.push highlighter
+    highlighter.run()
+
+  _clearHighlightingJobs: ->
+    _.each @highlighters, (hl)=> hl.cancel()
+    @highlighters = []
 
   onShow: ->
     console.log 'NotePreviewView.onShow'
 
-  _highlightCodesAsync: ->
-    setTimeout(
-      ()=>
-        @_highlightCodes()
-      0)
+#
+#
+#
+class CodeHighlighter
+  constructor: (elem)->
+    @$elem = $(elem)
+    @cancelled = false
 
-  _highlightCodes: ->
-    @$('pre > code').each (i, e)=>
+  run: ->
+    unless @cancelled
+      @$elem.find('pre > code').each (i, e)=>
+        setTimeout(
+          ()=> @_highlightUnlessCancelled(e)
+          0)
+
+  _highlightUnlessCancelled: (e)->
+    unless @cancelled
       hljs.highlightBlock(e)
-      @model.highlighted = @$el.html()
+
+  cancel: ->
+    @cancelled = true
