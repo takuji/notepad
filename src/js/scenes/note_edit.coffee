@@ -329,10 +329,11 @@ class NotePreviewView extends Marionette.ItemView
     'click a': 'onLinkClicked'
 
   initialize: ->
-    @listenTo @model, 'change:html', @onNoteUpdated
-    @highlighters = []
+    html_converter = new HtmlConverter(model: @model)
+    @listenTo html_converter, 'done', @onHtmlArrived
 
-  onNoteUpdated: ->
+  onHtmlArrived: (html)->
+    @model.updateHtml(html)
     @render()
 
   onLinkClicked: (e)->
@@ -342,32 +343,86 @@ class NotePreviewView extends Marionette.ItemView
   serializeData: ->
     {html: @model.get('html')}
 
-  onBeforeRender: ->
-    @_clearHighlightingJobs()
-    console.log 'NotePreviewView.onBeforeRender'
-
-  onRender: ->
-    @_highlight()
-    console.log 'NotePreviewView.onRender'
-
-  _highlight: ->
-    highlighter = new CodeHighlighter(@el)
-    @highlighters.push highlighter
-    highlighter.run()
-    .then(
-      ()=>
-        # all code block are highlighted
-        @model.updateHtml(@$el.html())
-      (err)=>
-        unless highlighter.isCancelled()
-          console.log err)
-
-  _clearHighlightingJobs: ->
-    _.each @highlighters, (hl)=> hl.cancel()
-    @highlighters = []
-
   onShow: ->
     console.log 'NotePreviewView.onShow'
+
+#
+#
+#
+class HtmlConverter
+  _.extend @::, Backbone.Events
+
+  constructor: (options)->
+    @jobs = []
+    model = options.model
+    markdown_worker = new Worker('js/markdown_worker.js')
+    markdown_worker.onmessage = (e)=> @onPlainHtmlCreated(e.data)
+    @listenTo model, 'change:content', ()=>
+      markdown_worker.postMessage(model.get('content'))
+
+  onPlainHtmlCreated: (html)->
+    @_clearJobs()
+    @_highlight(html)
+
+  _highlight: (html)->
+    job = new CodeHighlightJob(html)
+    @jobs.push job
+    job.run().then(
+      (highlighted)=>
+        @trigger 'done', highlighted
+      (error)=>
+        unless job.isCancelled()
+          console.error error)
+
+  _clearJobs: ->
+    _.each @jobs, (job)=> job.cancel()
+    @jobs = []
+
+#
+#
+#
+class CodeHighlightJob
+  constructor: (html)->
+    @$elem = $(html)
+    @cancelled = false
+
+  run: ->
+    if @cancelled
+      Q.reject(new Error('Already cancelled'))
+    else
+      $root = $('<div>').append(@$elem)
+      jobs = $root.find('pre > code').map((i, e)=> @_highlight(e))
+      Q.all(jobs).then(
+        ()=> $root.html())
+
+  _highlight: (code)->
+    if @cancelled
+      Q.reject(new Error('Already cancelled'))
+    else
+      @_highlightAsync(code)
+
+  _highlightAsync: (code)->
+    d = Q.defer()
+    setTimeout(
+      ()=>
+        try
+          if @cancelled
+            d.reject(new Error('cancelled'))
+          else
+            $code = $(code)
+            highlighted = hljs.highlightAuto($code.text()).value
+            $code.html(highlighted)
+            d.resolve(highlighted)
+        catch e
+          d.reject(e)
+      0)
+    d.promise
+
+  cancel: ->
+    @cancelled = true
+
+  isCancelled: ->
+    @cancelled
 
 #
 #
