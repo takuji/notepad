@@ -2,7 +2,7 @@ class NoteIndexReader
   constructor: (options)->
     @manager = options.note_manager
     @offset = 0
-    @count = options.batch || 3
+    @count = options.count || 20
     @has_next = true
 
   next: ->

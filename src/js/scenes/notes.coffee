@@ -23,7 +23,7 @@ class NotesScene extends Marionette.Layout
   initialize: ->
     @active = false
     @keymap = Keymap.createFromData(@keymapData, @)
-    @note_index_reader = @model.getNoteIndexReader()
+    @note_index_reader = @model.getNoteIndexReader(count: 100)
     $(window).on 'resize', => @_resize()
     console.log "NotesScene created at #{new Date()}"
 
@@ -59,7 +59,6 @@ class NotesScene extends Marionette.Layout
       @main.$el.width($window.width() - sidebar.outerWidth())
 
   onMoreClicked: (e)->
-    console.log "MORE!!!"
     @note_index_reader.next()
     .then(
       (note_indexes)=>
