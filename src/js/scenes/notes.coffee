@@ -2,16 +2,8 @@
 # model: Notepad
 #
 class NotesScene extends NoteListScene
-  template: '#note-list-scene-template'
   id: 'note-list-scene'
   className: 'scene note-list-scene'
-
-  events:
-    'click .more': 'onMoreClicked'
-
-  regions:
-    main: '#main'
-    note_list_pane: '#note-list-pane'
 
   keymapData:
     'J': 'nextNote'
@@ -19,118 +11,6 @@ class NotesScene extends NoteListScene
     'N': 'newNote'
     'ENTER': 'editCurrentNote'
     'DELETE': 'deleteCurrentNote'
-
-  initialize: ->
-    @active = false
-    @keymap = Keymap.createFromData(@keymapData, @)
-    $(window).on 'resize', => @_resize()
-    console.log "NotesScene created at #{new Date()}"
-
-  onRender: ->
-    @note_index_reader = @model.getNoteIndexReader(count: 50)
-    @note_list_view = new NoteListView()
-    @note_view      = new EmptyNoteView()
-    @note_list_pane.show(@note_list_view)
-    @main.show(@note_view)
-    # Connect
-    @listenTo @note_list_view, 'note:selected', @onNoteSelected
-    @listenTo @note_list_view, 'note:delete', @deleteNote
-    @listenTo @note_list_view, 'more', (options)=> @onMoreNotesRequested(@note_list_view, options)
-    @note_list_pane.$el.on 'scroll', => @onNoteListPaneScrolled()
-    # # Load note index data
-    # @model.getActiveNoteIndex().then(
-    #   (note_index)=> console.log "NOTE INDEX UPDATED"
-    #   (error)=> console.log "NOTE INDEX NOT LOADED")
-    console.log 'NotesScene.onRender'
-
-  onShow: ->
-    @active = true
-    @_resize()
-    @fetchEnoughNoteIndexes()
-    console.log 'NotesScene.onShow'
-
-  onClose: ->
-    @active = false
-
-  _resize: ->
-    if @active
-      $window = $(window)
-      margin = @$el.offset().top
-      @$el.height($window.height() - margin)
-      sidebar = @$('#sidebar')
-      @main.$el.width($window.width() - sidebar.outerWidth())
-
-  onMoreClicked: (e)->
-    @fetchNextNoteIndexes()
-
-  fetchNextNoteIndexes: ->
-    @note_index_reader.next()
-    .then(
-      (note_indexes)=>
-        @note_list_view.addNoteIndexes(note_indexes)
-        note_indexes
-      (error)=>
-        console.log error)
-
-  fetchEnoughNoteIndexes: ->
-    if @_shouldFetchMoreNoteIndexes()
-      @fetchNextNoteIndexes()
-      .then(
-        ()=>
-          setTimeout(
-            ()=> @fetchEnoughNoteIndexes()
-            0)
-        (error)=>
-          console.log error)
-
-  _shouldFetchMoreNoteIndexes: ->
-    @note_index_reader.hasNext() &&
-    @$('.more').viewportOffset().top <= $(window).height()
-
-
-  onNoteListPaneScrolled: (e)->
-    @fetchEnoughNoteIndexes()
-
-  onMoreNotesRequested: (view, options)->
-    @note_index_reader.next()
-    .then(
-      (note_indexes)=>
-        view.addNoteIndexes(note_indexes)
-      (error)=>
-        console.log error)
-
-  onNoteSelected: (note_info)->
-    @model.selectNote(note_info.id).then(
-      (note)=> @main.show(new NoteView(model: note)))
-
-  nextNote: ->
-    @note_list_view.selectNextNote()
-
-  prevNote: ->
-    @note_list_view.selectPrevNote()
-
-  # Action to create a new note
-  # - create a note data
-  # - save it
-  # - set it to the note edite scene
-  # - open the note edit scene
-  newNote: ->
-    @model.createNote().then(
-      (note)=>
-        location.href = "#notes/#{note.id}/edit")
-
-  # Action to open the note edit scene to start editing the current note
-  editCurrentNote: ->
-    @note_list_view.editCurrentNote()
-
-  deleteCurrentNote: ->
-    @deleteNote(@current_note.id)
-
-  deleteNote: (note_id)->
-    console.log "Deleting note #{note_id}"
-    @model.deleteNote(note_id)
-    .fail((error)=>
-      console.log error)
 
 #
 #
@@ -210,36 +90,41 @@ class NoteListView extends Marionette.CollectionView
     'click .more': 'onMoreClicked'
 
   initialize: (options)->
-    @collection = new NoteIndexCollection()
     @on 'itemview:note:selected', @onNoteSelected, @
     @on 'itemview:note:delete', @onDeleteClicked, @
     @current_item_view = null
 
   onRender: ->
     console.log 'NoteListView.onRender'
-
-  onShow: ->
     @_addMoreButton()
 
   _addMoreButton: ->
-    console.log '--- a'
-    console.log @$el.siblings('.more')
-    console.log @$el.parent()
-    if @$el.siblings('.more').length == 0
-      console.log '--- b'
-      more_view = new NoteListMoreView()
-      console.log more_view.render().el 
-      @$el.after(more_view.render().el)
+    more_view = new NoteListMoreView()
+    @more = more_view.render().$el
+    @$el.after(@more)
+
+  onShow: ->
+    @fetchEnoughNoteIndexes()
 
   onMoreClicked: ->
-    @trigger 'more', oldest: @collection.last, offset: @collection.length
+    if @collection.hasNext()
+      @collection.next()
 
-  addNoteIndexes: (note_indexes)->
-    console.log note_indexes
-    @collection.push note_indexes
+  fetchEnoughNoteIndexes: ->
+    if @_shouldFetchMoreNoteIndexes()
+      @collection.next()
+      .then(
+        ()=>
+          setTimeout(
+            ()=> @fetchEnoughNoteIndexes()
+            0)
+        (error)=>
+          console.log error)
 
-  addNoteIndex: (note_index)->
-    @collection.push note_index
+  _shouldFetchMoreNoteIndexes: ->
+    @collection.hasNext() && 
+    @more.viewportOffset().top <= $(window).height()
+
 
   onNoteSelected: (view)->
     @_unselectCurrent()
@@ -254,7 +139,7 @@ class NoteListView extends Marionette.CollectionView
     @trigger 'note:delete', view.model.id
 
   onItemRemoved: (itemView)->
-    #console.log "NoteListView.itemRemoved #{itemView.model.id}"
+    console.log "NoteListView.itemRemoved #{itemView.model.id}"
 
   onClose: ->
     console.log 'NoteListView.onClose'

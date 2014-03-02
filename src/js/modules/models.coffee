@@ -23,6 +23,15 @@ class NoteIndexCollection extends Backbone.Collection
   isUpToDate: ->
     @up_to_date
 
+  next: ->
+    @source.next()
+    .then(
+      (note_indexes)=>
+        @push note_indexes)
+
+  hasNext: ->
+    @source.hasNext()
+
 #
 #
 #

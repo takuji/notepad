@@ -6,8 +6,9 @@ class Notepad extends Backbone.Model
     @note_manager    = new NoteManager(settings: @settings)
     @history_manager = new HistoryManager(settings: @settings)
     @notes           = new NoteCollection()
-    @note_index      = new NoteIndexCollection([], source: new NoteIndexReader())
-    @note_index.listenTo @notes, 'add', @note_index.onNoteAdded
+    note_index_reader = new NoteIndexReader(note_manager: @note_manager)
+    @note_indexes      = new NoteIndexCollection([], source: note_index_reader)
+    @note_indexes.listenTo @notes, 'add', @note_indexes.onNoteAdded
     @current_note = null
 
   prepareWorkspace: ->
@@ -28,15 +29,20 @@ class Notepad extends Backbone.Model
 
   createNote: ->
     note = @notes.newNote()
-    @saveNote(note)
+    console.log '---------------------------------------- 1'
+    @_saveNote(note)
     .then(()=>
+      console.log '---------------------------------------- 2'
       NoteCreateEvent.create(note))
     .then((event)=>
+      console.log '---------------------------------------- 3'
       @history_manager.addEvent(event))
     .then((event)=>
+      console.log '---------------------------------------- 4'
       @note_manager.addEvent(event))
-    .then(
-      ()=> note)
+    .then(()=>
+      console.log '---------------------------------------- 5'
+      note)
 
   getNoteAsync: (note_id)->
     note = @notes.get(note_id)
@@ -54,6 +60,7 @@ class Notepad extends Backbone.Model
       note)
 
   getCurrentNote: ->
+    console.log "getCurrentNote #{@current_note}"
     @current_note
 
   loadNote: (note_id)->
@@ -66,38 +73,41 @@ class Notepad extends Backbone.Model
   # Save a note and update it's index
   saveNote: (note)->
     if note && note.isModified()
-      @note_manager.saveNote(note).then(
-        ()=>
-          note.onSaved()
-          @note_index.onNoteUpdated(note)
-          item = @note_index.get(note.id)
-          @note_manager.saveNoteIndexItem(item).then(
-            (note_index_item)=> note))
+      @_saveNote(note)
     else
-      d = Q.defer()
-      d.resolve(note)
-      d.promise
+      Q(note)
+
+  _saveNote: (note)->
+    @note_manager.saveNote(note)
+    .then(()=>
+      note.onSaved()
+      @note_indexes.onNoteUpdated(note)
+      item = @note_indexes.get(note.id)
+      console.log "--------------------------------- aaa"
+      console.log item
+      @note_manager.saveNoteIndexItem(item).then(
+        (note_index_item)=> note))
 
   deleteNote: (note_id)->
     console.log "Deleting note index #{note_id}"
-    @note_manager.deleteNote(note_id)
-    .then(()=>
-      @getNoteAsync(note_id))
-    .then((note)=>
-      console.log "Logging note index deletion #{note_id}"
-      event = NoteDeleteEvent.create(note)
-      @history_manager.addEvent(event))
-    .then((event)=>
-      @note_manager.addEvent(event))
-    .then(()=>
-      console.log 'Note deletion done')
+    note_index = @note_indexes.get(note_id)
+    if note_index
+      @note_manager.deleteNote(note_id)
+      .then(()=>
+        @note_indexes.remove(note_index))
+      .then(()=>
+        @getNoteAsync(note_id))
+      .then((note)=>
+        console.log "Logging note index deletion #{note_id}"
+        event = NoteDeleteEvent.create(note)
+        @history_manager.addEvent(event))
+      .then((event)=>
+        @note_manager.addEvent(event))
+      .then(()=>
+        console.log 'Note deletion done')
 
-  getActiveNoteIndex: ->
-    Q.fcall =>
-      if @note_index.isUpToDate()
-        @note_index
-      else
-        @loadActiveNoteIndex()
+  getNoteIndex: ->
+    @note_indexes
 
   getNoteIndexReader: (options = {})->
     options.note_manager = @note_manager
@@ -121,8 +131,8 @@ class Notepad extends Backbone.Model
     @note_manager.loadActiveNoteIndex().then(
       (arr)=> 
         items = _.map arr, (json)=> new NoteIndexItem(json)
-        @note_index.reset(items)
-        @note_index
+        @note_indexes.reset(items)
+        @note_indexes
       (error)=>
         console.log error)
 

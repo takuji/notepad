@@ -6,9 +6,6 @@ class NoteListScene extends BaseScene
   id: 'note-list-scene'
   className: 'scene note-list-scene'
 
-  events:
-    'click .more': 'onMoreClicked'
-
   regions:
     main: '#main'
     note_list_pane: '#note-list-pane'
@@ -23,29 +20,22 @@ class NoteListScene extends BaseScene
   initialize: ->
     super
 
-  getNoteIndexReader: ->
-    @model.getNoteIndexReader(count: 50)
+  getNoteIndex: ->
+    @model.getNoteIndex()
 
   onRender: ->
-    @note_index_reader = @getNoteIndexReader()
-    @note_list_view = new NoteListView()
+    @note_list_view = new NoteListView(collection: @getNoteIndex())
     @note_view      = new EmptyNoteView()
     @note_list_pane.show(@note_list_view)
     @main.show(@note_view)
     # Connect
     @listenTo @note_list_view, 'note:selected', @onNoteSelected
     @listenTo @note_list_view, 'note:delete', @deleteNote
-    @listenTo @note_list_view, 'more', (options)=> @onMoreNotesRequested(@note_list_view, options)
     @note_list_pane.$el.on 'scroll', => @onNoteListPaneScrolled()
-    # # Load note index data
-    # @model.getActiveNoteIndex().then(
-    #   (note_index)=> console.log "NOTE INDEX UPDATED"
-    #   (error)=> console.log "NOTE INDEX NOT LOADED")
     console.log 'NotesScene.onRender'
 
   onShow: ->
     super
-    @fetchEnoughNoteIndexes()
     console.log 'NotesScene.onShow'
 
   onClose: ->
@@ -58,36 +48,8 @@ class NoteListScene extends BaseScene
       sidebar = @$('#sidebar')
       @main.$el.width($window.width() - sidebar.outerWidth())
 
-  onMoreClicked: (e)->
-    @fetchNextNoteIndexes()
-
-  fetchNextNoteIndexes: ->
-    @note_index_reader.next()
-    .then(
-      (note_indexes)=>
-        @note_list_view.addNoteIndexes(note_indexes)
-        note_indexes
-      (error)=>
-        console.log error)
-
-  fetchEnoughNoteIndexes: ->
-    if @_shouldFetchMoreNoteIndexes()
-      @fetchNextNoteIndexes()
-      .then(
-        ()=>
-          setTimeout(
-            ()=> @fetchEnoughNoteIndexes()
-            0)
-        (error)=>
-          console.log error)
-
-  _shouldFetchMoreNoteIndexes: ->
-    @note_index_reader.hasNext() &&
-    @$('.more').viewportOffset().top <= $(window).height()
-
-
   onNoteListPaneScrolled: (e)->
-    @fetchEnoughNoteIndexes()
+    @note_list_view.fetchEnoughNoteIndexes()
 
   onMoreNotesRequested: (view, options)->
     @note_index_reader.next()
@@ -97,9 +59,12 @@ class NoteListScene extends BaseScene
       (error)=>
         console.log error)
 
-  onNoteSelected: (note_info)->
-    @model.selectNote(note_info.id).then(
-      (note)=> @main.show(new NoteView(model: note)))
+  onNoteSelected: (note_index)->
+    console.log note_index
+    @model.selectNote(note_index.id).then(
+      (note)=>
+        console.log note
+        @main.show(new NoteView(model: note)))
 
   nextNote: ->
     @note_list_view.selectNextNote()
@@ -113,9 +78,12 @@ class NoteListScene extends BaseScene
   # - set it to the note edite scene
   # - open the note edit scene
   newNote: ->
-    @model.createNote().then(
-      (note)=>
-        location.href = "#notes/#{note.id}/edit")
+    @model.createNote()
+    .then((note)=>
+      @model.selectNote(note.id))
+    .then((note)=>
+      console.log note
+      location.href = "#notes/#{note.id}/edit")
 
   # Action to open the note edit scene to start editing the current note
   editCurrentNote: ->
@@ -123,7 +91,10 @@ class NoteListScene extends BaseScene
 
   deleteCurrentNote: ->
     console.log 'delete current note'
-    @model.deleteNote(@current_note.id)
+    note = @model.getCurrentNote()
+    if note
+      @model.deleteNote(note.id)
 
   deleteNote: (note_id)->
+    console.log "Deleting #{note_id}..."
     @model.deleteNote(note_id)
