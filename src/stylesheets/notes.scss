@@ -37,10 +37,13 @@
   
   .more {
     padding: 10px;
-    background-color: #efe;
     text-align: center;
-    color: #888;
-    cursor: pointer;
+    color: transparent;
+
+    &:hover {
+      color: #aaa;
+      cursor: pointer;
+    }
   }
 }
 

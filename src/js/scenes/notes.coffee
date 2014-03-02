@@ -23,11 +23,11 @@ class NotesScene extends Marionette.Layout
   initialize: ->
     @active = false
     @keymap = Keymap.createFromData(@keymapData, @)
-    @note_index_reader = @model.getNoteIndexReader(count: 100)
     $(window).on 'resize', => @_resize()
     console.log "NotesScene created at #{new Date()}"
 
   onRender: ->
+    @note_index_reader = @model.getNoteIndexReader(count: 100)
     @note_list_view = new NoteListView()
     @note_view      = new EmptyNoteView()
     @note_list_pane.show(@note_list_view)
@@ -36,6 +36,7 @@ class NotesScene extends Marionette.Layout
     @listenTo @note_list_view, 'note:selected', @onNoteSelected
     @listenTo @note_list_view, 'note:delete', @deleteNote
     @listenTo @note_list_view, 'more', (options)=> @onMoreNotesRequested(@note_list_view, options)
+    @note_list_pane.$el.on 'scroll', => @onNoteListPaneScrolled()
     # # Load note index data
     # @model.getActiveNoteIndex().then(
     #   (note_index)=> console.log "NOTE INDEX UPDATED"
@@ -45,6 +46,7 @@ class NotesScene extends Marionette.Layout
   onShow: ->
     @active = true
     @_resize()
+    @fetchEnoughNoteIndexes()
     console.log 'NotesScene.onShow'
 
   onClose: ->
@@ -59,14 +61,35 @@ class NotesScene extends Marionette.Layout
       @main.$el.width($window.width() - sidebar.outerWidth())
 
   onMoreClicked: (e)->
+    @fetchNextNoteIndexes()
+
+  fetchNextNoteIndexes: ->
     @note_index_reader.next()
     .then(
       (note_indexes)=>
-        console.log "#{note_indexes.length} note loaded"
         @note_list_view.addNoteIndexes(note_indexes)
+        note_indexes
       (error)=>
         console.log error)
 
+  fetchEnoughNoteIndexes: ->
+    if @_shouldFetchMoreNoteIndexes()
+      @fetchNextNoteIndexes()
+      .then(
+        ()=>
+          setTimeout(
+            ()=> @fetchEnoughNoteIndexes()
+            0)
+        (error)=>
+          console.log error)
+
+  _shouldFetchMoreNoteIndexes: ->
+    @note_index_reader.hasNext() &&
+    @$('.more').viewportOffset().top <= $(window).height()
+
+
+  onNoteListPaneScrolled: (e)->
+    @fetchEnoughNoteIndexes()
 
   onMoreNotesRequested: (view, options)->
     @note_index_reader.next()
