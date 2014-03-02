@@ -16,7 +16,7 @@
     min-width: 200px;
     max-width: 300px;
     // border-right: 1px solid #ddd;
-    overflow-y: scroll;
+    // overflow-y: scroll;
   }
 
   #main {
@@ -30,22 +30,27 @@
   }
 }
 
-.notes {
-
+#note-list-pane {
+  // background-color: #efe;
+  height: 100%;
+  overflow-y: scroll;
+  
+  .more {
+    padding: 10px;
+    background-color: #efe;
+    text-align: center;
+    color: #888;
+    cursor: pointer;
+  }
 }
 
 .note-list {
   padding: 0;
   margin: 0;
   list-style: none;
-  height: 100%;
   min-width: 200px;
   // background-color: #ddd;
   @include user-select(none);
-
-  .more {
-    padding-left: 10px;
-  }
 }
 
 .note-list-item {

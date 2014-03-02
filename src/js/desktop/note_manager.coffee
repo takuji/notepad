@@ -70,6 +70,9 @@ class NoteManager
     note_index_item.delete()
     @note_index_storage.update(note_index_item)
 
+  getActiveNoteIndex: (params)->
+    @note_index_storage.get(params)
+
   addEvent: (note_event)->
     console.log note_event
     d = Q.defer()
@@ -112,6 +115,41 @@ class NoteIndexStorage
             d.resolve()
     d.promise
 
+  uniq: ->
+    @getAll()
+    .then(
+      (items)=>
+        _.groupBy items, (item)-> item.id)
+    .then(
+      (groups)=>
+        console.log groups
+        values = _.values(groups)
+        console.log values
+        latests = _.map values, (indexes)-> _.first(indexes))
+    .then(
+      (latests)=>
+        console.log latests
+        @_removeAll()
+        latests)
+    .then(
+      (latests)=>
+        @db.insert latests, (err, docs)=>
+          if err
+            console.error err
+            false
+          else
+            true)
+
+  _removeAll: ->
+    d = Q.defer()
+    @db.remove {}, {multi: true}, (err, num)=>
+      console.log num
+      if err
+        d.reject(err)
+      else
+        d.resolve()
+    d.promise
+
   add: (index_item)->
     d = Q.defer()
     json = index_item.toJSON()
@@ -122,7 +160,9 @@ class NoteIndexStorage
       if err
         d.reject(err)
       else
-        d.resolve(item)
+        index_item.set(item)
+        d.resolve(index_item)
+      console.log "NOTE INDEX ADDED #{index_item.id}"
     d.promise
 
   update: (index_item)->
@@ -138,6 +178,7 @@ class NoteIndexStorage
       else
         index_item.updated_at = now
         d.resolve(index_item)
+      console.log "NOTE INDEX UPDATED #{index_item.id}"
     d.promise
 
   destroy: (index_item)->
@@ -148,6 +189,30 @@ class NoteIndexStorage
       else
         d.resolve()
     d.promise
+
+  findByNoteId: (note_id)->
+    d = Q.defer()
+    @db.find({id: note_id}).limit(1).exec (err, items)=>
+      if err
+        d.reject(err)
+      else
+        if items.length > 0
+          d.resolve(items[0])
+        else
+          d.resolve(null)
+    d.promise
+
+  get: (options)->
+    offset = options.offset || 0
+    count  = options.count || 100
+    d = Q.defer()
+    @db.find({deleted: {$ne: true}}).sort({updated_at: -1}).skip(offset).limit(count).exec (err, items)=>
+      if err
+        d.reject(err)
+      else
+        d.resolve(items)
+    d.promise
+
 
   getAll: (options)->
     d = Q.defer()

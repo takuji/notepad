@@ -97,6 +97,9 @@ class Notepad extends Backbone.Model
       else
         @loadActiveNoteIndex()
 
+  getNoteIndexReader: ->
+    new NoteIndexReader(note_manager: @note_manager)
+
   # Load note index from the storage
   # and reset the note index.
   loadNoteIndex: ->

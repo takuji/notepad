@@ -133,6 +133,7 @@ win.on 'resize', (w, h)->
 
 app.addInitializer (options)->
   notepad = new Notepad()
+  app.getNotePad = ()-> notepad
   app.loadWindowSize(win)
   notepad.prepareWorkspace().then(
     (notepad)->
