@@ -3,8 +3,6 @@
 #
 class NoteIndex extends Backbone.Collection
   initialize: ->
-    @up_to_date = false
-    @listenTo @, 'reset', => @up_to_date = true
 
   updateIndex: (note)->
     item = @get(note.id)
