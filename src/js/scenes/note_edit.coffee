@@ -260,7 +260,8 @@ class NoteEditorView extends Marionette.ItemView
       newLinePos = text.indexOf("\n", pos)
       pos = newLinePos + 1
     newLinePos = text.indexOf("\n", pos)
-    {start: pos, end: newLinePos}
+    start: pos
+    end: newLinePos
 
   lineCount: ->
     @$textarea.val().split("\n").length
@@ -341,7 +342,7 @@ class NotePreviewView extends Marionette.ItemView
     Shell.openExternal $(e.target).attr('href')
 
   serializeData: ->
-    {html: @model.get('html')}
+    html: @model.get('html')
 
   onShow: ->
     console.log 'NotePreviewView.onShow'

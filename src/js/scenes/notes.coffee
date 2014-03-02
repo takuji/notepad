@@ -178,13 +178,10 @@ class NoteListItemView extends Marionette.ItemView
 
   getRect: ->
     pos = @$el.position()
-    {
-      left:   pos.left,
-      top:    pos.top
-      right:  pos.left + @$el.width()
-      bottom: pos.top + @$el.height()
-    }
-
+    left:   pos.left
+    top:    pos.top
+    right:  pos.left + @$el.width()
+    bottom: pos.top + @$el.height()
 
 #
 #

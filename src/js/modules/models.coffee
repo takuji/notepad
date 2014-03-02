@@ -90,7 +90,10 @@ class Note extends Backbone.Model
     new NoteMap().attachNote(@)
 
   getInfo: ->
-    {id: @id, title: @get('title'), created_at: @get('created_at'), updated_at: @get('updated_at')}
+    id: @id
+    title: @get('title')
+    created_at: @get('created_at')
+    updated_at: @get('updated_at')
 
   isHighlighted: ->
     @get('highlighted') == true
