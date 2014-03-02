@@ -1,10 +1,10 @@
 #
 # model: Notepad
 #
-class NotesScene extends Marionette.Layout
-  template: '#notes-scene-template'
-  id: 'notes'
-  className: 'notes scene'
+class NotesScene extends NoteListScene
+  template: '#note-list-scene-template'
+  id: 'note-list-scene'
+  className: 'scene note-list-scene'
 
   events:
     'click .more': 'onMoreClicked'
@@ -124,11 +124,13 @@ class NotesScene extends Marionette.Layout
     @note_list_view.editCurrentNote()
 
   deleteCurrentNote: ->
-    console.log 'delete current note'
-    @model.deleteNote(@current_note.id)
+    @deleteNote(@current_note.id)
 
   deleteNote: (note_id)->
+    console.log "Deleting note #{note_id}"
     @model.deleteNote(note_id)
+    .fail((error)=>
+      console.log error)
 
 #
 #
@@ -155,15 +157,11 @@ class NoteListItemView extends Marionette.ItemView
   onDeleteClicked: (e)->
     e.stopImmediatePropagation()
     @trigger 'note:delete'
-    console.log "DELETE?"
 
   onDoubleClicked: (e)->
     @editNote()
 
   onRender: ->
-    if @model.get('deleted')
-      @$el.hide()
-      console.log "Note #{@model.id} is hidden because it is deleted."
     console.log 'NoteListItemView.onRender'
 
   select: ->
@@ -252,7 +250,7 @@ class NoteListView extends Marionette.CollectionView
 
   onDeleteClicked: (view)->
     console.log 'NoteListView.onNoteDeleteClicked'
-    console.log view.model
+    view.model.delete()
     @trigger 'note:delete', view.model.id
 
   onItemRemoved: (itemView)->

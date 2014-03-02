@@ -23,3 +23,8 @@ class BaseScene extends Marionette.Layout
       $window = $(window)
       margin = @$el.offset().top
       @$el.height($window.height() - margin)
+
+  _adjustHeight: ->
+    $window = $(window)
+    margin = @$el.offset().top
+    @$el.height($window.height() - margin)

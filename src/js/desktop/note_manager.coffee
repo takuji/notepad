@@ -70,8 +70,19 @@ class NoteManager
     note_index_item.delete()
     @note_index_storage.update(note_index_item)
 
-  getActiveNoteIndex: (params)->
+  deleteNote: (note_id)->
+    @note_index_storage.findByNoteId(note_id)
+    .then(
+      (json)=>
+        note_index = new NoteIndexItem(json)
+        note_index.delete()
+        @note_index_storage.update(note_index))
+
+  getActiveNoteIndexes: (params)->
     @note_index_storage.get(params)
+
+  getArchivedNoteIndexes: (params)->
+    @note_index_storage.getArchivedNoteIndexes(params)
 
   addEvent: (note_event)->
     console.log note_event
@@ -172,6 +183,7 @@ class NoteIndexStorage
     _id = json._id
     delete json._id
     json.updated_at = now
+    console.log json
     @db.update {_id: _id}, json, {}, (err, num)=>
       if err
         d.reject(err)
@@ -203,16 +215,21 @@ class NoteIndexStorage
     d.promise
 
   get: (options)->
-    offset = options.offset || 0
-    count  = options.count || 100
+    @_getNoteIndexes(options.offset, options.count, deleted: {$ne: true})
+
+  getArchivedNoteIndexes: (options)->
+    @_getNoteIndexes(options.offset, options.count, deleted: true)
+
+  _getNoteIndexes: (offset, count, query)->
+    offset = offset || 0
+    count  = count || 100
     d = Q.defer()
-    @db.find({deleted: {$ne: true}}).sort({updated_at: -1}).skip(offset).limit(count).exec (err, items)=>
+    @db.find(query).sort({updated_at: -1}).skip(offset).limit(count).exec (err, items)=>
       if err
         d.reject(err)
       else
         d.resolve(items)
     d.promise
-
 
   getAll: (options)->
     d = Q.defer()

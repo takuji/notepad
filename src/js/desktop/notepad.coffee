@@ -79,16 +79,18 @@ class Notepad extends Backbone.Model
       d.promise
 
   deleteNote: (note_id)->
-    index_item = @note_index.get(note_id)
-    if index_item
-      @note_index.remove(index_item)
-      @note_manager.deleteNoteIndexItem(index_item)
-      .then(()=>
-        note = @notes.get(note_id)
-        event = NoteDeleteEvent.create(note)
-        @history_manager.addEvent(event))
-      .then((event)=>
-        @note_manager.addEvent(event))
+    console.log "Deleting note index #{note_id}"
+    @note_manager.deleteNote(note_id)
+    .then(()=>
+      @getNoteAsync(note_id))
+    .then((note)=>
+      console.log "Logging note index deletion #{note_id}"
+      event = NoteDeleteEvent.create(note)
+      @history_manager.addEvent(event))
+    .then((event)=>
+      @note_manager.addEvent(event))
+    .then(()=>
+      console.log 'Note deletion done')
 
   getActiveNoteIndex: ->
     Q.fcall =>
@@ -100,6 +102,10 @@ class Notepad extends Backbone.Model
   getNoteIndexReader: (options = {})->
     options.note_manager = @note_manager
     new NoteIndexReader(options)
+
+  getArchivedNoteIndexReader: (options = {})->
+    options.note_manager = @note_manager
+    new ArchivedNoteIndexReader(options)
 
   # Load note index from the storage
   # and reset the note index.

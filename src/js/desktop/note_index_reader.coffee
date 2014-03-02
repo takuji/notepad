@@ -1,3 +1,6 @@
+#
+#
+#
 class NoteIndexReader
   constructor: (options)->
     @manager = options.note_manager
@@ -17,7 +20,7 @@ class NoteIndexReader
 
   _loadNext: ->
     @reading = true
-    @manager.getActiveNoteIndex(offset: @offset, count: @count)
+    @getNoteIndexes(@manager)
     .then((arr)=>
       @offset += arr.length
       if arr.length < @count
@@ -29,3 +32,13 @@ class NoteIndexReader
 
   hasNext: ->
     @has_next
+
+  getNoteIndexes: (manager)->
+    manager.getActiveNoteIndexes(offset: @offset, count: @count)
+
+#
+#
+#
+class ArchivedNoteIndexReader extends NoteIndexReader
+  getNoteIndexes: (manager)->
+    manager.getArchivedNoteIndexes(offset: @offset, count: @count)
