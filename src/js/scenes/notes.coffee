@@ -210,7 +210,7 @@ class NoteListView extends Marionette.CollectionView
     'click .more': 'onMoreClicked'
 
   initialize: (options)->
-    @collection = new NoteIndex()
+    @collection = new NoteIndexCollection()
     @on 'itemview:note:selected', @onNoteSelected, @
     @on 'itemview:note:delete', @onDeleteClicked, @
     @current_item_view = null

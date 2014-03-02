@@ -1,8 +1,9 @@
 #
 #
 #
-class NoteIndex extends Backbone.Collection
-  initialize: ->
+class NoteIndexCollection extends Backbone.Collection
+  initialize: (models, options)->
+    @source = options.source
 
   updateIndex: (note)->
     item = @get(note.id)
@@ -12,11 +13,11 @@ class NoteIndex extends Backbone.Collection
 
   onNoteUpdated: (note)->
     @updateIndex(note)
-    console.log "NoteIndex.onNoteUpdated #{note.id}"
+    console.log "NoteIndexCollection.onNoteUpdated #{note.id}"
 
   onNoteAdded: (note)->
     @unshift NoteIndexItem.fromNote(note)
-    console.log "NoteIndex.onNoteAdded #{note.id}"
+    console.log "NoteIndexCollection.onNoteAdded #{note.id}"
     note
 
   isUpToDate: ->

@@ -6,7 +6,7 @@ class Notepad extends Backbone.Model
     @note_manager    = new NoteManager(settings: @settings)
     @history_manager = new HistoryManager(settings: @settings)
     @notes           = new NoteCollection()
-    @note_index      = new NoteIndex()
+    @note_index      = new NoteIndexCollection([], source: new NoteIndexReader())
     @note_index.listenTo @notes, 'add', @note_index.onNoteAdded
     @current_note = null
 
@@ -113,7 +113,7 @@ class Notepad extends Backbone.Model
     @note_manager.loadNoteIndex().then(
       (arr)=> 
         items = _.map arr, (json)=> new NoteIndexItem(json)
-        new NoteIndex(items)
+        new NoteIndexCollection(items)
       (error)=>
         console.log error)
 
