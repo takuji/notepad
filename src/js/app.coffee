@@ -5,6 +5,7 @@ class Router extends Backbone.Router
     'notes/:id/edit': 'edit'
     'settings': 'settings'
     'history': 'history'
+    'archive': 'archive'
 
   initialize: (option)->
     @app = option.app
@@ -23,6 +24,9 @@ class Router extends Backbone.Router
 
   history: ->
     @app.changeScene('history')
+
+  archive: ->
+    @app.changeScene('archive')
 
 #
 #
@@ -69,6 +73,7 @@ class App extends Marionette.Application
       note_edit: new NoteEditScene(model: notepad)
       settings: new SettingsScene(model: notepad)
       history: new HistoryScene(model: notepad)
+      archive: new ArchiveScene(model: notepad)
     @resize()
     $window = $(window)
     $window.on 'resize', => @resize()
@@ -133,6 +138,7 @@ win.on 'resize', (w, h)->
 
 app.addInitializer (options)->
   notepad = new Notepad()
+  app.getNotePad = ()-> notepad
   app.loadWindowSize(win)
   notepad.prepareWorkspace().then(
     (notepad)->

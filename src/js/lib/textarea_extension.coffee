@@ -2,7 +2,8 @@ $.fn.extend
   viewportOffset: ->
     $window = $(window)
     p = @offset()
-    {left: p.left - $window.scrollLeft(), top: p.top - $window.scrollTop()}
+    left: p.left - $window.scrollLeft()
+    top: p.top - $window.scrollTop()
 
   getCaretPosition: ->
     el = @[0]
@@ -51,10 +52,8 @@ $.fn.extend
     prevPos = @data('prevLocation')
     if !prevPos? || (prevPos.pos != pos)
       content = @.val()
-      {
-        pos: pos
-        line_no: content.substr(0, pos).split("\n").length
-      }
+      pos: pos
+      line_no: content.substr(0, pos).split("\n").length
     else
       prevPos
 

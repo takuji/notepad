@@ -1,10 +1,9 @@
 #
 #
 #
-class NoteIndex extends Backbone.Collection
-  initialize: ->
-    @up_to_date = false
-    @listenTo @, 'reset', => @up_to_date = true
+class NoteIndexCollection extends Backbone.Collection
+  initialize: (models, options)->
+    @source = options.source
 
   updateIndex: (note)->
     item = @get(note.id)
@@ -14,15 +13,24 @@ class NoteIndex extends Backbone.Collection
 
   onNoteUpdated: (note)->
     @updateIndex(note)
-    console.log "NoteIndex.onNoteUpdated #{note.id}"
+    console.log "NoteIndexCollection.onNoteUpdated #{note.id}"
 
   onNoteAdded: (note)->
     @unshift NoteIndexItem.fromNote(note)
-    console.log "NoteIndex.onNoteAdded #{note.id}"
+    console.log "NoteIndexCollection.onNoteAdded #{note.id}"
     note
 
   isUpToDate: ->
     @up_to_date
+
+  next: ->
+    @source.next()
+    .then(
+      (note_indexes)=>
+        @push note_indexes)
+
+  hasNext: ->
+    @source.hasNext()
 
 #
 #
@@ -92,7 +100,10 @@ class Note extends Backbone.Model
     new NoteMap().attachNote(@)
 
   getInfo: ->
-    {id: @id, title: @get('title'), created_at: @get('created_at'), updated_at: @get('updated_at')}
+    id: @id
+    title: @get('title')
+    created_at: @get('created_at')
+    updated_at: @get('updated_at')
 
   isHighlighted: ->
     @get('highlighted') == true

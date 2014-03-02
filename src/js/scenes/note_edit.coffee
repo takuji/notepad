@@ -19,6 +19,15 @@ class NoteEditScene extends Marionette.Layout
     @active = false
     @settings = @model.settings.getSceneSettings('note_edit')
 
+  onShowing: (options)->
+    console.log 'NoteEditScene.onShowing'
+
+  onRender: ->
+    note = @model.getCurrentNote()
+    @_setupSubViews(note)
+    $(window).on 'resize', => @_resize()
+    console.log "NoteEditScene.onRender"
+
   _setupSubViews: (note)->
     note_map_view = new NoteMapView(
       model: note
@@ -28,18 +37,6 @@ class NoteEditScene extends Marionette.Layout
     @sidebar.show(note_map_view)
     @main.show(main_view)
     @listenTo note_map_view, 'clicked', @onNoteMapClicked
-
-  onRender: ->
-    @_setupSubViews(@model.getCurrentNote())
-    $(window).on 'resize', => @_resize()
-    console.log "NoteEditScene.onRender"
-
-  onShowing: (options)->
-    note_id = options.id
-    @model.getNoteAsync(note_id).then(
-      (note)=>
-        @current_note = note)
-    console.log 'NoteEditScene.onShowing'
 
   onShow: ->
     @active = true
@@ -64,10 +61,12 @@ class NoteEditScene extends Marionette.Layout
 
   saveCurrentNote: ->
     console.log 'Saving...'
-    @model.saveNote(@current_note)
+    note = @model.getCurrentNote()
+    @model.saveNote(note)
 
   saveAndQuit: ->
-    @model.saveNote(@current_note).then(
+    note = @model.getCurrentNote()
+    @model.saveNote(note).then(
       ()=>
         location.href = '#notes')
 
@@ -142,6 +141,7 @@ class NoteMapView extends Marionette.CompositeView
   className: 'note-index'
 
   initialize: (options)->
+    @collection = new NoteMap()
     @note_map_level = options.note_map_level || 6
     @note_map_worker = new Worker('js/note_map_worker.js')
     @note_map_worker.onmessage = (e)=> @onContentParsed(e.data)
@@ -260,7 +260,8 @@ class NoteEditorView extends Marionette.ItemView
       newLinePos = text.indexOf("\n", pos)
       pos = newLinePos + 1
     newLinePos = text.indexOf("\n", pos)
-    {start: pos, end: newLinePos}
+    start: pos
+    end: newLinePos
 
   lineCount: ->
     @$textarea.val().split("\n").length
@@ -341,7 +342,7 @@ class NotePreviewView extends Marionette.ItemView
     Shell.openExternal $(e.target).attr('href')
 
   serializeData: ->
-    {html: @model.get('html')}
+    html: @model.get('html')
 
   onShow: ->
     console.log 'NotePreviewView.onShow'
