@@ -9,6 +9,8 @@ class Notepad extends Backbone.Model
     note_index_reader = new NoteIndexReader(note_manager: @note_manager)
     @note_indexes      = new NoteIndexCollection([], source: note_index_reader)
     @note_indexes.listenTo @notes, 'add', @note_indexes.onNoteAdded
+    archived_note_index_reader = new ArchivedNoteIndexReader(note_manager: @note_manager)
+    @archived_note_indexes = new NoteIndexCollection([], source: archived_note_index_reader)
     @current_note = null
 
   prepareWorkspace: ->
@@ -29,19 +31,14 @@ class Notepad extends Backbone.Model
 
   createNote: ->
     note = @notes.newNote()
-    console.log '---------------------------------------- 1'
     @_saveNote(note)
     .then(()=>
-      console.log '---------------------------------------- 2'
       NoteCreateEvent.create(note))
     .then((event)=>
-      console.log '---------------------------------------- 3'
       @history_manager.addEvent(event))
     .then((event)=>
-      console.log '---------------------------------------- 4'
       @note_manager.addEvent(event))
     .then(()=>
-      console.log '---------------------------------------- 5'
       note)
 
   getNoteAsync: (note_id)->
@@ -83,8 +80,6 @@ class Notepad extends Backbone.Model
       note.onSaved()
       @note_indexes.onNoteUpdated(note)
       item = @note_indexes.get(note.id)
-      console.log "--------------------------------- aaa"
-      console.log item
       @note_manager.saveNoteIndexItem(item).then(
         (note_index_item)=> note))
 
@@ -145,7 +140,7 @@ class Notepad extends Backbone.Model
         attrs_list.map((attrs)=> new HistoryEvent(attrs)))
 
   getArchivedNoteIndex: ->
-    new Backbone.Collection()
+    @archived_note_indexes
 
 #
 #
