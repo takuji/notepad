@@ -27,7 +27,7 @@ class NotesScene extends Marionette.Layout
     console.log "NotesScene created at #{new Date()}"
 
   onRender: ->
-    @note_index_reader = @model.getNoteIndexReader(count: 100)
+    @note_index_reader = @model.getNoteIndexReader(count: 50)
     @note_list_view = new NoteListView()
     @note_view      = new EmptyNoteView()
     @note_list_pane.show(@note_list_view)
