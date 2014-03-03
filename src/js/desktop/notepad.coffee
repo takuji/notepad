@@ -15,7 +15,7 @@ class Notepad extends Backbone.Model
     # Notes cache
     @notes           = new NoteCollection()
     # Current active note
-    @current_note = null
+    @current_note = new CurrentNote()
 
   prepareWorkspace: ->
     @_prepareHomeDirectory()
@@ -59,14 +59,11 @@ class Notepad extends Backbone.Model
   selectNote: (note_id)->
     @getNoteAsync(note_id)
     .then((note)=>
-      @current_note = note)
-    .then((note)=>
-      @trigger 'current_note_changed', note
+      @current_note.changeNote(note)
       note)
 
   getCurrentNote: ->
-    console.log "getCurrentNote #{@current_note}"
-    @current_note
+    @current_note.getNote()
 
   loadNote: (note_id)->
     @note_manager.loadNote(note_id).then(
@@ -149,6 +146,27 @@ class Notepad extends Backbone.Model
 
   getArchivedNoteIndex: ->
     @archived_note_indexes
+
+#
+#
+#
+class CurrentNote
+  _.extend @::, Backbone.Events
+  constructor: ->
+    @note = null
+
+  changeNote: (note)->
+    @note = note
+    @stopListening()
+    @listenTo note, 'change', @onChanged
+    @onChanged(note)
+
+  onChanged: (note)->
+    @trigger 'changed', note
+
+  getNote: ->
+    @note
+
 
 #
 #

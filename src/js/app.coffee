@@ -35,28 +35,35 @@ class Toolbar extends Backbone.View
   events:
     'click #toolbar-item-new-note': 'onNewNoteClicked'
     'click #dev-tools': 'onDevToolsClicked'
+    'click .current-note': 'onCurrentNoteClicked'
 
   initialize: ->
-    @listenTo @model, 'current_note_changed', @onCurrentNoteChanged
+    current_note = @model.current_note
+    @listenTo current_note, 'changed', @onCurrentNoteChanged
     settings = @model.settings.getToolbarSettings()
     if settings.dev_tools
       @$('#dev-tools').css('display', 'inline-block')
 
   onNewNoteClicked: (e)->
-    console.log 'Toolbar.onNewNoteClicked'
     @model.createNote()
     .then((note)=>
       @model.selectNote(note.id))
     .then((note)=>
-      location.href = "#notes/#{note.id}/edit")
+      @goToNoteEditScene note)
 
   onDevToolsClicked: (e)->
     e.preventDefault()
     Window.get().showDevTools()
-    console.log 'Toolbar.onDevToolsClicked'
 
   onCurrentNoteChanged: (note)->
     @$('.current-note').html(note.get('title'))
+
+  onCurrentNoteClicked: (e)->
+    @goToNoteEditScene @model.getCurrentNote()
+
+  goToNoteEditScene: (note)->
+    if note?
+      location.href = "#notes/#{note.id}/edit"
 
 #
 #

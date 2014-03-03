@@ -9,10 +9,13 @@
 
   .toolbar-item {
     display: inline-block;
-    width: 50px;
     padding: 10px;
     text-align: center;
     color: #444;
+  }
+
+  .toolbar-item-btn {
+    width: 50px;
 
     &:hover {
       background-color: #fafafa;
@@ -26,5 +29,9 @@
 
   #dev-tools {
     display: none;
+  }
+
+  .current-note {
+    cursor: pointer;
   }
 }
