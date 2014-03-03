@@ -1,16 +1,20 @@
 class Notepad extends Backbone.Model
   initialize: (attrs, options)->
+    # Settings
     @settings = new Settings()
-    @scenes = ['notes', 'note-edit']
-    @current_scene = @scenes[0]
+    # File IO of Notes and Note Indexes
     @note_manager    = new NoteManager(settings: @settings)
+    # File IO of History Events
     @history_manager = new HistoryManager(settings: @settings)
-    @notes           = new NoteCollection()
+    # Note Indexes
     note_index_reader = new NoteIndexReader(note_manager: @note_manager)
     @note_indexes      = new NoteIndexCollection([], source: note_index_reader)
-    @note_indexes.listenTo @notes, 'add', @note_indexes.onNoteAdded
+    # Archived Note Indexes
     archived_note_index_reader = new ArchivedNoteIndexReader(note_manager: @note_manager)
     @archived_note_indexes = new NoteIndexCollection([], source: archived_note_index_reader)
+    # Notes cache
+    @notes           = new NoteCollection()
+    # Current active note
     @current_note = null
 
   prepareWorkspace: ->
@@ -32,6 +36,10 @@ class Notepad extends Backbone.Model
   createNote: ->
     note = @notes.newNote()
     @_saveNote(note)
+    .then((note)=>
+      note_index = NoteIndexItem.fromNote(note)
+      @note_indexes.push(note_index)
+      )
     .then(()=>
       NoteCreateEvent.create(note))
     .then((event)=>
@@ -78,7 +86,7 @@ class Notepad extends Backbone.Model
     @note_manager.saveNote(note)
     .then(()=>
       note.onSaved()
-      @note_indexes.onNoteUpdated(note)
+      @note_indexes.onNoteSaved(note)
       item = @note_indexes.get(note.id)
       @note_manager.saveNoteIndexItem(item).then(
         (note_index_item)=> note))

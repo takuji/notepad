@@ -15,6 +15,17 @@ class NoteIndexCollection extends Backbone.Collection
     @updateIndex(note)
     console.log "NoteIndexCollection.onNoteUpdated #{note.id}"
 
+  onNoteSaved: (note)->
+    index = @get(note.id)
+    if index?
+      index.reset(note)
+      @remove index
+      @unshift index
+    else
+      index = NoteIndexItem.fromNote(note)
+      @unshift index
+    console.log "NoteIndexCollection.onNoteSaved #{note.id}"
+
   onNoteAdded: (note)->
     @unshift NoteIndexItem.fromNote(note)
     console.log "NoteIndexCollection.onNoteAdded #{note.id}"
@@ -98,12 +109,6 @@ class Note extends Backbone.Model
 
   getMap: ->
     new NoteMap().attachNote(@)
-
-  getInfo: ->
-    id: @id
-    title: @get('title')
-    created_at: @get('created_at')
-    updated_at: @get('updated_at')
 
   isHighlighted: ->
     @get('highlighted') == true
