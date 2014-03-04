@@ -55,7 +55,7 @@ gulp.task('watch', function () {
   gulp.watch('src/stylesheets/**/*.scss', ['compass']);
   gulp.watch('resources/**/*', ['copy-resources']);
   gulp.watch(DEST_DIR + '/**/*', ['package']);
-  gulp.watch(DEST_DIR + '/app.nw', ['export-package']);
+  gulp.watch(BUILD_DIR + '/target/app.nw', ['export-package']);
 });
 
 gulp.task('package', function() {
