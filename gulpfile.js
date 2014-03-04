@@ -54,7 +54,8 @@ gulp.task('watch', function () {
   gulp.watch('src/js/**/*.coffee', ['build-notepad.js', 'build-workers']);
   gulp.watch('src/stylesheets/**/*.scss', ['compass']);
   gulp.watch('resources/**/*', ['copy-resources']);
-  gulp.watch(DEST_DIR + '/**/*', ['export-package']);
+  gulp.watch(DEST_DIR + '/**/*', ['package']);
+  gulp.watch(DEST_DIR + '/app.nw', ['export-package']);
 });
 
 gulp.task('package', function() {
@@ -66,7 +67,7 @@ gulp.task('package', function() {
 	return result;
 });
 
-gulp.task('export-package', ['package'], function() {
+gulp.task('export-package', function() {
 	return gulp.src(BUILD_DIR + '/target/app.nw')
 		.pipe(gulp.dest('./'))
 });
