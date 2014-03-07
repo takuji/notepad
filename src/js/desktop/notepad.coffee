@@ -49,7 +49,7 @@ class Notepad extends Backbone.Model
     .then(()=>
       note)
 
-  getNoteAsync: (note_id)->
+  getNote: (note_id)->
     note = @notes.get(note_id)
     if note
       Q(note)
@@ -57,7 +57,7 @@ class Notepad extends Backbone.Model
       @loadNote(note_id)
 
   selectNote: (note_id)->
-    @getNoteAsync(note_id)
+    @getNote(note_id)
     .then((note)=>
       @current_note.changeNote(note)
       note)
@@ -96,7 +96,7 @@ class Notepad extends Backbone.Model
       .then(()=>
         @note_indexes.remove(note_index))
       .then(()=>
-        @getNoteAsync(note_id))
+        @getNote(note_id))
       .then((note)=>
         console.log "Logging note index deletion #{note_id}"
         event = NoteDeleteEvent.create(note)
