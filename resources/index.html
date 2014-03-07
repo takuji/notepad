@@ -108,9 +108,19 @@
     </div>
   </script>
 
+  <script type="text/template" id="editor-settings-template">
+    <section>
+      <h2>Editor</h2>
+      <div><%= scenes.note_edit.note_map_level %></div>
+    </section>
+    <div class="buttons">
+      <button id="save-button">Save & Restart</button>
+    </div>
+  </script>
+
   <script type="text/template" id="settings-sections-template">
     <% _.each(items, function(item){ %>
-      <li class="settings-section-select"><a href="<%= item.path %>"><%= item.name %></a></div>
+      <li class="settings-section-select"><a href="<%= item.path %>" data-id="<%= item.id %>"><%= item.name %></a></div>
     <% }); %>
   </script>
 

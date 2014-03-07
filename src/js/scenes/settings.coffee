@@ -19,14 +19,20 @@ class SettingsScene extends Marionette.Layout
     settings = @model.settings
     @sections =
       workspace: new WorkspaceSettingsView(model: settings)
+      editor: new EditorSettingsView(model: settings)
     @keymap = Keymap.createFromData(@keymapData, @)
     @active = false
     $(window).on 'resize', => @_resize()
 
   onRender: ->
-    @sidebar.show new SettingsSidebarView(collection: [])
+    sections_view = new SettingsSidebarView()
+    @sidebar.show sections_view
+    @listenTo sections_view, 'section:selected', @onSectionSelected
     @changeSection 'workspace'
     console.log 'SettingsScene.onRender'
+
+  onSectionSelected: (section_id)->
+    @changeSection section_id
 
   onShow: ->
     @active = true
@@ -48,6 +54,9 @@ class SettingsScene extends Marionette.Layout
   nextSection: ->
     console.log 'SettingsScene.nextSection'
 
+#
+#
+#
 class WorkspaceSettingsView extends Marionette.ItemView
   template: '#workspace-settings-template'
   className: 'settings-section'
@@ -82,17 +91,53 @@ class SettingsSidebarView extends Marionette.ItemView
   className: 'settings-section-list'
 
   events:
-    'click li': 'onItemClicked'
+    'click li a': 'onItemClicked'
 
   sections:
     workspace:
       path: '#settings/workspace'
       name: 'Workspace'
+    editor:
+      path: '#settings/editor'
+      name: 'Editor'
 
   initialize: ->
     @collection = new Backbone.Collection()
     _.each @sections, (attrs, name)=>
-      @collection.add(attrs)
+      obj = _.extend attrs, {id: name}
+      console.log obj
+      @collection.add(obj)
 
   onItemClicked: (e)->
+    $a = $(e.target)
+    @trigger 'section:selected', $a.attr('data-id')
     console.log 'clicked!'
+
+#
+#
+#
+class EditorSettingsView extends Marionette.ItemView
+  template: '#editor-settings-template'
+  className: 'settings-section'
+
+  events:
+    'change #editor-note-map-visible-depth': 'onNoteMapVisibleDepthChanged'
+    'click #save-button': 'onSaveButtonClicked'
+
+  initialize: ->
+    console.log @model.toJSON()
+  
+  onRender: ->
+    console.log 'WorkspaceSettingsView.onRender'
+
+  onShow: ->
+    console.log 'WorkspaceSettingsView.onShow'
+
+  onNoteMapVisibleDepthChanged: (e)->
+    console.log 'WorkspaceSettingsView.onNoteMapVisibleDepthChanged'
+
+  onSaveButtonClicked: (e)->
+    @model.save()
+    location.href = 'index.html'
+
+  
