@@ -21,16 +21,18 @@ if (!fs.existsSync(MOD_DIR)) {
 }
 
 gulp.task('default', ['build', 'watch']);
-gulp.task('build', ['build-notepad.js', 'build-workers', 'compass', 'copy-vendor', 'copy-resources', 'export-package']);
+gulp.task('build', ['build-lib', 'build-notepad.js', 'build-workers', 'compass', 'copy-vendor', 'copy-resources', 'export-package']);
+
+gulp.task('build-lib', function() {
+  return gulp.src(['src/js/lib/**/*.coffee'])
+    .pipe(coffee({bare: true})).on('error', gutil.log)
+    .pipe(gulp.dest(DEST_DIR + '/js/lib/'))
+});
 
 gulp.task('build-notepad.js', function() {
-	return gulp.src(['src/js/requirements.coffee',
-                   'src/js/lib/*.coffee',
-                   'src/js/modules/*.coffee',
-                   'src/js/desktop/*.coffee',
-                   'src/js/views/*.coffee',
-                   'src/js/scenes/*.coffee',
-                   'src/js/app.coffee'])
+	return gulp.src(['src/js/app/requirements.coffee',
+                   'src/js/app/*/**/*.coffee',
+                   'src/js/app/app.coffee'])
 		.pipe(coffee({bare: true}).on('error', gutil.log))
 		.pipe(concat('notepad.js'))
 		.pipe(gulp.dest(DEST_DIR + '/js/'));
@@ -51,7 +53,9 @@ gulp.task('copy-resources', function() {
 });
 
 gulp.task('watch', function () {
-  gulp.watch('src/js/**/*.coffee', ['build-notepad.js', 'build-workers']);
+  gulp.watch('src/js/app/**/*.coffee', ['build-notepad.js']);
+  gulp.watch('src/js/workers/**/*.coffee', ['build-workers']);
+  gulp.watch('src/js/lib/**/*.coffee', ['build-lib']);
   gulp.watch('src/stylesheets/**/*.scss', ['compass']);
   gulp.watch('resources/**/*', ['copy-resources']);
   gulp.watch(DEST_DIR + '/**/*', ['package']);

@@ -7,3 +7,6 @@ Shell = gui.Shell
 Window = gui.Window
 cuid = require('cuid')
 hljs = require('highlight.js')
+Q         = require('./js/q.js')
+FileUtils = require('./js/lib/fileutils.js')
+# require './js/lib/textarea_extension.js'

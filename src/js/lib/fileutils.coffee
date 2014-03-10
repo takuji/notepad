@@ -1,3 +1,7 @@
+Q      = require '../q.js'
+mkdirp = require 'mkdirp'
+fs     = require 'fs'
+
 FileUtils =
   slurp: (path)->
     d = Q.defer()
@@ -25,3 +29,5 @@ FileUtils =
       else
         d.resolve()
     d.promise
+
+module.exports = FileUtils
