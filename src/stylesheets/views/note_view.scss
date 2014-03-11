@@ -71,6 +71,15 @@
     }
   }
 
+  code {
+    padding: 2px 4px;
+    font-size: 90%;
+    color: #c7254e;
+    background-color: #f9f2f4;
+    white-space: nowrap;
+    border-radius: 4px;
+  }
+
   p {
     margin: 0 0 10px;
   }
@@ -92,6 +101,9 @@
     background-color: #fdfdfd;
   }
 
+  b, strong {
+    font-weight: bold;
+  }
 
   // pre {
   //   font-family: monospace;
