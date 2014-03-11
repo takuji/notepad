@@ -14,12 +14,13 @@
   #sidebar {
     width: 30%;
     min-width: 200px;
-    max-width: 300px;
+    max-width: 400px;
+    border-right: 1px solid #ddd;
   }
 
   #main {
     overflow-y: scroll;
-    background-color: #f8f8f8
+    // background-color: #f8f8f8
   }
 
   .note-empty {
