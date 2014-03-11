@@ -118,10 +118,10 @@ class SettingsSidebarView extends Marionette.ItemView
 #
 class EditorSettingsView extends Marionette.ItemView
   template: '#editor-settings-template'
-  className: 'settings-section'
+  className: 'settings-section editor-settings'
 
   events:
-    'change #editor-note-map-visible-depth': 'onNoteMapVisibleDepthChanged'
+    'change input[name="note_map_depth_level"]': 'onNoteMapVisibleDepthChanged'
     'click #save-button': 'onSaveButtonClicked'
 
   initialize: ->
@@ -131,9 +131,19 @@ class EditorSettingsView extends Marionette.ItemView
     console.log 'WorkspaceSettingsView.onRender'
 
   onShow: ->
+    @displayCurrentLevel()
     console.log 'WorkspaceSettingsView.onShow'
 
+  displayCurrentLevel: ->
+    console.log 'EditorSettingsView.displayCurrentLevel'
+    level = @model.getNoteEditSceneSettings().note_map_level
+    @$("#note_map_depth_level_#{level}").prop('checked', true)
+    console.log 'EditorSettingsView.displayCurrentLevel done'
+
   onNoteMapVisibleDepthChanged: (e)->
+    level = +$(e.target).val()
+    @model.changeNoteMapLevel(level)
+    @model.save()
     console.log 'WorkspaceSettingsView.onNoteMapVisibleDepthChanged'
 
   onSaveButtonClicked: (e)->

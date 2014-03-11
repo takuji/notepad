@@ -210,17 +210,20 @@ class Settings extends Backbone.Model
   getNotesDirectory: ->
     "#{@defaultWorkspaceDirectory()}/notes"
 
-  getNoteEditSceneSettings: ->
-    @get('note_edit_scene')
-
   getSceneSettings: (scene)->
     @get('scenes')[scene]
+
+  getNoteEditSceneSettings: ->
+    @getSceneSettings('note_edit')
 
   getToolbarSettings: ->
     @get('toolbar')
 
   changeWorkspaceDirectory: (path)->
     @get('workspace').root_path = path
+
+  changeNoteMapLevel: (level)->
+    @get('scenes').note_edit.note_map_level = level
 
   save: ->
     s = JSON.stringify(@toJSON(), null, 2)
