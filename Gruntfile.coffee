@@ -4,16 +4,21 @@ module.exports = (grunt)->
     pkg: grunt.file.readJSON 'package.json'
 
     coffee:
-      compile:
+      lib:
         options:
           bare: true
-        files: [
-          expand: true
-          cwd: 'src/js/lib/'
-          src: ['**/*.coffee']
-          dest: 'build/app.nw/js/lib/'
-          ext: '.js'          
-        ]
+        expand: true
+        cwd: 'src/js/lib/'
+        src: ['**/*.coffee']
+        dest: 'build/app.nw/js/lib/'
+        ext: '.js'          
+      notepad:
+        options:
+          bare: true
+          join: true
+        files:
+          'build/app.nw/js/notepad.js': ['src/js/app/**/*.coffee']
+
 
 
   # Plugins
