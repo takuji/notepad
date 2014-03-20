@@ -1,7 +1,7 @@
 Notepad
 =======
 
-# How to Build
+## How to Build
 
 ```sh
 $ npm install
