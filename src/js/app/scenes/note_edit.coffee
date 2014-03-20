@@ -143,7 +143,7 @@ class NoteMapView extends Marionette.CompositeView
   initialize: (options)->
     @collection = new NoteMap()
     @note_map_level = options.note_map_level || 6
-    @note_map_worker = new Worker('js/note_map_worker.js')
+    @note_map_worker = new Worker('js/workers/note_map_worker.js')
     @note_map_worker.onmessage = (e)=> @onContentParsed(e.data)
     @listenTo @model, 'change:content', @onContentChanged
     @on 'itemview:clicked', @onItemClicked
@@ -200,8 +200,6 @@ class NoteEditorView extends Marionette.ItemView
 
   initialize: ->
     @keymap = Keymap.createFromData(@keymapData, @)
-    @markdown_worker = new Worker('js/markdown_worker.js')
-    @markdown_worker.onmessage = (e)=> @onMarkdownWorkerMessage(e)
 
   onRender: ->
     @$textarea = @$('textarea')
@@ -234,13 +232,9 @@ class NoteEditorView extends Marionette.ItemView
       percent = @$textarea.scrollTop() / (h2 - h1)
       @trigger 'scrolled', percent
 
-  onMarkdownWorkerMessage: (e)->
-    @model.updateHtml e.data
-
   updateModel: ->
     content = @$textarea.val()
     @model.updateContent(content)
-    @markdown_worker.postMessage(content)
 
   focus: ->
     @$('textarea').focus()
@@ -356,7 +350,7 @@ class HtmlConverter
   constructor: (options)->
     @jobs = []
     model = options.model
-    markdown_worker = new Worker('js/markdown_worker.js')
+    markdown_worker = new Worker('js/workers/markdown_worker.js')
     markdown_worker.onmessage = (e)=> @onPlainHtmlCreated(e.data)
     @listenTo model, 'change:content', ()=>
       markdown_worker.postMessage(model.get('content'))

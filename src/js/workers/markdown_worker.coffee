@@ -1,4 +1,4 @@
-importScripts 'marked.js'
+importScripts '../marked.js'
 
 onmessage = (e)->
 	html = marked(e.data)

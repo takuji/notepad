@@ -1,4 +1,4 @@
-importScripts 'underscore.js'
+importScripts '../underscore.js'
 
 onmessage = (e)->
   markdownString = e.data
