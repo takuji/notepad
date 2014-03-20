@@ -17,14 +17,18 @@ module.exports = (grunt)->
           bare: true
           join: true
         files:
-          'build/app.nw/js/notepad.js': ['src/js/app/**/*.coffee']
+          'build/app.nw/js/notepad.js': [
+            'src/js/app/requirements.coffee'
+            'src/js/app/*/**/*.coffee'
+            'src/js/app/app.coffee'
+          ]
       workers:
         options:
           bare: true
         expand: true
         cwd: 'src/js/workers/'
         src: ['**/*.coffee']
-        dest: 'build/app.nw/js/workers/'
+        dest: 'build/app.nw/js/'
         ext: '.js'
 
     compass:
