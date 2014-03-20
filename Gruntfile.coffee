@@ -50,10 +50,29 @@ module.exports = (grunt)->
           dest: 'build/app.nw/'
         ]
 
+    nodewebkit:
+      main:
+        options:
+          version: '0.9.2'
+          app_name: 'Notepad'
+          build_dir: 'build/'
+          mac: true
+          win: false
+          linux32: false
+          linux64: false
+          mac_icns: 'mac/app.icns'
+        src: ['./build/app.nw/**/*']
+
+    'install-dependencies':
+      options:
+        cwd: './build/app.nw'
+
   # Plugins
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-compass'
+  grunt.loadNpmTasks 'grunt-node-webkit-builder'
+  grunt.loadNpmTasks 'grunt-install-dependencies'
 
   # Tasks
-  grunt.registerTask 'default', ['coffee', 'compass', 'copy']
+  grunt.registerTask 'default', ['coffee', 'compass', 'copy', 'install-dependencies', 'nodewebkit']
