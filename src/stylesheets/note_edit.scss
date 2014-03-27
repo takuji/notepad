@@ -58,6 +58,14 @@
     outline: none !important;
     font-size: 12px;
   }
+
+  .CodeMirror {
+    height: 100%;
+    padding: 6px;
+    line-height: 1.2;
+    font-size: 12px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
 }
 
 .preview {
