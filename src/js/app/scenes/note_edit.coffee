@@ -83,12 +83,12 @@ class NoteEditMain extends Marionette.Layout
     preview: '#preview'
 
   onRender: ->
-    editor  = new NoteEditorView(model: @model)
+    editor  = new CMNoteEditorView(model: @model)
     preview = new NotePreviewView(model: @model)
     @editor.show(editor)
     @preview.show(preview)
     @listenTo editor, 'scrolled', @onEditorScrolled
-    console.log "NoteEditorView#onRender #{@$el.width()}"
+    console.log "NoteEditMain.onRender #{@$el.width()}"
 
   onShow: ->
     console.log "NoteEditMain.onShow"
@@ -102,6 +102,7 @@ class NoteEditMain extends Marionette.Layout
 
   resize: ->
     @editor.$el.width(@$el.width() - @preview.$el.width())
+    @editor.currentView.resize()
 
   focus: ->
     @editor.currentView.focus()
@@ -182,6 +183,125 @@ class NoteMapView extends Marionette.CompositeView
   onBeforeItemAdded: (view)->
     if view.getLevel() > @note_map_level
       view.hide()
+#
+# Editor based on CodeMirror
+#
+class CMNoteEditorView extends Marionette.ItemView
+  template: '#note-editor-template'
+  className: 'editor'
+
+  events:
+    'keydown .CodeMirror': 'onKeyDown'
+
+  keymapData:
+    'TAB': 'forwardHeadingLevel'
+    'SHIFT-TAB': 'backwardHeadingLevel'
+
+  initialize: ->
+    @keymap = Keymap.createFromData(@keymapData, @)
+
+  onRender: ->
+    $textarea = @$('textarea')
+    $textarea.val(@model.get('content'))
+    $textarea.scroll((e)=> @onScrolled(e))
+    @code_mirror = CodeMirror.fromTextArea($textarea[0], lineWrapping: true, theme: 'twilight')
+    @code_mirror.on 'change', (code_mirror, changeObj)=>
+      @model.updateContent code_mirror.getValue()
+    console.log 'NoteEditorView.onRender'
+
+  onShow: ->
+    @code_mirror.refresh()
+    console.log 'NoteDeitorView.onShow'
+
+  resize: ->
+    @code_mirror.refresh()
+    console.log 'NoteEditorView.refresh'
+
+  redraw: ->
+    @code_mirror.refresh()
+
+  onKeyDown: (e)->
+    key = Key.fromEvent(e)
+    action = @keymap.get(key)
+    if action
+      e.preventDefault()
+      action.fire()
+
+  onScrolled: (e)->
+
+  focus: ->
+    @code_mirror.focus()
+
+  goToLine: (line_no)->
+    @code_mirror.scrollIntoView line: line_no, ch: 0
+    @code_mirror.setCursor line: line_no, ch: 0
+    @code_mirror.focus()
+    console.log "NoteEditorView.goToLine #{line_no}"
+
+  moveCaretToLine: (line_no)->
+    pos = @_rangeOfLine(line_no, @$textarea.val())
+    @$textarea.setCaretPosition(pos.start)
+
+  _rangeOfLine: (line_no, text)->
+    pos = 0
+    _.times line_no - 1, ->
+      newLinePos = text.indexOf("\n", pos)
+      pos = newLinePos + 1
+    newLinePos = text.indexOf("\n", pos)
+    start: pos
+    end: newLinePos
+
+  lineCount: ->
+    @$textarea.val().split("\n").length
+
+  forwardHeadingLevel: ->
+    cursor_loc = @code_mirror.getCursor()
+    line_no = cursor_loc.line
+    ch = cursor_loc.ch
+    @_nextHeadingLevel line_no,
+      nextLevel: (level)=> (level + 1) % 7
+      nextCaretPos: (nextLevel, level) => if nextLevel > level then ch + 1 else ch - 6
+
+  backwardHeadingLevel: ->
+    cursor_loc = @code_mirror.getCursor()
+    line_no = cursor_loc.line
+    ch = cursor_loc.ch
+    @_nextHeadingLevel line_no,
+      nextLevel: (level)=> (level + 6) % 7
+      nextCaretPos: (nextLevel, level)=> if nextLevel > level then ch + 6 else ch - 1
+
+  _nextHeadingLevel: (line_no, funcs)->
+    line = @code_mirror.getLine(line_no)
+    console.log line
+    level = @_headingLevelOfString(line)
+    console.log "heading level = #{level}"
+    nextLevel = funcs.nextLevel(level)
+    h = @_makeHeading(nextLevel)
+    heading = @_extractHeading(line)
+    new_line = h + heading
+    @code_mirror.replaceRange(new_line, {line: line_no, ch: 0}, {line: line_no, ch: line.length})
+    ch = funcs.nextCaretPos(nextLevel, level)
+
+  _headingLevelOfString: (line) ->
+    level = 0
+    while line[level] == '#'
+      level += 1
+    if level <= 6 then level else 0
+
+  _makeHeading: (level)->
+    h = ''
+    _.times(level, -> h += '#')
+    h
+
+  _extractHeading: (line)->
+    line.replace /^#+/, ''
+
+  _replaceLine: (text, line_no, new_text)->
+    range = @_rangeOfLine(line_no, text)
+    t1 = text.substring(0, range.start)
+    t2 = if range.end >= 0 then text.substring(range.end) else ''
+    t1 + new_text + t2
+
 #
 #
 #
