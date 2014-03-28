@@ -215,13 +215,30 @@ class CMNoteEditorView extends Marionette.ItemView
       theme: 'twilight'
       extraKeys: @_makeKeymap()
     )
-    @code_mirror.on 'change', (code_mirror, changeObj)=>
-      @model.updateContent code_mirror.getValue()
+    @_setupEventHandlers(@code_mirror, @model)
     console.log 'NoteEditorView.onRender'
+
+  _setupEventHandlers: (cm, note)->
+    cm.on 'change', (code_mirror, changeObj)=>
+      note.updateContent code_mirror.getValue()
+    cm.on 'viewportChange', (cm, from, to)=>
+      console.log "viewportChange: #{from} - #{to}"
+    cm.on 'scroll', (cm)=>
+      @syncScroll()
+      console.log "scrolled"
 
   onShow: ->
     @code_mirror.refresh()
     console.log 'NoteDeitorView.onShow'
+
+  syncScroll: ->
+    info = @code_mirror.getScrollInfo()
+    console.log info
+    h1 = info.clientHeight
+    h2 = info.height
+    if h2 > h1
+      percent = info.top / (h2 - h1)
+      @trigger 'scrolled', percent
 
   resize: ->
     @code_mirror.refresh()
@@ -236,8 +253,6 @@ class CMNoteEditorView extends Marionette.ItemView
     if action
       e.preventDefault()
       action.fire()
-
-  onScrolled: (e)->
 
   focus: ->
     @code_mirror.focus()
