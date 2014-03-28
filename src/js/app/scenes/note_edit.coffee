@@ -381,6 +381,8 @@ class NoteEditorView extends Marionette.ItemView
     content = @$textarea.val()
     @model.updateContent(content)
 
+  resize: ->
+
   focus: ->
     @$('textarea').focus()
 
