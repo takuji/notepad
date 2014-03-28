@@ -193,18 +193,28 @@ class CMNoteEditorView extends Marionette.ItemView
   events:
     'keydown .CodeMirror': 'onKeyDown'
 
-  keymapData:
-    'TAB': 'forwardHeadingLevel'
-    'SHIFT-TAB': 'backwardHeadingLevel'
+  keymapData: {}
+
+  cm_keymap:
+    'Tab': (cm)-> @forwardHeadingLevel()
+    'Shift-Tab': (cm)-> @backwardHeadingLevel()
 
   initialize: ->
     @keymap = Keymap.createFromData(@keymapData, @)
+
+  _makeKeymap: ->
+    'Tab': (cm)=> @forwardHeadingLevel()
+    'Shift-Tab': (cm)=> @backwardHeadingLevel()
 
   onRender: ->
     $textarea = @$('textarea')
     $textarea.val(@model.get('content'))
     $textarea.scroll((e)=> @onScrolled(e))
-    @code_mirror = CodeMirror.fromTextArea($textarea[0], lineWrapping: true, theme: 'twilight')
+    @code_mirror = CodeMirror.fromTextArea($textarea[0],
+      lineWrapping: true
+      theme: 'twilight'
+      extraKeys: @_makeKeymap()
+    )
     @code_mirror.on 'change', (code_mirror, changeObj)=>
       @model.updateContent code_mirror.getValue()
     console.log 'NoteEditorView.onRender'
