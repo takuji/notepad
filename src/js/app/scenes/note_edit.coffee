@@ -83,8 +83,8 @@ class NoteEditMain extends Marionette.Layout
     preview: '#preview'
 
   onRender: ->
-    # editor  = new CMNoteEditorView(model: @model)
-    editor  = new NoteEditorView(model: @model)
+    editor  = new CMNoteEditorView(model: @model)
+    # editor  = new NoteEditorView(model: @model)
     preview = new NotePreviewView(model: @model)
     @editor.show(editor)
     @preview.show(preview)
