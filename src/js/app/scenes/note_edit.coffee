@@ -196,16 +196,13 @@ class CMNoteEditorView extends Marionette.ItemView
 
   keymapData: {}
 
-  cm_keymap:
-    'Tab': (cm)-> @forwardHeadingLevel()
-    'Shift-Tab': (cm)-> @backwardHeadingLevel()
-
   initialize: ->
     @keymap = Keymap.createFromData(@keymapData, @)
 
   _makeKeymap: ->
-    'Tab': (cm)=> @forwardHeadingLevel()
-    'Shift-Tab': (cm)=> @backwardHeadingLevel()
+    # 'Tab': (cm)=> @forwardHeadingLevel()
+    # 'Shift-Tab': (cm)=> @backwardHeadingLevel()
+    {}
 
   onRender: ->
     $textarea = @$('textarea')
@@ -213,7 +210,7 @@ class CMNoteEditorView extends Marionette.ItemView
     $textarea.scroll((e)=> @onScrolled(e))
     @code_mirror = CodeMirror.fromTextArea($textarea[0],
       lineWrapping: true
-      theme: 'twilight'
+      theme: 'eclipse'
       extraKeys: @_makeKeymap()
     )
     @_setupEventHandlers(@code_mirror, @model)
@@ -340,9 +337,7 @@ class NoteEditorView extends Marionette.ItemView
     'keydown textarea': 'onKeyDown'
     'scroll textarea': 'onScrolled'
 
-  keymapData:
-    'TAB': 'forwardHeadingLevel'
-    'SHIFT-TAB': 'backwardHeadingLevel'
+  keymapData: {}
 
   initialize: ->
     @keymap = Keymap.createFromData(@keymapData, @)
