@@ -200,9 +200,8 @@ class CMNoteEditorView extends Marionette.ItemView
     @keymap = Keymap.createFromData(@keymapData, @)
 
   _makeKeymap: ->
-    # 'Tab': (cm)=> @forwardHeadingLevel()
-    # 'Shift-Tab': (cm)=> @backwardHeadingLevel()
-    {}
+    'Tab': (cm)=> @forwardHeadingLevel()
+    'Shift-Tab': (cm)=> @backwardHeadingLevel()
 
   onRender: ->
     $textarea = @$('textarea')
