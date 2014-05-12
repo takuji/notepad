@@ -202,6 +202,8 @@ class CMNoteEditorView extends Marionette.ItemView
   _makeKeymap: ->
     'Tab': (cm)=> @forwardHeadingLevel()
     'Shift-Tab': (cm)=> @backwardHeadingLevel()
+    'Ctrl-]': (cm)=> @forwardListItemLevel()
+    'Ctrl-[': (cm)=> @backwardListItemLevel()
 
   onRender: ->
     $textarea = @$('textarea')
@@ -323,6 +325,59 @@ class CMNoteEditorView extends Marionette.ItemView
     t1 = text.substring(0, range.start)
     t2 = if range.end >= 0 then text.substring(range.end) else ''
     t1 + new_text + t2
+
+  forwardListItemLevel: (cm)->
+    cursor_loc = @code_mirror.getCursor()
+    line_no = cursor_loc.line
+    ch = cursor_loc.ch
+    @_nextListItemLevel line_no,
+      nextLevel: (level)=> (level + 1) % 7
+      nextCaretPos: (nextLevel, level) => if nextLevel > level then ch + 1 else ch - 6
+    console.log 'forwardListItemLevel'
+
+  backwardListItemLevel: (cm)->
+    cursor_loc = @code_mirror.getCursor()
+    line_no = cursor_loc.line
+    ch = cursor_loc.ch
+    @_nextListItemLevel line_no,
+      nextLevel: (level)=> if level > 0 then level - 1 else 0
+      nextCaretPos: (nextLevel, level)=> if nextLevel > level then ch + 6 else ch - 1
+
+  _nextListItemLevel: (line_no, funcs)->
+    line = @code_mirror.getLine(line_no)
+    list_item = new ListItem(line)
+    next_level = funcs.nextLevel(list_item.level)
+    new_line = list_item.makeListOfLevel(next_level)
+    console.log "next_level=#{next_level}, new_line=#{new_line}"
+    @code_mirror.replaceRange(new_line, {line: line_no, ch: 0}, {line: line_no, ch: line.length})
+    # ch = funcs.nextCaretPos(nextLevel, level)
+
+#
+# "hoge"     => level: 0
+# "- hoge"   => level: 1
+# "  hoge"   => level: 1
+# "  - hoge" => level: 2
+# "    hoge" => level: 2
+#
+class ListItem
+  constructor: (line)->
+    result = line.match(/^((  )*(- )?)(.*)$/)
+    if result
+      @level = result[1].length / 2
+      @text  = result[4]
+    else
+      @level = 0
+      @text  = line
+    console.log "LEVEL=#{@level}, TEXT=#{@text}"
+
+  makeListOfLevel: (level)->
+    if level == 0
+      @text
+    else
+      indent = ''
+      for i in [1 ... level]
+        indent += '  '
+      indent + '- ' + @text
 
 #
 #
