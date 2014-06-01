@@ -41,13 +41,6 @@ class NoteListScene extends BaseScene
   onClose: ->
     super
 
-  _resize: ->
-    super
-    if @active
-      $window = $(window)
-      sidebar = @$('#sidebar')
-      @main.$el.width($window.width() - sidebar.outerWidth())
-
   onNoteListPaneScrolled: (e)->
     @note_list_view.fetchEnoughNoteIndexes()
 

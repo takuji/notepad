@@ -2,7 +2,9 @@
 @import "compass/css3/user-interface";
 
 #note-list-scene {
-  white-space: nowrap;
+  // white-space: nowrap;
+  width: 1280px;
+  margin: 10px auto 0;
   
   >* {
     display: inline-block;
@@ -12,15 +14,13 @@
   }
 
   #sidebar {
-    width: 30%;
-    min-width: 200px;
-    max-width: 400px;
-    border-right: 1px solid #ddd;
+    width: 300px;
   }
 
   #main {
     overflow-y: scroll;
-    // background-color: #f8f8f8
+    width: 900px;
+    background-color: #fff;
   }
 
   .note-empty {
@@ -65,7 +65,7 @@
   }
 
   &:hover {
-    background-color: #fafafa;
+    background-color: #fff;
 
     .note-index-actions {
       display: block;
@@ -73,7 +73,8 @@
   }
   
   &.selected {
-    background-color: #f0f0f0;
+    background-color: #fff;
+    border-right: 1px dotted #eeeeee;
   }
 
   .title {
@@ -84,7 +85,7 @@
 
   .created_at {
     font-size: 70%;
-    color: #aaa;
+    color: #888;
   }
 }
 
